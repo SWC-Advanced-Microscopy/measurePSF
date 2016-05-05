@@ -7,6 +7,8 @@ function varargout=measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ,maxIntensity
 % Fit and display a PSF. Reports FWHM to on-screen figure
 %
 % INPUTS
+% DEMO MODE - run with no input arguments
+%
 % PSFstack  - a 3-D array (imagestack). First layer should be that nearest the objective
 % micsPerPixelXY - number of microns per pixel in X and Y
 % micsPerPixelZ  - number of microns per pixel in Z (i.e. distance between adjacent Z planes)
@@ -19,6 +21,10 @@ function varargout=measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ,maxIntensity
 %
 %
 % Rob Campbell - Basel 2016
+%
+% Requires:
+% Curve-Fitting Toolbox
+
 
 
 if nargin<1
@@ -32,6 +38,9 @@ end
 if nargin<4
 	maxIntensityInZ=0;
 end
+
+
+
 
 % Step One
 %
@@ -330,9 +339,9 @@ function updateUserSelected(PSFstack)
 	Hax=findobj('Tag','userSelected');
 	Hslider = findobj('Tag','DepthSlider');
 
-
-	slice = round(Hslider.Value);
+	slice = round(get(Hslider,'Value'));
 	set(Hax,'CData',PSFstack(:,:,slice))
+
 	caxis([min(PSFstack(:)), max(PSFstack(:))])
 
 	title(sprintf('Slice #%d',slice))
