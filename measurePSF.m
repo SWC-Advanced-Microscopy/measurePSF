@@ -31,7 +31,7 @@ if nargin<1
 	help(mfilename)
 	P=load('PSF');
 	PSFstack = P.PSF;
-	micsPerPixelXY=0.08;
+	micsPerPixelXY=0.05;
 	micsPerPixelZ=0.500;
 end
 
@@ -154,7 +154,7 @@ set(gca,'XAxisLocation','Top',...
 		'XTick',[],...
 		'YTick',Ytick,'YTickLabel',roundSig(Ytick*micsPerPixelXY,2));
 
-t=text(1,1,	sprintf('PSF in Z/Y'), 'Color','w','VerticalAlignment','top');
+text(1,1,sprintf('PSF in Z/Y'), 'Color','w','VerticalAlignment','top');
 
 %This is the fitted Z/Y PSF with the FWHM
 axes('Position',[0.03,0.705,0.4,0.1])
@@ -183,7 +183,7 @@ set(gca,'YAxisLocation','Right',...
 		'XTick',Xtick,'XTickLabel',roundSig(Xtick*micsPerPixelXY,2),...
 		'YTick',[])
 
-t=text(1,1,	sprintf('PSF in Z/X'), 'Color','w','VerticalAlignment','top');
+text(1,1,sprintf('PSF in Z/X'), 'Color','w','VerticalAlignment','top');
 
 %This is the fitted Z/X PSF with the FWHM
 axes('Position',[0.665,0.07,0.1,0.4])
@@ -302,7 +302,7 @@ function [FWHM,p] = plotCrossSectionAndFit(x,y,fitObj,fitRes,flipAxes)
 	p(1)=area(fitX(inds),fitY(inds));
 
 	set(p,'FaceColor','k','EdgeColor','none')
-    if verLessThan('matlab','8.4')
+	if verLessThan('matlab','8.4')
     	set(p,'FaceColor',[0.8,0.8,0.8]);
     else
 		set(p,'FaceAlpha',0.15);
@@ -322,7 +322,7 @@ function [FWHM,p] = plotCrossSectionAndFit(x,y,fitObj,fitRes,flipAxes)
 	title(sprintf('FWHM: %0.2f \\mum',FWHM))
 
 	axis tight
-	grid
+	grid on
 
 	%Add ticks such that the peak has a tick mark that we will label as zero	
 	stepSize  = (fitX(end)-fitX(1))/11; %to divide up the fit
