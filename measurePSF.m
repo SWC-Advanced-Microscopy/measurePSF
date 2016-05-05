@@ -1,7 +1,7 @@
-function varargout=measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ)
+function varargout=measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ,maxIntensityInZ)
 % Display PSF and measure its size in X, Y, and Z
 %
-% function varargout=measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ)
+% function varargout=measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ,maxIntensityInZ)
 %
 % Purpose
 % Fit and display a PSF. Reports FWHM to on-screen figure
@@ -10,6 +10,9 @@ function varargout=measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ)
 % PSFstack  - a 3-D array (imagestack). First layer should be that nearest the objective
 % micsPerPixelXY - number of microns per pixel in X and Y
 % micsPerPixelZ  - number of microns per pixel in Z (i.e. distance between adjacent Z planes)
+% maxIntensityInZ - [optional, false by default] if true we use the max intensity projection
+%					for the Z PSFs. This is likely necessary if the PSF is very tilted.
+%
 %
 % OUTPUTS
 % Returns fit objects and various handles (not finalised yet)
@@ -23,7 +26,14 @@ if nargin<1
 	return
 end
 
-%Estimate the center of the PSF in Z by finding the brightest point
+if nargin<4
+	maxIntensityInZ=0;
+end
+
+% Step One
+%
+% Estimate the slice that contains center of the PSF in Z by finding the brightest point.
+
 
 %Clean up the PSF because we're using max
 PSFstack = double(PSFstack);
@@ -33,15 +43,21 @@ for ii=1:size(DS,3)
 end
 Z = max(squeeze(max(DS))); 
 
-
 z=max(squeeze(max(DS)));
-[f,g] = fit_Intensity(z,1);
+f = fit_Intensity(z,1); 
 psfCenterInZ = round(f.b1);
 
+if psfCenterInZ > size(PSFstack,3) || psfCenterInZ<1
+	fprintf('PSF center in Z estimated as slice %d. That is out of range. PSF stack has %d slices\n',...
+		psfCenterInZ,size(PSFstack,3))
+	return
+end
+
+midZ=round(size(PSFstack,3)/2); %The calculated mid-point of the PSF stack
 
 
-midZ=round(size(PSFstack,3)/2);
 
+%Plot the mid-point of the stack
 
 clf
 
@@ -55,7 +71,8 @@ text(size(PSFstack,1)*0.025,...
 	sprintf('PSF center at slice #%d',psfCenterInZ),...
 	'color','w','VerticalAlignment','top') 
 
-%sort out the axes
+
+%Optionally, show the axes. Right now, I don't think we want this at all so it's not an input argument 
 showAxesInMainPSFplot=0;
 if showAxesInMainPSFplot
 	Xtick = linspace(1,size(maxZplane,1),8);
@@ -66,20 +83,26 @@ else
 	set(gca,'XTick',[],'YTick',[])
 end
 
-%Find the center of the bead in X and Y by fitting gaussians along these dimensions
+
+
+% Step Two
+%
+% Find the center of the bead in X and Y by fitting gaussians along these dimensions.
+% We will use these values to show cross-sections of it along X and Y at the level of the image plotted above
 f = fit_Intensity(max(maxZplane,[],1),1);
 psfCenterInX = round(f.b1);
 
 f = fit_Intensity(max(maxZplane,[],2),1);
 psfCenterInY = round(f.b1);
 
+%Add lines to the main X/Y plot showing where we are slicing it to take the cross-sections
 hold on
 plot(xlim,[psfCenterInY,psfCenterInY],'--w')
 plot([psfCenterInX,psfCenterInX],ylim,'--w')
 hold off
 
 
-%The slice along the rows  (fit along the right side of the X/Y PSF)
+%The cross-section sliced along the rows (the fit shown along the right side of the X/Y PSF)
 axes('Position',[0.435,0.07,0.1,0.4])
 yvals = maxZplane(:,psfCenterInX);
 x=(1:length(yvals))*micsPerPixelXY;
@@ -88,7 +111,7 @@ plotCrossSectionAndFit(x,yvals,fitX,micsPerPixelXY/2,1);
 set(gca,'XTickLabel',[])
 
 
-%The slice down the columns (fit above the X/Y psf)
+%The cross-section sliced down the columns (fit shown above the X/Y PSF)
 axes('Position',[0.03,0.475,0.4,0.1])
 yvals = maxZplane(psfCenterInY,:);
 x=(1:length(yvals))*micsPerPixelXY;
@@ -97,22 +120,31 @@ plotCrossSectionAndFit(x,yvals,fitY,micsPerPixelXY/2);
 set(gca,'XTickLabel',[])
 
 
-%So now we can slice the PSF in Z along the X and Y maxima 
 
-%PSF in Z/Y
+% Step Three
+%
+% We now obtain images showing the PSF's extent in Z
+% We do this by taking maximum intensity projections or slices through the maximum
 axes('Position',[0.03,0.6,0.4,0.1])
-PSF_ZY=squeeze(PSFstack(psfCenterInY,:,:));
+
+
+%PSF in Z/Y (panel above)
+if maxIntensityInZ
+	PSF_ZY=squeeze(max(PSFstack,[],1));
+else
+	PSF_ZY=squeeze(PSFstack(psfCenterInY,:,:));
+end
+
 imagesc(PSF_ZY)
 
-Xtick = linspace(1,size(PSF_ZY,2),8);
 Ytick = linspace(1,size(PSF_ZY,1),3);
-
 set(gca,'XAxisLocation','Top',...
 		'XTick',[],...
 		'YTick',Ytick,'YTickLabel',round(Ytick*micsPerPixelXY,2));
 
 t=text(1,1,	sprintf('PSF in Z/Y'), 'Color','w','VerticalAlignment','top');
 
+%This is the fitted Z/Y PSF with the FWHM
 axes('Position',[0.03,0.705,0.4,0.1])
 maxPSF_ZY = max(PSF_ZY,[],1);
 fitZY = fit_Intensity(maxPSF_ZY, micsPerPixelZ,2);
@@ -123,25 +155,25 @@ set(gca,'XAxisLocation','Top')
 
 
 
-
-
-%PSF in Z/X (on the right)
+%PSF in Z/X (panel on the right on the right)
 axes('Position',[0.56,0.07,0.1,0.4])
-PSF_ZX=squeeze(PSFstack(:,psfCenterInX,:));
+if maxIntensityInZ
+	PSF_ZX=squeeze(max(PSFstack,[],2));
+else
+	PSF_ZX=squeeze(PSFstack(:,psfCenterInX,:));
+end
+
 PSF_ZX=rot90(PSF_ZX,3);
 imagesc(PSF_ZX)
 
-
 Xtick = linspace(1,size(PSF_ZX,2),3);
-Ytick = linspace(1,size(PSF_ZX,1),8);
-
-
 set(gca,'YAxisLocation','Right',...
 		'XTick',Xtick,'XTickLabel',round(Xtick*micsPerPixelXY,2),...
 		'YTick',[])
 
 t=text(1,1,	sprintf('PSF in Z/X'), 'Color','w','VerticalAlignment','top');
 
+%This is the fitted Z/X PSF with the FWHM
 axes('Position',[0.665,0.07,0.1,0.4])
 maxPSF_ZX = max(PSF_ZX,[],2);
 fitZX = fit_Intensity(maxPSF_ZX, micsPerPixelZ,2);
@@ -150,7 +182,10 @@ plotCrossSectionAndFit(x,maxPSF_ZX,fitZX,micsPerPixelZ/4,1);
 set(gca,'XAxisLocation','Top')
 
 
-%Finally, we add a plot with a scroll-bar so we can view the PSF as desires
+
+% Step Four
+%
+% Finally, we add a plot with a scroll-bar so we can view the PSF as desires
 axes('Position',[0.5,0.55,0.4,0.4])
 userSelected=imagesc(maxZplane);
 set(userSelected,'Tag','userSelected')
@@ -173,17 +208,29 @@ if nargout>0
 	OUT.slider = slider;
 	OUT.fitY = fitY;
 	OUT.fitX = fitX;
+	OUT.fitZY = fitZY;
+	OUT.fitZX = fitZY;
 	OUT.PSF_ZX = PSF_ZX;
 	OUT.PSF_ZY = PSF_ZY;
 	varargout{1} = OUT;
 end
 
+
+
 function [fitresult, gof] = fit_Intensity(Y,micsPerPix,numberOfTerms)
-	%  Data for 'Z_FIT' fit:
-	%      Y Output: Z
-	%  Output:
-	%      fitresult : a fit object representing the fit.
-	%      gof : structure with goodness-of fit info.
+	%  Fit PSF intensity profile with a Gaussian
+	%
+	% Inputs
+	%  Y - the vector intensities for this PSF cross-section
+	%  micsPerPix - the number of microns per pixel (set to 1 
+	%			 if using this function to determine the index of the peak)
+	%  numberOfTerms - number of terms in the Gaussian. Use 1 for a regular 
+	%				Gaussian. 2 if kurtosis of the raw data seem high.
+	%
+	%
+	% Outputs
+	%  fitresult - a fit object representing the fit.
+	%  gof - structure with goodness-of fit info.
 	%
 	%  See also FIT, CFIT, SFIT.
 
@@ -209,6 +256,14 @@ function [fitresult, gof] = fit_Intensity(Y,micsPerPix,numberOfTerms)
 
 
 function [FWHM,p] = plotCrossSectionAndFit(x,y,fitObj,fitRes,flipAxes)
+	% Used to plot the fit cross-sections
+	%
+	% x - x data
+	% y - y data
+	% fitObj - the fit object produced by fit_Intensity that is associated with these data
+	% fitRes - the resolution in microns of the fitted curve. This is used to obtain the FWHM
+	% flipAxes - set to true to flip x/y axes for the plots long the right. 
+	
 	if nargin<5
 		flipAxes = 0;
 	end
