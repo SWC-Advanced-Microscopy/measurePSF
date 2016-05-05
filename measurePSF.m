@@ -1,21 +1,32 @@
-function varargout=measurePSF(PSFstack)
+function varargout=measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ)
 % Display PSF and measure its size in X, Y, and Z
 %
+% function varargout=measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ)
+%
 % Purpose
-% Fit and display a PSF
+% Fit and display a PSF. Reports FWHM to on-screen figure
 %
 % INPUTS
 % PSFstack  - a 3-D array (imagestack). First layer should be that nearest the objective
+% micsPerPixelXY - number of microns per pixel in X and Y
+% micsPerPixelZ  - number of microns per pixel in Z (i.e. distance between adjacent Z planes)
+%
+% OUTPUTS
+% Returns fit objects and various handles (not finalised yet)
+%
+%
+% Rob Campbell - Basel 2016
 
 
-micsPerPixelXY = 0.04;
-micsPerPixelZ = 0.5;
-
-PSFstack = double(PSFstack);
+if nargin<1
+	help(mfilename)
+	return
+end
 
 %Estimate the center of the PSF in Z by finding the brightest point
 
 %Clean up the PSF because we're using max
+PSFstack = double(PSFstack);
 DS = imresize(PSFstack,0.25); 
 for ii=1:size(DS,3)
 	DS(:,:,ii) = conv2(DS(:,:,ii),ones(2),'same');
