@@ -11,7 +11,7 @@ function varargout=measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ,maxIntensity
 % micsPerPixelXY - number of microns per pixel in X and Y
 % micsPerPixelZ  - number of microns per pixel in Z (i.e. distance between adjacent Z planes)
 % maxIntensityInZ - [optional, false by default] if true we use the max intensity projection
-%					for the Z PSFs. This is likely necessary if the PSF is very tilted.
+%                   for the Z PSFs. This is likely necessary if the PSF is very tilted.
 %
 %
 % OUTPUTS
@@ -23,7 +23,10 @@ function varargout=measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ,maxIntensity
 
 if nargin<1
 	help(mfilename)
-	return
+	P=load('PSF');
+	PSFstack = P.PSF;
+	micsPerPixelXY=0.08;
+	micsPerPixelZ=0.500;
 end
 
 if nargin<4
@@ -149,7 +152,7 @@ axes('Position',[0.03,0.705,0.4,0.1])
 maxPSF_ZY = max(PSF_ZY,[],1);
 fitZY = fit_Intensity(maxPSF_ZY, micsPerPixelZ,2);
 x = (1:length(maxPSF_ZY))*micsPerPixelZ;
-OUT.ZY.fitPlot_H = plotCrossSectionAndFit(x,maxPSF_ZY,fitZY,micsPerPixelZ/4);
+[OUT.ZY.FWHM,OUT.ZY.fitPlot_H] = plotCrossSectionAndFit(x,maxPSF_ZY,fitZY,micsPerPixelZ/4);
 set(gca,'XAxisLocation','Top')
 
 
@@ -178,7 +181,7 @@ axes('Position',[0.665,0.07,0.1,0.4])
 maxPSF_ZX = max(PSF_ZX,[],2);
 fitZX = fit_Intensity(maxPSF_ZX, micsPerPixelZ,2);
 x = (1:length(maxPSF_ZX))*micsPerPixelZ;
-OUT.ZX.fitPlot_H = plotCrossSectionAndFit(x,maxPSF_ZX,fitZX,micsPerPixelZ/4,1);
+[OUT.ZY.FWHM, OUT.ZX.fitPlot_H] = plotCrossSectionAndFit(x,maxPSF_ZX,fitZX,micsPerPixelZ/4,1);
 set(gca,'XAxisLocation','Top')
 
 
