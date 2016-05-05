@@ -5,6 +5,11 @@ function varargout=measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ,maxIntensity
 %
 % Purpose
 % Fit and display a PSF. Reports FWHM to on-screen figure
+% Note: currently uses two-component fits for the PSF in Z. This may be a bad choice
+% 		for 2-photon PSFs or PSFs which are sparsely sampled in Z. Will need to look 
+%		at real data and decide what to do about the Z-fits. So far only tried simulated
+%		PSFs.
+%
 %
 % INPUTS
 % DEMO MODE - run with no input arguments
