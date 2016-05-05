@@ -77,8 +77,8 @@ showAxesInMainPSFplot=0;
 if showAxesInMainPSFplot
 	Xtick = linspace(1,size(maxZplane,1),8);
 	Ytick = linspace(1,size(maxZplane,2),8);
-	set(gca,'XTick',Xtick,'XTickLabel',round(Xtick*micsPerPixelXY,2),...
-			'YTick',Ytick,'YTickLabel',round(Ytick*micsPerPixelXY,2));
+	set(gca,'XTick',Xtick,'XTickLabel',roundSig(Xtick*micsPerPixelXY,2),...
+			'YTick',Ytick,'YTickLabel',roundSig(Ytick*micsPerPixelXY,2));
 else
 	set(gca,'XTick',[],'YTick',[])
 end
@@ -140,7 +140,7 @@ imagesc(PSF_ZY)
 Ytick = linspace(1,size(PSF_ZY,1),3);
 set(gca,'XAxisLocation','Top',...
 		'XTick',[],...
-		'YTick',Ytick,'YTickLabel',round(Ytick*micsPerPixelXY,2));
+		'YTick',Ytick,'YTickLabel',roundSig(Ytick*micsPerPixelXY,2));
 
 t=text(1,1,	sprintf('PSF in Z/Y'), 'Color','w','VerticalAlignment','top');
 
@@ -149,7 +149,7 @@ axes('Position',[0.03,0.705,0.4,0.1])
 maxPSF_ZY = max(PSF_ZY,[],1);
 fitZY = fit_Intensity(maxPSF_ZY, micsPerPixelZ,2);
 x = (1:length(maxPSF_ZY))*micsPerPixelZ;
-plotCrossSectionAndFit(x,maxPSF_ZY,fitZY,micsPerPixelZ/4);
+OUT.ZY.fitPlot_H = plotCrossSectionAndFit(x,maxPSF_ZY,fitZY,micsPerPixelZ/4);
 set(gca,'XAxisLocation','Top')
 
 
@@ -168,7 +168,7 @@ imagesc(PSF_ZX)
 
 Xtick = linspace(1,size(PSF_ZX,2),3);
 set(gca,'YAxisLocation','Right',...
-		'XTick',Xtick,'XTickLabel',round(Xtick*micsPerPixelXY,2),...
+		'XTick',Xtick,'XTickLabel',roundSig(Xtick*micsPerPixelXY,2),...
 		'YTick',[])
 
 t=text(1,1,	sprintf('PSF in Z/X'), 'Color','w','VerticalAlignment','top');
@@ -178,7 +178,7 @@ axes('Position',[0.665,0.07,0.1,0.4])
 maxPSF_ZX = max(PSF_ZX,[],2);
 fitZX = fit_Intensity(maxPSF_ZX, micsPerPixelZ,2);
 x = (1:length(maxPSF_ZX))*micsPerPixelZ;
-plotCrossSectionAndFit(x,maxPSF_ZX,fitZX,micsPerPixelZ/4,1);
+OUT.ZX.fitPlot_H = plotCrossSectionAndFit(x,maxPSF_ZX,fitZX,micsPerPixelZ/4,1);
 set(gca,'XAxisLocation','Top')
 
 
@@ -206,12 +206,12 @@ title(sprintf('Slice #%d',psfCenterInZ))
 
 if nargout>0
 	OUT.slider = slider;
-	OUT.fitY = fitY;
-	OUT.fitX = fitX;
-	OUT.fitZY = fitZY;
-	OUT.fitZX = fitZY;
-	OUT.PSF_ZX = PSF_ZX;
-	OUT.PSF_ZY = PSF_ZY;
+	OUT.fit.Y = fitY;
+	OUT.fit.X = fitX;
+	OUT.fit.ZY = fitZY;
+	OUT.fit.ZX = fitZY;
+	OUT.ZX.im = PSF_ZX;
+	OUT.ZY.im = PSF_ZY;
 	varargout{1} = OUT;
 end
 
@@ -288,17 +288,19 @@ function [FWHM,p] = plotCrossSectionAndFit(x,y,fitObj,fitRes,flipAxes)
 	deltaIndVals  = length(yvals)-halfMaxInd ;%number of index values between the peak and the FWHM point
 	inds = (maxInd-deltaIndVals):(maxInd+deltaIndVals);
 	p(1)=area(fitX(inds),fitY(inds));
-	set(p,'FaceColor','k','EdgeColor','none','FaceAlpha',0.15)
 
+	set(p,'FaceColor','k','EdgeColor','none')
+    if verLessThan('matlab','8.4')
+    	set(p,'FaceColor',[0.8,0.8,0.8]);
+    else
+		set(p,'FaceAlpha',0.15);
+	end
 	%The fit
 	p(2)=plot(fitX,fitY,'-','linewidth',2,'color',[1,0.5,0.5]);
 
 	%The raw data
 	p(3)=plot(x,y,'k.');
 	hold off
-
-
-
 
 	if flipAxes
 		view(90,90) % flip graph onto its side
@@ -316,11 +318,12 @@ function [FWHM,p] = plotCrossSectionAndFit(x,y,fitObj,fitRes,flipAxes)
 
 	xtick = unique([xAtMax:-stepSize:fitX(1),xAtMax:stepSize:fitX(end)]);
 
+	set(gca,'YTickLabel',[],'XTick',xtick,'XTickLabel', roundSig(xtick-xAtMax,2))
 
-	set(gca,'YTickLabel',[],'XTick',xtick,'XTickLabel', round(xtick-xAtMax,2))
 
 
 function updateUserSelected(PSFstack)
+	% Runs when the user moves the slider
 	Hax=findobj('Tag','userSelected');
 	Hslider = findobj('Tag','DepthSlider');
 
@@ -330,3 +333,12 @@ function updateUserSelected(PSFstack)
 	caxis([min(PSFstack(:)), max(PSFstack(:))])
 
 	title(sprintf('Slice #%d',slice))
+
+
+function out = roundSig(in,sigFig)
+	% Needed for earlier MATLAB releases where round doesn't have a
+	% a second input argument
+	if nargin<2
+		sigFig=1;
+	end
+	out = round(in * 10*sigFig)/(10*sigFig);
