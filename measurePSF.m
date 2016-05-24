@@ -1,4 +1,4 @@
-function varargout=measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ,maxIntensityInZ)
+function varargout=measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ,varargin)
 % Display PSF and measure its size in X, Y, and Z
 %
 % function varargout=measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ,maxIntensityInZ)
@@ -11,14 +11,18 @@ function varargout=measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ,maxIntensity
 %		PSFs.
 %
 %
-% INPUTS
 % DEMO MODE - run with no input arguments
+%
+% INPUTS (required)
 %
 % PSFstack  - a 3-D array (imagestack). First layer should be that nearest the objective
 % micsPerPixelXY - number of microns per pixel in X and Y
 % micsPerPixelZ  - number of microns per pixel in Z (i.e. distance between adjacent Z planes)
-% maxIntensityInZ - [optional, false by default] if true we use the max intensity projection
+%
+% INPUTS (optional param/val pairs)
+% maxIntensityInZ - [false by default] if true we use the max intensity projection
 %                   for the Z PSFs. This is likely necessary if the PSF is very tilted.
+% zFitOrder - [1 by default]. Number of gaussians to use for the fit of the Z PSF
 %
 %
 % OUTPUTS
@@ -40,9 +44,15 @@ if nargin<1
 	micsPerPixelZ=0.500;
 end
 
-if nargin<4
-	maxIntensityInZ=0;
-end
+params = inputParser;
+params.CaseSensitive = false;
+params.addParamValue('maxIntensityInZ', 1, @(x) islogical(x) || x==0 || x==1);
+params.addParamValue('zFitOrder', 1, @(x) isnumeric(x) && isscalar(x));
+
+params.parse(varargin{:});
+
+maxIntensityInZ = params.Results.maxIntensityInZ;
+zFitOrder = params.Results.zFitOrder;
 
 
 
@@ -168,7 +178,7 @@ text(1,1,sprintf('PSF in Z/Y'), 'Color','w','VerticalAlignment','top');
 %This is the fitted Z/Y PSF with the FWHM
 axes('Position',[0.03,0.705,0.4,0.1])
 maxPSF_ZY = max(PSF_ZY,[],1);
-fitZY = fit_Intensity(maxPSF_ZY, micsPerPixelZ,1);
+fitZY = fit_Intensity(maxPSF_ZY, micsPerPixelZ,zFitOrder);
 x = (1:length(maxPSF_ZY))*micsPerPixelZ;
 [OUT.ZY.FWHM,OUT.ZY.fitPlot_H] = plotCrossSectionAndFit(x,maxPSF_ZY,fitZY,micsPerPixelZ/4);
 set(gca,'XAxisLocation','Top')
@@ -197,7 +207,7 @@ text(1,1,sprintf('PSF in Z/X'), 'Color','w','VerticalAlignment','top');
 %This is the fitted Z/X PSF with the FWHM
 axes('Position',[0.665,0.07,0.1,0.4])
 maxPSF_ZX = max(PSF_ZX,[],2);
-fitZX = fit_Intensity(maxPSF_ZX, micsPerPixelZ,1);
+fitZX = fit_Intensity(maxPSF_ZX, micsPerPixelZ,zFitOrder);
 x = (1:length(maxPSF_ZX))*micsPerPixelZ;
 [OUT.ZY.FWHM, OUT.ZX.fitPlot_H] = plotCrossSectionAndFit(x,maxPSF_ZX,fitZX,micsPerPixelZ/4,1);
 set(gca,'XAxisLocation','Top')
