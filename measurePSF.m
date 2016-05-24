@@ -50,10 +50,10 @@ end
 % Step One
 %
 % Estimate the slice that contains center of the PSF in Z by finding the brightest point.
-
+PSFstack = double(PSFstack);
+PSFstack = PSFstack - median(PSFstack(:)); %subtract the baseline because the Gaussian fit doesn't have an offset parameter
 
 %Clean up the PSF because we're using max
-PSFstack = double(PSFstack);
 DS = imresize(PSFstack,0.25); 
 for ii=1:size(DS,3)
 	DS(:,:,ii) = conv2(DS(:,:,ii),ones(2),'same');
@@ -123,8 +123,10 @@ hold off
 axes('Position',[0.435,0.07,0.1,0.4])
 yvals = maxZplane(:,psfCenterInX);
 x=(1:length(yvals))*micsPerPixelXY;
-fitX = fit_Intensity(yvals,micsPerPixelXY);
+fitX = fit_Intensity(yvals,micsPerPixelXY,1);
 plotCrossSectionAndFit(x,yvals,fitX,micsPerPixelXY/2,1);
+X.xVals=x;
+X.yVals=yvals;
 set(gca,'XTickLabel',[])
 
 
@@ -134,6 +136,8 @@ yvals = maxZplane(psfCenterInY,:);
 x=(1:length(yvals))*micsPerPixelXY;
 fitY = fit_Intensity(yvals,micsPerPixelXY);
 plotCrossSectionAndFit(x,yvals,fitY,micsPerPixelXY/2);
+Y.xVals=x;
+Y.yVals=yvals;
 set(gca,'XTickLabel',[])
 
 
@@ -164,7 +168,7 @@ text(1,1,sprintf('PSF in Z/Y'), 'Color','w','VerticalAlignment','top');
 %This is the fitted Z/Y PSF with the FWHM
 axes('Position',[0.03,0.705,0.4,0.1])
 maxPSF_ZY = max(PSF_ZY,[],1);
-fitZY = fit_Intensity(maxPSF_ZY, micsPerPixelZ,2);
+fitZY = fit_Intensity(maxPSF_ZY, micsPerPixelZ,1);
 x = (1:length(maxPSF_ZY))*micsPerPixelZ;
 [OUT.ZY.FWHM,OUT.ZY.fitPlot_H] = plotCrossSectionAndFit(x,maxPSF_ZY,fitZY,micsPerPixelZ/4);
 set(gca,'XAxisLocation','Top')
@@ -193,7 +197,7 @@ text(1,1,sprintf('PSF in Z/X'), 'Color','w','VerticalAlignment','top');
 %This is the fitted Z/X PSF with the FWHM
 axes('Position',[0.665,0.07,0.1,0.4])
 maxPSF_ZX = max(PSF_ZX,[],2);
-fitZX = fit_Intensity(maxPSF_ZX, micsPerPixelZ,2);
+fitZX = fit_Intensity(maxPSF_ZX, micsPerPixelZ,1);
 x = (1:length(maxPSF_ZX))*micsPerPixelZ;
 [OUT.ZY.FWHM, OUT.ZX.fitPlot_H] = plotCrossSectionAndFit(x,maxPSF_ZX,fitZX,micsPerPixelZ/4,1);
 set(gca,'XAxisLocation','Top')
@@ -223,10 +227,12 @@ title(sprintf('Slice #%d',psfCenterInZ))
 
 if nargout>0
 	OUT.slider = slider;
-	OUT.fit.Y = fitY;
-	OUT.fit.X = fitX;
-	OUT.fit.ZY = fitZY;
-	OUT.fit.ZX = fitZY;
+	OUT.Y.fit  = fitY;
+	OUT.Y.data  = Y;
+	OUT.X.fit  = fitX;
+	OUT.X.data  = X;
+	OUT.ZY.fit = fitZY;
+	OUT.ZX.fit = fitZY;
 	OUT.ZX.im = PSF_ZX;
 	OUT.ZY.im = PSF_ZY;
 	varargout{1} = OUT;
@@ -254,6 +260,8 @@ function [fitresult, gof] = fit_Intensity(Y,micsPerPix,numberOfTerms)
 	if nargin<3
 		numberOfTerms=1;
 	end
+
+
 
 	Y = Y(:);
 	X =  (1:length(Y))*micsPerPix;
