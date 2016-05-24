@@ -220,7 +220,7 @@ slider = uicontrol('Style','Slider', ...
 			'Max',size(PSFstack,3),...
 			'Value',psfCenterInZ,...
 			'Tag','DepthSlider',...
-			'Callback', @(~,~) updateUserSelected(PSFstack) ) ;
+			'Callback', @(~,~) updateUserSelected(PSFstack,psfCenterInZ,micsPerPixelZ) ) ;
 
 title(sprintf('Slice #%d',psfCenterInZ))
 
@@ -347,17 +347,17 @@ function [FWHM,p] = plotCrossSectionAndFit(x,y,fitObj,fitRes,flipAxes)
 
 
 
-function updateUserSelected(PSFstack)
+function updateUserSelected(PSFstack,psfCenterInZ,micsPerPixelZ)
 	% Runs when the user moves the slider
 	Hax=findobj('Tag','userSelected');
 	Hslider = findobj('Tag','DepthSlider');
 
-	slice = round(get(Hslider,'Value'));
-	set(Hax,'CData',PSFstack(:,:,slice))
+	thisSlice = round(get(Hslider,'Value'));
+	set(Hax,'CData',PSFstack(:,:,thisSlice))
 
 	caxis([min(PSFstack(:)), max(PSFstack(:))])
 
-	title(sprintf('Slice #%d',slice))
+	title(sprintf('Slice #%d %0.2f \\mum', thisSlice, (psfCenterInZ-thisSlice)*micsPerPixelZ ))
 
 
 function out = roundSig(in,sigFig)
