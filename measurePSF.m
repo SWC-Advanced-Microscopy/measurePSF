@@ -6,15 +6,14 @@ function varargout=measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ,varargin)
 % Purpose
 % Fit and display a PSF. Reports FWHM to on-screen figure
 % Note: currently uses two-component fits for the PSF in Z. This may be a bad choice
-% 		for 2-photon PSFs or PSFs which are sparsely sampled in Z. Will need to look 
-%		at real data and decide what to do about the Z-fits. So far only tried simulated
-%		PSFs.
+%       for 2-photon PSFs or PSFs which are sparsely sampled in Z. Will need to look 
+%       at real data and decide what to do about the Z-fits. So far only tried simulated
+%       PSFs.
 %
 %
 % DEMO MODE - run with no input arguments
 %
 % INPUTS (required)
-%
 % PSFstack  - a 3-D array (imagestack). First layer should be that nearest the objective
 % micsPerPixelXY - number of microns per pixel in X and Y
 % micsPerPixelZ  - number of microns per pixel in Z (i.e. distance between adjacent Z planes)
@@ -31,17 +30,16 @@ function varargout=measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ,varargin)
 %
 % Rob Campbell - Basel 2016
 %
+%
 % Requires:
 % Curve-Fitting Toolbox
 
-
-
 if nargin<1
-	help(mfilename)
-	P=load('PSF');
-	PSFstack = P.PSF;
-	micsPerPixelXY=0.05;
-	micsPerPixelZ=0.500;
+    help(mfilename)
+    P=load('PSF');
+    PSFstack = P.PSF;
+    micsPerPixelXY=0.05;
+    micsPerPixelZ=0.500;
 end
 
 params = inputParser;
@@ -56,7 +54,6 @@ zFitOrder = params.Results.zFitOrder;
 
 
 
-
 % Step One
 %
 % Estimate the slice that contains center of the PSF in Z by finding the brightest point.
@@ -66,7 +63,7 @@ PSFstack = PSFstack - median(PSFstack(:)); %subtract the baseline because the Ga
 %Clean up the PSF because we're using max
 DS = imresize(PSFstack,0.25); 
 for ii=1:size(DS,3)
-	DS(:,:,ii) = conv2(DS(:,:,ii),ones(2),'same');
+    DS(:,:,ii) = conv2(DS(:,:,ii),ones(2),'same');
 end
 Z = max(squeeze(max(DS))); 
 
@@ -75,9 +72,9 @@ f = fit_Intensity(z,1);
 psfCenterInZ = round(f.b1);
 
 if psfCenterInZ > size(PSFstack,3) || psfCenterInZ<1
-	fprintf('PSF center in Z estimated as slice %d. That is out of range. PSF stack has %d slices\n',...
-		psfCenterInZ,size(PSFstack,3))
-	return
+    fprintf('PSF center in Z estimated as slice %d. That is out of range. PSF stack has %d slices\n',...
+        psfCenterInZ,size(PSFstack,3))
+    return
 end
 
 midZ=round(size(PSFstack,3)/2); %The calculated mid-point of the PSF stack
@@ -85,7 +82,6 @@ midZ=round(size(PSFstack,3)/2); %The calculated mid-point of the PSF stack
 
 
 %Plot the mid-point of the stack
-
 clf
 
 %PSF at mid-point
@@ -94,20 +90,20 @@ maxZplane = PSFstack(:,:,psfCenterInZ);
 imagesc(maxZplane)
 
 text(size(PSFstack,1)*0.025,...
-	size(PSFstack,2)*0.04,...
-	sprintf('PSF center at slice #%d',psfCenterInZ),...
-	'color','w','VerticalAlignment','top') 
+    size(PSFstack,2)*0.04,...
+    sprintf('PSF center at slice #%d',psfCenterInZ),...
+    'color','w','VerticalAlignment','top') 
 
 
 %Optionally, show the axes. Right now, I don't think we want this at all so it's not an input argument 
 showAxesInMainPSFplot=0;
 if showAxesInMainPSFplot
-	Xtick = linspace(1,size(maxZplane,1),8);
-	Ytick = linspace(1,size(maxZplane,2),8);
-	set(gca,'XTick',Xtick,'XTickLabel',roundSig(Xtick*micsPerPixelXY,2),...
-			'YTick',Ytick,'YTickLabel',roundSig(Ytick*micsPerPixelXY,2));
+    Xtick = linspace(1,size(maxZplane,1),8);
+    Ytick = linspace(1,size(maxZplane,2),8);
+    set(gca,'XTick',Xtick,'XTickLabel',roundSig(Xtick*micsPerPixelXY,2),...
+            'YTick',Ytick,'YTickLabel',roundSig(Ytick*micsPerPixelXY,2));
 else
-	set(gca,'XTick',[],'YTick',[])
+    set(gca,'XTick',[],'YTick',[])
 end
 
 
@@ -161,17 +157,17 @@ axes('Position',[0.03,0.6,0.4,0.1])
 
 %PSF in Z/Y (panel above)
 if maxIntensityInZ
-	PSF_ZY=squeeze(max(PSFstack,[],1));
+    PSF_ZY=squeeze(max(PSFstack,[],1));
 else
-	PSF_ZY=squeeze(PSFstack(psfCenterInY,:,:));
+    PSF_ZY=squeeze(PSFstack(psfCenterInY,:,:));
 end
 
 imagesc(PSF_ZY)
 
 Ytick = linspace(1,size(PSF_ZY,1),3);
 set(gca,'XAxisLocation','Top',...
-		'XTick',[],...
-		'YTick',Ytick,'YTickLabel',roundSig(Ytick*micsPerPixelXY,2));
+        'XTick',[],...
+        'YTick',Ytick,'YTickLabel',roundSig(Ytick*micsPerPixelXY,2));
 
 text(1,1,sprintf('PSF in Z/Y'), 'Color','w','VerticalAlignment','top');
 
@@ -189,9 +185,9 @@ set(gca,'XAxisLocation','Top')
 %PSF in Z/X (panel on the right on the right)
 axes('Position',[0.56,0.07,0.1,0.4])
 if maxIntensityInZ
-	PSF_ZX=squeeze(max(PSFstack,[],2));
+    PSF_ZX=squeeze(max(PSFstack,[],2));
 else
-	PSF_ZX=squeeze(PSFstack(:,psfCenterInX,:));
+    PSF_ZX=squeeze(PSFstack(:,psfCenterInX,:));
 end
 
 PSF_ZX=rot90(PSF_ZX,3);
@@ -199,8 +195,8 @@ imagesc(PSF_ZX)
 
 Xtick = linspace(1,size(PSF_ZX,2),3);
 set(gca,'YAxisLocation','Right',...
-		'XTick',Xtick,'XTickLabel',roundSig(Xtick*micsPerPixelXY,2),...
-		'YTick',[])
+        'XTick',Xtick,'XTickLabel',roundSig(Xtick*micsPerPixelXY,2),...
+        'YTick',[])
 
 text(1,1,sprintf('PSF in Z/X'), 'Color','w','VerticalAlignment','top');
 
@@ -224,156 +220,155 @@ box on
 set(gca,'XTick',[],'YTick',[])
 
 slider = uicontrol('Style','Slider', ...
-			'Units','normalized',...
-			'Position',[0.9,0.55,0.02,0.4],...
-			'Min',1,...
-			'Max',size(PSFstack,3),...
-			'Value',psfCenterInZ,...
-			'Tag','DepthSlider',...
-			'Callback', @(~,~) updateUserSelected(PSFstack,psfCenterInZ,micsPerPixelZ) ) ;
+            'Units','normalized',...
+            'Position',[0.9,0.55,0.02,0.4],...
+            'Min',1,...
+            'Max',size(PSFstack,3),...
+            'Value',psfCenterInZ,...
+            'Tag','DepthSlider',...
+            'Callback', @(~,~) updateUserSelected(PSFstack,psfCenterInZ,micsPerPixelZ) ) ;
 
 title(sprintf('Slice #%d',psfCenterInZ))
 
 
 if nargout>0
-	OUT.slider = slider;
-	OUT.Y.fit  = fitY;
-	OUT.Y.data  = Y;
-	OUT.X.fit  = fitX;
-	OUT.X.data  = X;
-	OUT.ZY.fit = fitZY;
-	OUT.ZX.fit = fitZY;
-	OUT.ZX.im = PSF_ZX;
-	OUT.ZY.im = PSF_ZY;
-	varargout{1} = OUT;
+    OUT.slider = slider;
+    OUT.Y.fit  = fitY;
+    OUT.Y.data  = Y;
+    OUT.X.fit  = fitX;
+    OUT.X.data  = X;
+    OUT.ZY.fit = fitZY;
+    OUT.ZX.fit = fitZY;
+    OUT.ZX.im = PSF_ZX;
+    OUT.ZY.im = PSF_ZY;
+    varargout{1} = OUT;
 end
 
 
 
 function [fitresult, gof] = fit_Intensity(Y,micsPerPix,numberOfTerms)
-	%  Fit PSF intensity profile with a Gaussian
-	%
-	% Inputs
-	%  Y - the vector intensities for this PSF cross-section
-	%  micsPerPix - the number of microns per pixel (set to 1 
-	%			 if using this function to determine the index of the peak)
-	%  numberOfTerms - number of terms in the Gaussian. Use 1 for a regular 
-	%				Gaussian. 2 if kurtosis of the raw data seem high.
-	%
-	%
-	% Outputs
-	%  fitresult - a fit object representing the fit.
-	%  gof - structure with goodness-of fit info.
-	%
-	%  See also FIT, CFIT, SFIT.
+    %  Fit PSF intensity profile with a Gaussian
+    %
+    % Inputs
+    %  Y - the vector intensities for this PSF cross-section
+    %  micsPerPix - the number of microns per pixel (set to 1 
+    %            if using this function to determine the index of the peak)
+    %  numberOfTerms - number of terms in the Gaussian. Use 1 for a regular 
+    %               Gaussian. 2 if kurtosis of the raw data seem high.
+    %
+    %
+    % Outputs
+    %  fitresult - a fit object representing the fit.
+    %  gof - structure with goodness-of fit info.
+    %
+    %  See also FIT, CFIT, SFIT.
 
-	if nargin<3
-		numberOfTerms=1;
-	end
+    if nargin<3
+        numberOfTerms=1;
+    end
 
+    Y = Y(:);
+    X =  (1:length(Y))*micsPerPix;
+    X = X(:);
 
+    [xData, yData] = prepareCurveData(X,Y);
 
-	Y = Y(:);
-	X =  (1:length(Y))*micsPerPix;
-	X = X(:);
-
-	[xData, yData] = prepareCurveData(X,Y);
-
-	% Set up fittype and options.
-	ft = fittype(['gauss',num2str(numberOfTerms)]);
-	opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
-	opts.Display = 'Off';
+    % Set up fittype and options.
+    ft = fittype(['gauss',num2str(numberOfTerms)]);
+    opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
+    opts.Display = 'Off';
 
 
-	% Fit model to data.
-	[fitresult, gof] = fit( xData, yData, ft, opts );
+    % Fit model to data.
+    [fitresult, gof] = fit( xData, yData, ft, opts );
 
 
 
 function [FWHM,p] = plotCrossSectionAndFit(x,y,fitObj,fitRes,flipAxes)
-	% Used to plot the fit cross-sections
-	%
-	% x - x data
-	% y - y data
-	% fitObj - the fit object produced by fit_Intensity that is associated with these data
-	% fitRes - the resolution in microns of the fitted curve. This is used to obtain the FWHM
-	% flipAxes - set to true to flip x/y axes for the plots long the right. 
-	
-	if nargin<5
-		flipAxes = 0;
-	end
-	%Generate x data 
-	fitX = x(1):fitRes:x(end);
-	fitY = feval(fitObj,fitX); 
+    % Used to plot the fit cross-sections
+    %
+    % x - x data
+    % y - y data
+    % fitObj - the fit object produced by fit_Intensity that is associated with these data
+    % fitRes - the resolution in microns of the fitted curve. This is used to obtain the FWHM
+    % flipAxes - set to true to flip x/y axes for the plots long the right. 
+    
+    if nargin<5
+        flipAxes = 0;
+    end
+    %Generate x data 
+    fitX = x(1):fitRes:x(end);
+    fitY = feval(fitObj,fitX); 
 
-	%calculate the FWHM
-	halfMax = fitObj.a1/2;
+    %calculate the FWHM
+    halfMax = fitObj.a1/2;
 
-	%Take just one side of the curve
-	maxInd=find(max(fitY)==fitY);
-	yvals = fitY(1:maxInd);
+    %Take just one side of the curve
+    maxInd=find(max(fitY)==fitY);
+    yvals = fitY(1:maxInd);
 
-	[~,halfMaxInd]=min(abs(yvals-halfMax));
-	FWHM = (length(yvals)-halfMaxInd)*fitRes;
+    [~,halfMaxInd]=min(abs(yvals-halfMax));
+    FWHM = (length(yvals)-halfMaxInd)*fitRes;
 
 
-	%Plot
-	hold on
-	%The FWHM area
-	deltaIndVals  = length(yvals)-halfMaxInd ;%number of index values between the peak and the FWHM point
-	inds = (maxInd-deltaIndVals):(maxInd+deltaIndVals);
-	p(1)=area(fitX(inds),fitY(inds));
+    %Plot
+    hold on
+    %The FWHM area
+    deltaIndVals  = length(yvals)-halfMaxInd ;%number of index values between the peak and the FWHM point
+    inds = (maxInd-deltaIndVals):(maxInd+deltaIndVals);
+    p(1)=area(fitX(inds),fitY(inds));
 
-	set(p,'FaceColor','k','EdgeColor','none')
-	if verLessThan('matlab','8.4')
-    	set(p,'FaceColor',[0.8,0.8,0.8]);
+    set(p,'FaceColor','k','EdgeColor','none')
+    if verLessThan('matlab','8.4')
+        set(p,'FaceColor',[0.8,0.8,0.8]);
     else
-		set(p,'FaceAlpha',0.15);
-	end
-	%The fit
-	p(2)=plot(fitX,fitY,'-','linewidth',2,'color',[1,0.5,0.5]);
+        set(p,'FaceAlpha',0.15);
+    end
+    %The fit
+    p(2)=plot(fitX,fitY,'-','linewidth',2,'color',[1,0.5,0.5]);
 
-	%The raw data
-	p(3)=plot(x,y,'k.');
-	hold off
+    %The raw data
+    p(3)=plot(x,y,'k.');
+    hold off
 
-	if flipAxes
-		view(90,90) % flip graph onto its side
-	end
+    if flipAxes
+        view(90,90) % flip graph onto its side
+    end
 
-	
-	title(sprintf('FWHM: %0.2f \\mum',FWHM))
+    
+    title(sprintf('FWHM: %0.2f \\mum',FWHM))
 
-	axis tight
-	grid on
+    axis tight
+    grid on
 
-	%Add ticks such that the peak has a tick mark that we will label as zero	
-	stepSize  = (fitX(end)-fitX(1))/11; %to divide up the fit
-	xAtMax = fitX(length(yvals));
+    %Add ticks such that the peak has a tick mark that we will label as zero    
+    stepSize  = (fitX(end)-fitX(1))/11; %to divide up the fit
+    xAtMax = fitX(length(yvals));
 
-	xtick = unique([xAtMax:-stepSize:fitX(1),xAtMax:stepSize:fitX(end)]);
+    xtick = unique([xAtMax:-stepSize:fitX(1),xAtMax:stepSize:fitX(end)]);
 
-	set(gca,'YTickLabel',[],'XTick',xtick,'XTickLabel', roundSig(xtick-xAtMax,2))
-
+    set(gca,'YTickLabel',[],'XTick',xtick,'XTickLabel', roundSig(xtick-xAtMax,2))
 
 
 function updateUserSelected(PSFstack,psfCenterInZ,micsPerPixelZ)
-	% Runs when the user moves the slider
-	Hax=findobj('Tag','userSelected');
-	Hslider = findobj('Tag','DepthSlider');
+    % Runs when the user moves the slider
+    Hax=findobj('Tag','userSelected');
+    Hslider = findobj('Tag','DepthSlider');
 
-	thisSlice = round(get(Hslider,'Value'));
-	set(Hax,'CData',PSFstack(:,:,thisSlice))
+    thisSlice = round(get(Hslider,'Value'));
+    set(Hax,'CData',PSFstack(:,:,thisSlice))
 
-	caxis([min(PSFstack(:)), max(PSFstack(:))])
+    caxis([min(PSFstack(:)), max(PSFstack(:))])
 
-	title(sprintf('Slice #%d %0.2f \\mum', thisSlice, (psfCenterInZ-thisSlice)*micsPerPixelZ ))
+    title(sprintf('Slice #%d %0.2f \\mum', thisSlice, (psfCenterInZ-thisSlice)*micsPerPixelZ ))
 
 
 function out = roundSig(in,sigFig)
-	% Needed for earlier MATLAB releases where round doesn't have a
-	% a second input argument
-	if nargin<2
-		sigFig=1;
-	end
-	out = round(in * 10*sigFig)/(10*sigFig);
+    % Needed for earlier MATLAB releases where round doesn't have a
+    % a second input argument
+    if nargin<2
+        sigFig=1;
+    end
+    out = round(in * 10*sigFig)/(10*sigFig);
+
+
