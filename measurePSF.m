@@ -282,8 +282,6 @@ function [fitresult, gof] = fit_Intensity(Y,micsPerPix,numberOfTerms)
     % Fit model to data.
     [fitresult, gof] = fit( xData, yData, ft, opts );
 
-
-
 function [FWHM,p] = plotCrossSectionAndFit(x,y,fitObj,fitRes,flipAxes)
     % Used to plot the fit cross-sections
     %
@@ -303,12 +301,13 @@ function [FWHM,p] = plotCrossSectionAndFit(x,y,fitObj,fitRes,flipAxes)
     %calculate the FWHM
     halfMax = fitObj.a1/2;
 
+
     %Take just one side of the curve
     maxInd=find(max(fitY)==fitY);
     yvals = fitY(1:maxInd);
 
     [~,halfMaxInd]=min(abs(yvals-halfMax));
-    FWHM = (length(yvals)-halfMaxInd)*fitRes;
+    FWHM = (length(yvals)-halfMaxInd)*fitRes*2;
 
 
     %Plot
