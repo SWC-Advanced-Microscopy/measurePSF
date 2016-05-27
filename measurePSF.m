@@ -22,6 +22,8 @@ function varargout=measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ,varargin)
 % maxIntensityInZ - [false by default] if true we use the max intensity projection
 %                   for the Z PSFs. This is likely necessary if the PSF is very tilted.
 % zFitOrder - [1 by default]. Number of gaussians to use for the fit of the Z PSF
+% medFiltSize - [1 by default -- no filtering]. If more than one performs a median filtering 
+%				operation on each slice with a filter of this size.
 %
 %
 % OUTPUTS
@@ -46,18 +48,22 @@ params = inputParser;
 params.CaseSensitive = false;
 params.addParamValue('maxIntensityInZ', 1, @(x) islogical(x) || x==0 || x==1);
 params.addParamValue('zFitOrder', 1, @(x) isnumeric(x) && isscalar(x));
+params.addParamValue('medFiltSize', 1, @(x) isnumeric(x) && isscalar(x));
 
 params.parse(varargin{:});
 
 maxIntensityInZ = params.Results.maxIntensityInZ;
 zFitOrder = params.Results.zFitOrder;
-
+medFiltSize = params.Results.medFiltSize;
 
 
 % Step One
 %
 % Estimate the slice that contains center of the PSF in Z by finding the brightest point.
 PSFstack = double(PSFstack);
+for ii=1:size(PSFstack,3)
+	PSFstack(:,:,ii) = 	medfilt2(PSFstack(:,:,ii),[medFiltSize,medFiltSize]);
+end
 PSFstack = PSFstack - median(PSFstack(:)); %subtract the baseline because the Gaussian fit doesn't have an offset parameter
 
 %Clean up the PSF because we're using max
@@ -174,6 +180,10 @@ text(1,1,sprintf('PSF in Z/X'), 'Color','w','VerticalAlignment','top');
 %This is the fitted Z/Y PSF with the FWHM
 axes('Position',[0.03,0.85,0.4,0.1])
 maxPSF_ZX = max(PSF_ZX,[],1);
+baseline = sort(maxPSF_ZX);
+baseline = mean(baseline(1:5));
+maxPSF_ZX = maxPSF_ZX-baseline;
+
 fitZX = fit_Intensity(maxPSF_ZX, micsPerPixelZ,zFitOrder);
 x = (1:length(maxPSF_ZX))*micsPerPixelZ;
 [OUT.ZX.FWHM,OUT.ZX.fitPlot_H] = plotCrossSectionAndFit(x,maxPSF_ZX,fitZX,micsPerPixelZ/4);
@@ -203,6 +213,10 @@ text(1,1,sprintf('PSF in Z/Y'), 'Color','w','VerticalAlignment','top');
 %This is the fitted Z/X PSF with the FWHM
 axes('Position',[0.8,0.07,0.1,0.4])
 maxPSF_ZY = max(PSF_ZY,[],2);
+baseline = sort(maxPSF_ZY);
+baseline = mean(baseline(1:5));
+maxPSF_ZY = maxPSF_ZY-baseline;
+
 fitZY = fit_Intensity(maxPSF_ZY, micsPerPixelZ,zFitOrder);
 x = (1:length(maxPSF_ZY))*micsPerPixelZ;
 [OUT.ZY.FWHM, OUT.ZY.fitPlot_H] = plotCrossSectionAndFit(x,maxPSF_ZY,fitZY,micsPerPixelZ/4,1);
@@ -294,12 +308,14 @@ function [FWHM,p] = plotCrossSectionAndFit(x,y,fitObj,fitRes,flipAxes)
     if nargin<5
         flipAxes = 0;
     end
+
     %Generate x data 
     fitX = x(1):fitRes:x(end);
     fitY = feval(fitObj,fitX); 
 
+
     %calculate the FWHM
-    halfMax = fitObj.a1/2;
+    halfMax = (fitObj.a1)/2;
 
 
     %Take just one side of the curve
