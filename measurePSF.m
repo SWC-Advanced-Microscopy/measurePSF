@@ -180,6 +180,10 @@ text(1,1,sprintf('PSF in Z/X'), 'Color','w','VerticalAlignment','top');
 %This is the fitted Z/Y PSF with the FWHM
 axes('Position',[0.03,0.85,0.4,0.1])
 maxPSF_ZX = max(PSF_ZX,[],1);
+baseline = sort(maxPSF_ZX);
+baseline = mean(baseline(1:5));
+maxPSF_ZX = maxPSF_ZX-baseline;
+
 fitZX = fit_Intensity(maxPSF_ZX, micsPerPixelZ,zFitOrder);
 x = (1:length(maxPSF_ZX))*micsPerPixelZ;
 [OUT.ZX.FWHM,OUT.ZX.fitPlot_H] = plotCrossSectionAndFit(x,maxPSF_ZX,fitZX,micsPerPixelZ/4);
@@ -209,6 +213,10 @@ text(1,1,sprintf('PSF in Z/Y'), 'Color','w','VerticalAlignment','top');
 %This is the fitted Z/X PSF with the FWHM
 axes('Position',[0.8,0.07,0.1,0.4])
 maxPSF_ZY = max(PSF_ZY,[],2);
+baseline = sort(maxPSF_ZY);
+baseline = mean(baseline(1:5));
+maxPSF_ZY = maxPSF_ZY-baseline;
+
 fitZY = fit_Intensity(maxPSF_ZY, micsPerPixelZ,zFitOrder);
 x = (1:length(maxPSF_ZY))*micsPerPixelZ;
 [OUT.ZY.FWHM, OUT.ZY.fitPlot_H] = plotCrossSectionAndFit(x,maxPSF_ZY,fitZY,micsPerPixelZ/4,1);
@@ -300,12 +308,14 @@ function [FWHM,p] = plotCrossSectionAndFit(x,y,fitObj,fitRes,flipAxes)
     if nargin<5
         flipAxes = 0;
     end
+
     %Generate x data 
     fitX = x(1):fitRes:x(end);
     fitY = feval(fitObj,fitX); 
 
+
     %calculate the FWHM
-    halfMax = fitObj.a1/2;
+    halfMax = (fitObj.a1)/2;
 
 
     %Take just one side of the curve
