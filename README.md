@@ -8,4 +8,4 @@ The repository also contains ``Grid2MicsPerPixel``, which can be used to measure
 The function has been tested on R2014a and R2015b.
 
 
-![cover image](https://raw.githubusercontent.com/raacampbell/measurePSF/gh-pages/measurePSF.png "Main Window")
+![cover image](https://raw.githubusercontent.com/raacampbell/measurePSF/gh-pages/realBead.png "Main Window")
