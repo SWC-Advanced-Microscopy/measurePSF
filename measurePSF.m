@@ -22,6 +22,8 @@ function varargout=measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ,varargin)
 % maxIntensityInZ - [false by default] if true we use the max intensity projection
 %                   for the Z PSFs. This is likely necessary if the PSF is very tilted.
 % zFitOrder - [1 by default]. Number of gaussians to use for the fit of the Z PSF
+% medFiltSize - [1 by default -- no filtering]. If more than one performs a median filtering 
+%				operation on each slice with a filter of this size.
 %
 %
 % OUTPUTS
@@ -46,18 +48,22 @@ params = inputParser;
 params.CaseSensitive = false;
 params.addParamValue('maxIntensityInZ', 1, @(x) islogical(x) || x==0 || x==1);
 params.addParamValue('zFitOrder', 1, @(x) isnumeric(x) && isscalar(x));
+params.addParamValue('medFiltSize', 1, @(x) isnumeric(x) && isscalar(x));
 
 params.parse(varargin{:});
 
 maxIntensityInZ = params.Results.maxIntensityInZ;
 zFitOrder = params.Results.zFitOrder;
-
+medFiltSize = params.Results.medFiltSize;
 
 
 % Step One
 %
 % Estimate the slice that contains center of the PSF in Z by finding the brightest point.
 PSFstack = double(PSFstack);
+for ii=1:size(PSFstack,3)
+	PSFstack(:,:,ii) = 	medfilt2(PSFstack(:,:,ii),[medFiltSize,medFiltSize]);
+end
 PSFstack = PSFstack - median(PSFstack(:)); %subtract the baseline because the Gaussian fit doesn't have an offset parameter
 
 %Clean up the PSF because we're using max
