@@ -152,60 +152,60 @@ set(gca,'XTickLabel',[])
 %
 % We now obtain images showing the PSF's extent in Z
 % We do this by taking maximum intensity projections or slices through the maximum
-axes('Position',[0.03,0.6,0.4,0.1])
+axes('Position',[0.03,0.6,0.4,0.25])
 
 
-%PSF in Z/Y (panel above)
+%PSF in Z/X (panel above)
 if maxIntensityInZ
-    PSF_ZY=squeeze(max(PSFstack,[],1));
+    PSF_ZX=squeeze(max(PSFstack,[],1));
 else
-    PSF_ZY=squeeze(PSFstack(psfCenterInY,:,:));
+    PSF_ZX=squeeze(PSFstack(psfCenterInY,:,:));
 end
 
-imagesc(PSF_ZY)
+imagesc(PSF_ZX)
 
-Ytick = linspace(1,size(PSF_ZY,1),3);
+Ytick = linspace(1,size(PSF_ZX,1),3);
 set(gca,'XAxisLocation','Top',...
         'XTick',[],...
         'YTick',Ytick,'YTickLabel',roundSig(Ytick*micsPerPixelXY,2));
 
-text(1,1,sprintf('PSF in Z/Y'), 'Color','w','VerticalAlignment','top');
+text(1,1,sprintf('PSF in Z/X'), 'Color','w','VerticalAlignment','top');
 
 %This is the fitted Z/Y PSF with the FWHM
-axes('Position',[0.03,0.705,0.4,0.1])
-maxPSF_ZY = max(PSF_ZY,[],1);
-fitZY = fit_Intensity(maxPSF_ZY, micsPerPixelZ,zFitOrder);
-x = (1:length(maxPSF_ZY))*micsPerPixelZ;
-[OUT.ZY.FWHM,OUT.ZY.fitPlot_H] = plotCrossSectionAndFit(x,maxPSF_ZY,fitZY,micsPerPixelZ/4);
+axes('Position',[0.03,0.85,0.4,0.1])
+maxPSF_ZX = max(PSF_ZX,[],1);
+fitZX = fit_Intensity(maxPSF_ZX, micsPerPixelZ,zFitOrder);
+x = (1:length(maxPSF_ZX))*micsPerPixelZ;
+[OUT.ZX.FWHM,OUT.ZX.fitPlot_H] = plotCrossSectionAndFit(x,maxPSF_ZX,fitZX,micsPerPixelZ/4);
 set(gca,'XAxisLocation','Top')
 
 
 
 
-%PSF in Z/X (panel on the right on the right)
-axes('Position',[0.56,0.07,0.1,0.4])
+%PSF in Z/Y (panel on the right on the right)
+axes('Position',[0.56,0.07,0.25,0.4])
 if maxIntensityInZ
-    PSF_ZX=squeeze(max(PSFstack,[],2));
+    PSF_ZY=squeeze(max(PSFstack,[],2));
 else
-    PSF_ZX=squeeze(PSFstack(:,psfCenterInX,:));
+    PSF_ZY=squeeze(PSFstack(:,psfCenterInX,:));
 end
 
-PSF_ZX=rot90(PSF_ZX,3);
-imagesc(PSF_ZX)
+PSF_ZY=rot90(PSF_ZY,3);
+imagesc(PSF_ZY)
 
-Xtick = linspace(1,size(PSF_ZX,2),3);
+Xtick = linspace(1,size(PSF_ZY,2),3);
 set(gca,'YAxisLocation','Right',...
         'XTick',Xtick,'XTickLabel',roundSig(Xtick*micsPerPixelXY,2),...
         'YTick',[])
 
-text(1,1,sprintf('PSF in Z/X'), 'Color','w','VerticalAlignment','top');
+text(1,1,sprintf('PSF in Z/Y'), 'Color','w','VerticalAlignment','top');
 
 %This is the fitted Z/X PSF with the FWHM
-axes('Position',[0.665,0.07,0.1,0.4])
-maxPSF_ZX = max(PSF_ZX,[],2);
-fitZX = fit_Intensity(maxPSF_ZX, micsPerPixelZ,zFitOrder);
-x = (1:length(maxPSF_ZX))*micsPerPixelZ;
-[OUT.ZY.FWHM, OUT.ZX.fitPlot_H] = plotCrossSectionAndFit(x,maxPSF_ZX,fitZX,micsPerPixelZ/4,1);
+axes('Position',[0.8,0.07,0.1,0.4])
+maxPSF_ZY = max(PSF_ZY,[],2);
+fitZY = fit_Intensity(maxPSF_ZY, micsPerPixelZ,zFitOrder);
+x = (1:length(maxPSF_ZY))*micsPerPixelZ;
+[OUT.ZY.FWHM, OUT.ZY.fitPlot_H] = plotCrossSectionAndFit(x,maxPSF_ZY,fitZY,micsPerPixelZ/4,1);
 set(gca,'XAxisLocation','Top')
 
 
