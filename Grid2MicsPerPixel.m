@@ -36,10 +36,6 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
 % - a hole width of 19 microns
 % - a bar width of 6 microns
 %
-% However, using the stage coords to measure the grid, we find that:
-% - hole width of about 16 microns
-% - bar width of about 4.5 microns
-% - so the pitch is 20 microns
 %
 % 
 % We remove one grid and place it on microscope slide. For measurement with a 2-photon microscope
@@ -63,11 +59,11 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
 
     params = inputParser;
     params.CaseSensitive = false;
-    params.addParamValue('gridPitch', 20, @(x) isnumeric(x) && isscalar(x));
-    params.addParamValue('cropProp', 0.05, @(x) isnumeric(x) && isscalar(x) && x>0 && x<1);
-    params.addParamValue('verbose', false, @(x) islogical(x) || x==0 || x==1);
-    params.addParamValue('medFiltSize', 6, @(x) isnumeric(x) && isscalar(x));
-    params.addParamValue('polynomDetrendOrder', 3, @(x) isnumeric(x) && isscalar(x));
+    params.addParameter('gridPitch', 25, @(x) isnumeric(x) && isscalar(x));
+    params.addParameter('cropProp', 0.05, @(x) isnumeric(x) && isscalar(x) && x>0 && x<1);
+    params.addParameter('verbose', false, @(x) islogical(x) || x==0 || x==1);
+    params.addParameter('medFiltSize', 6, @(x) isnumeric(x) && isscalar(x));
+    params.addParameter('polynomDetrendOrder', 3, @(x) isnumeric(x) && isscalar(x));
 
     params.parse(varargin{:});
     gridPitch = params.Results.gridPitch;
