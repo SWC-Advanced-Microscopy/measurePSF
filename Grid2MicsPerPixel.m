@@ -38,16 +38,21 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
 %
 %
 % 
-% We remove one grid and place it on microscope slide. For measurement with a 2-photon microscope
-% we dab the grid with a regular office fluorescent marker pen, then seal it with a coverslip. To
-% to find the grid without a camera, we place it under the objective. Set the power to about 10 mW 
-% at the sample with wavelength of about 880 nm. With PMTs off we scan and look at the sample by eye. 
-% When the grid is in focus, the emitted fluorescence is clearly visible by eye in a darkened room. 
-% We then set the power to about 3 mW and switch on the PMTs. The grid should now be visible. The grid 
-% should be oriented so that it's aligned relatively closely with the scan axes. This function will 
-% attempt to rotate the grid so that it's perpendicular with the scan axes, but we suggest you get it
-% correctly aligned to within about 10 degrees (see note above). Make sure the grid is in focus and 
-% take and image. Feed this image to this function.
+% We remove one grid and place it on microscope slide. Seal it with a coverslip. 
+% For measurement with a 2-photon microscope we will see fluorescence from the naked copper 
+% grid at 920 nm. Use very low power. e.g. 3 mW. The grid should be oriented so that it's aligned 
+% relatively closely with the scan axes. This function will attempt to rotate the grid so that it's 
+% perpendicular with the scan axes, but we suggest you get it correctly aligned to within about 10 
+% degrees (see note above). Make sure the grid is in focus and take and image. Feed this image to 
+% this function.
+%
+%
+% CAUTION:
+% When running this function, check that all grid lines on the image have been identified. If not, 
+% try tweaking cropProp, medFiltSize, and polynomDetrendOrder. 
+% ** The image scale will be miscalculated if not all lines are identified! **
+%
+%
 %
 %
 % Rob Campbell - Basel 2016
@@ -91,7 +96,7 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
 
     subplot(2,2,1)
     imagesc(inputIM)
-    title('Original image')
+    title(sprintf('Original image (%d by %d)',size(inputIM)))
     axis square
 
 
@@ -113,7 +118,8 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
 
     subplot(2,2,3)
     h=peakFinder(muCols);
-    fprintf('%0.3f mics/pix along columns\n', h.micsPix)
+    colExtent = h.micsPix*size(inputIM,2);
+    fprintf('%0.3f mics/pix along columns (width=%0.1f microns)\n', h.micsPix, colExtent)
     micsPix.cols = h.micsPix;
     set(h.line,'color',[1,0.3,0.3], 'linewidth',1);
     set(h.peaks,'MarkerEdgeColor',[0.66,0,0])
@@ -123,7 +129,8 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
 
     subplot(2,2,4)
     h=peakFinder(muRows);
-    fprintf('%0.3f mics/pix along rows\n', h.micsPix)
+    rowExtent = h.micsPix*size(inputIM,1);
+    fprintf('%0.3f mics/pix along columns (width=%0.1f microns)\n', h.micsPix, rowExtent)
     micsPix.rows = h.micsPix;
     set(h.line,'color',[1,1,1]*0.3, 'linewidth',1);
     set(h.peaks,'MarkerEdgeColor','k')
@@ -132,14 +139,25 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
     addLinesToImage(h,1,'k')
 
 
-
+    %Change the axis tick labels in the in the second figure to reflect the image size
+    subplot(2,2,2)
+    set(gca,'XTick',[1,size(inputIM,1)], ...
+        'XTickLabel', [0,colExtent],...
+        'YTick',[1,size(inputIM,2)],...
+        'YTickLabel', [rowExtent,0])
 
 
     % -----------------------------------------------
     % Nested functions follow
     function h=peakFinder(mu)
-        %Find locations of peaks along vector, mu. 
-        %Peaks are supposed to correspond to where the grating is
+        % Find locations of peaks along vector, mu. Plots the results
+        % Peaks are supposed to correspond to where the grating is
+        % 
+        % Returns structure h with fields:
+        % locs - locations of peaks
+        % line - handles to line plot elements
+        % peaks - handles to peak plot elements
+        % micsPix - scalar defining the number of microns per pixel
 
         %Try to remove long-range trends
         mu = detrendLine(mu);
@@ -168,6 +186,7 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
 
     function addLinesToImage(h,axisToAdd,lineCol)
         %Overlay the calculated location of the grid lines onto the rotated image
+        %This is to allow the user visually verify that all lines in the image have been identified
         hold(rotAx,'on')
         for ii=1:length(h.locs)
             thisL = h.locs(ii);
@@ -191,6 +210,16 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
 
 
     function bestAng=findGridAngle(inputIM)
+        % Iteratively find the grid orientation that makes the grid lines
+        % parallel with the axes. 
+        % Algorithm:
+        % START
+        % Projecting the image onto two 1D vectors (rows and columns).
+        % Calculating the total variance (see getVar) along both dimensions. 
+        % Repeat for a range of grid angles in an adaptive manner to improve speed.
+        % The variance is maximimal when the grid is parallel with the axes. 
+        % END
+
         startAngleRange=25;
         startRes=5;
         minRes=0.05;
@@ -243,6 +272,9 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
 
     function v=getVar(im,ang)
         %rotate grid by angle "ang", project to x and y. calculate total variance along these axes
+        %
+        % Rotate image "im" by angle "var", project the image onto the rows and columns, calculate the variance of each and sum them
+
         tmp=imrotate(im,ang,'crop');
 
         if verbose
