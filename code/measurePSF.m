@@ -84,7 +84,7 @@ end
 Z = max(squeeze(max(DS))); 
 
 z=max(squeeze(max(DS)));
-f = fit_Intensity(z,1); 
+f = measurePSF.fit_Intensity(z,1); 
 psfCenterInZ = round(f.b1);
 
 if psfCenterInZ > size(PSFstack,3) || psfCenterInZ<1
@@ -112,7 +112,7 @@ else
     maxZplaneForFit = maxZplane;
 end
 
-[psfCenterInX,psfCenterInY,badFit]=runXYfit(maxZplaneForFit);
+[psfCenterInX,psfCenterInY,badFit]=measurePSF.findPSF_centre(maxZplaneForFit);
 
 
 if isnumeric(frameSize) && ~badFit %Zoom into the bead if the user asked for this
@@ -125,7 +125,7 @@ if isnumeric(frameSize) && ~badFit %Zoom into the bead if the user asked for thi
     maxZplane = maxZplane(x,y);
     PSFstack = PSFstack(x,y,:);
 
-    [psfCenterInX,psfCenterInY]=runXYfit(maxZplaneForFit);
+    [psfCenterInX,psfCenterInY]=measurePSF.findPSF_centre(maxZplaneForFit);
 
 end
 
@@ -149,8 +149,8 @@ showAxesInMainPSFplot=0;
 if showAxesInMainPSFplot
     Xtick = linspace(1,size(maxZplane,1),8);
     Ytick = linspace(1,size(maxZplane,2),8);
-    set(gca,'XTick',Xtick,'XTickLabel',roundSig(Xtick*micsPerPixelXY,2),...
-            'YTick',Ytick,'YTickLabel',roundSig(Ytick*micsPerPixelXY,2));
+    set(gca,'XTick',Xtick,'XTickLabel',measurePSF.round(Xtick*micsPerPixelXY,2),...
+            'YTick',Ytick,'YTickLabel',measurePSF.round(Ytick*micsPerPixelXY,2));
 else
     set(gca,'XTick',[],'YTick',[])
 end
@@ -167,8 +167,8 @@ hold off
 axes('Position',[0.435,0.07,0.1,0.4])
 yvals = maxZplane(:,psfCenterInX);
 x=(1:length(yvals))*micsPerPixelXY;
-fitX = fit_Intensity(yvals,micsPerPixelXY,1);
-plotCrossSectionAndFit(x,yvals,fitX,micsPerPixelXY/2,1);
+fitX = measurePSF.fit_Intensity(yvals,micsPerPixelXY,1);
+measurePSF.plotCrossSectionAndFit(x,yvals,fitX,micsPerPixelXY/2,1);
 X.xVals=x;
 X.yVals=yvals;
 set(gca,'XTickLabel',[])
@@ -178,8 +178,8 @@ set(gca,'XTickLabel',[])
 axes('Position',[0.03,0.475,0.4,0.1])
 yvals = maxZplane(psfCenterInY,:);
 x=(1:length(yvals))*micsPerPixelXY;
-fitY = fit_Intensity(yvals,micsPerPixelXY);
-plotCrossSectionAndFit(x,yvals,fitY,micsPerPixelXY/2);
+fitY = measurePSF.fit_Intensity(yvals,micsPerPixelXY);
+measurePSF.plotCrossSectionAndFit(x,yvals,fitY,micsPerPixelXY/2);
 Y.xVals=x;
 Y.yVals=yvals;
 set(gca,'XTickLabel',[])
@@ -205,7 +205,7 @@ imagesc(PSF_ZX)
 Ytick = linspace(1,size(PSF_ZX,1),3);
 set(gca,'XAxisLocation','Top',...
         'XTick',[],...
-        'YTick',Ytick,'YTickLabel',roundSig(Ytick*micsPerPixelXY,2));
+        'YTick',Ytick,'YTickLabel',measurePSF.round(Ytick*micsPerPixelXY,2));
 
 text(1,1,sprintf('PSF in Z/X'), 'Color','w','VerticalAlignment','top');
 
@@ -216,9 +216,9 @@ baseline = sort(maxPSF_ZX);
 baseline = mean(baseline(1:5));
 maxPSF_ZX = maxPSF_ZX-baseline;
 
-fitZX = fit_Intensity(maxPSF_ZX, micsPerPixelZ,zFitOrder);
+fitZX = measurePSF.fit_Intensity(maxPSF_ZX, micsPerPixelZ,zFitOrder);
 x = (1:length(maxPSF_ZX))*micsPerPixelZ;
-[OUT.ZX.FWHM,OUT.ZX.fitPlot_H] = plotCrossSectionAndFit(x,maxPSF_ZX,fitZX,micsPerPixelZ/4);
+[OUT.ZX.FWHM,OUT.ZX.fitPlot_H] = measurePSF.plotCrossSectionAndFit(x,maxPSF_ZX,fitZX,micsPerPixelZ/4);
 set(gca,'XAxisLocation','Top')
 
 
@@ -237,7 +237,7 @@ imagesc(PSF_ZY)
 
 Xtick = linspace(1,size(PSF_ZY,2),3);
 set(gca,'YAxisLocation','Right',...
-        'XTick',Xtick,'XTickLabel',roundSig(Xtick*micsPerPixelXY,2),...
+        'XTick',Xtick,'XTickLabel',measurePSF.round(Xtick*micsPerPixelXY,2),...
         'YTick',[])
 
 text(1,1,sprintf('PSF in Z/Y'), 'Color','w','VerticalAlignment','top');
@@ -249,9 +249,9 @@ baseline = sort(maxPSF_ZY);
 baseline = mean(baseline(1:5));
 maxPSF_ZY = maxPSF_ZY-baseline;
 
-fitZY = fit_Intensity(maxPSF_ZY, micsPerPixelZ,zFitOrder);
+fitZY = measurePSF.fit_Intensity(maxPSF_ZY, micsPerPixelZ,zFitOrder);
 x = (1:length(maxPSF_ZY))*micsPerPixelZ;
-[OUT.ZY.FWHM, OUT.ZY.fitPlot_H] = plotCrossSectionAndFit(x,maxPSF_ZY,fitZY,micsPerPixelZ/4,1);
+[OUT.ZY.FWHM, OUT.ZY.fitPlot_H] = measurePSF.plotCrossSectionAndFit(x,maxPSF_ZY,fitZY,micsPerPixelZ/4,1);
 set(gca,'XAxisLocation','Top')
 
 
@@ -291,112 +291,7 @@ if nargout>0
 end
 
 
-
-function [fitresult, gof] = fit_Intensity(Y,micsPerPix,numberOfTerms)
-    %  Fit PSF intensity profile with a Gaussian
-    %
-    % Inputs
-    %  Y - the vector intensities for this PSF cross-section
-    %  micsPerPix - the number of microns per pixel (set to 1 
-    %            if using this function to determine the index of the peak)
-    %  numberOfTerms - number of terms in the Gaussian. Use 1 for a regular 
-    %               Gaussian. 2 if kurtosis of the raw data seem high.
-    %
-    %
-    % Outputs
-    %  fitresult - a fit object representing the fit.
-    %  gof - structure with goodness-of fit info.
-    %
-    %  See also FIT, CFIT, SFIT.
-
-    if nargin<3
-        numberOfTerms=1;
-    end
-
-    Y = Y(:);
-    X =  (1:length(Y))*micsPerPix;
-    X = X(:);
-
-    [xData, yData] = prepareCurveData(X,Y);
-
-    % Set up fittype and options.
-    ft = fittype(['gauss',num2str(numberOfTerms)]);
-    opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
-    opts.Display = 'Off';
-
-
-    % Fit model to data.
-    [fitresult, gof] = fit( xData, yData, ft, opts );
-
-function [FWHM,p] = plotCrossSectionAndFit(x,y,fitObj,fitRes,flipAxes)
-    % Used to plot the fit cross-sections
-    %
-    % x - x data
-    % y - y data
-    % fitObj - the fit object produced by fit_Intensity that is associated with these data
-    % fitRes - the resolution in microns of the fitted curve. This is used to obtain the FWHM
-    % flipAxes - set to true to flip x/y axes for the plots long the right. 
-    
-    if nargin<5
-        flipAxes = 0;
-    end
-
-    %Generate x data 
-    fitX = x(1):fitRes:x(end);
-    fitY = feval(fitObj,fitX); 
-
-
-    %calculate the FWHM
-    halfMax = (fitObj.a1)/2;
-
-
-    %Take just one side of the curve
-    maxInd=find(max(fitY)==fitY);
-    yvals = fitY(1:maxInd);
-
-    [~,halfMaxInd]=min(abs(yvals-halfMax));
-    FWHM = (length(yvals)-halfMaxInd)*fitRes*2;
-
-
-    %Plot
-    hold on
-    %The FWHM area
-    deltaIndVals  = length(yvals)-halfMaxInd ;%number of index values between the peak and the FWHM point
-    inds = (maxInd-deltaIndVals):(maxInd+deltaIndVals);
-    p(1)=area(fitX(inds),fitY(inds));
-
-    set(p,'FaceColor','k','EdgeColor','none')
-    if verLessThan('matlab','8.6')
-        set(p,'FaceColor',[0.8,0.8,0.8]);
-    else
-        set(p,'FaceAlpha',0.15);
-    end
-    %The fit
-    p(2)=plot(fitX,fitY,'-','linewidth',2,'color',[1,0.5,0.5]);
-
-    %The raw data
-    p(3)=plot(x,y,'k.');
-    hold off
-
-    if flipAxes
-        view(90,90) % flip graph onto its side
-    end
-
-    
-    title(sprintf('FWHM: %0.2f \\mum',FWHM))
-
-    axis tight
-    grid on
-
-    %Add ticks such that the peak has a tick mark that we will label as zero    
-    stepSize  = (fitX(end)-fitX(1))/11; %to divide up the fit
-    xAtMax = fitX(length(yvals));
-
-    xtick = unique([xAtMax:-stepSize:fitX(1),xAtMax:stepSize:fitX(end)]);
-
-    set(gca,'YTickLabel',[],'XTick',xtick,'XTickLabel', roundSig(xtick-xAtMax,2))
-
-
+%-----------------------------------------------------------------------------
 function updateUserSelected(PSFstack,psfCenterInZ,micsPerPixelZ)
     % Runs when the user moves the slider
     Hax=findobj('Tag','userSelected');
@@ -409,32 +304,3 @@ function updateUserSelected(PSFstack,psfCenterInZ,micsPerPixelZ)
 
     title(sprintf('Slice #%d %0.2f \\mum', thisSlice, (psfCenterInZ-thisSlice)*micsPerPixelZ ))
 
-
-function out = roundSig(in,sigFig)
-    % Needed for earlier MATLAB releases where round doesn't have a
-    % a second input argument
-    if nargin<2
-        sigFig=1;
-    end
-    out = round(in * 10*sigFig)/(10*sigFig);
-
-
-function [psfCenterInX,psfCenterInY,badFit]=runXYfit(im)
-    %Find the peak of the image
-    f = fit_Intensity(max(im,[],1),1);
-    psfCenterInX = round(f.b1);
-
-    badFit=false;
-    if psfCenterInX<0 || psfCenterInX>size(im,1)
-        fprintf('PSF centre not found along X dimension. Are your data noisy?\n')
-        psfCenterInX=1;
-        badFit=true;
-    end
-
-    f = fit_Intensity(max(im,[],2),1);
-    psfCenterInY = round(f.b1);
-    if psfCenterInY<0 || psfCenterInY>size(im,2)
-        fprintf('PSF centre not found along Y dimension. Are your data noisy?\n')
-        psfCenterInY=1;
-        badFit=true;
-    end
