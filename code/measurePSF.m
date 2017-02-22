@@ -42,7 +42,13 @@ if nargin<1
     PSFstack = P.PSF;
     micsPerPixelXY=0.05;
     micsPerPixelZ=0.500;
+elseif nargin<3
+    fprintf('\n\n ----> Function requires three input arguments! <---- \n\n')
+    help(mfilename)
+    return
 end
+
+
 
 params = inputParser;
 params.CaseSensitive = false;
@@ -117,12 +123,27 @@ end
 % Step Two
 %
 % Find the center of the bead in X and Y by fitting gaussians along these dimensions.
-% We will use these values to show cross-sections of it along X and Y at the level of the image plotted above
-f = fit_Intensity(max(maxZplane,[],1),1);
-psfCenterInX = round(f.b1);
+% We will use these values to show cross-sections of it along X and Y at the level of the image plotted above.
+% Always apply a light median filter to help ensure we get a reasonable fit
+if medFiltSize==1
+    maxZplaneForFit = medfilt2(maxZplane,[2,2]);
+else
+    maxZplaneForFit = maxZplane;
+end
 
-f = fit_Intensity(max(maxZplane,[],2),1);
+f = fit_Intensity(max(maxZplaneForFit,[],1),1);
+psfCenterInX = round(f.b1);
+if psfCenterInX<0 || psfCenterInX>size(maxZplaneForFit,1)
+    fprintf('PSF centre not found along X dimension. Are your data noisy?\n')
+    psfCenterInX=1;
+end
+
+f = fit_Intensity(max(maxZplaneForFit,[],2),1);
 psfCenterInY = round(f.b1);
+if psfCenterInY<0 || psfCenterInY>size(maxZplaneForFit,2)
+    fprintf('PSF centre not found along Y dimension. Are your data noisy?\n')
+    psfCenterInY=1;
+end
 
 %Add lines to the main X/Y plot showing where we are slicing it to take the cross-sections
 hold on
