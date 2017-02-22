@@ -24,7 +24,9 @@ function varargout=measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ,varargin)
 % zFitOrder - [1 by default]. Number of gaussians to use for the fit of the Z PSF
 % medFiltSize - [1 by default -- no filtering]. If more than one performs a median filtering 
 %				operation on each slice with a filter of this size.
-%
+% frameSize - [false by default] If a scalar, frameSize is used to zoom into the location of the
+%             the identified bead. e.g. if frameSize is 50, a 50 by 50 pixel window is centered 
+%             on the bead. 
 %
 % OUTPUTS
 % Returns fit objects and various handles (not finalised yet)
@@ -55,12 +57,14 @@ params.CaseSensitive = false;
 params.addParamValue('maxIntensityInZ', 1, @(x) islogical(x) || x==0 || x==1);
 params.addParamValue('zFitOrder', 1, @(x) isnumeric(x) && isscalar(x));
 params.addParamValue('medFiltSize', 1, @(x) isnumeric(x) && isscalar(x));
+params.addParamValue('frameSize',false, @(x) x==false || (isnumeric(x) && isscalar(x)) )
 
 params.parse(varargin{:});
 
 maxIntensityInZ = params.Results.maxIntensityInZ;
 zFitOrder = params.Results.zFitOrder;
 medFiltSize = params.Results.medFiltSize;
+frameSize = params.Results.frameSize;
 
 
 % Step One
@@ -93,12 +97,45 @@ midZ=round(size(PSFstack,3)/2); %The calculated mid-point of the PSF stack
 
 
 
+
+
+
+% Step Two
+%
+% Find the center of the bead in X and Y by fitting gaussians along these dimensions.
+% We will use these values to show cross-sections of it along X and Y at the level of the image plotted above.
+% Always apply a moderate median filter to help ensure we get a reasonable fit
+maxZplane = PSFstack(:,:,psfCenterInZ);
+if medFiltSize==1
+    maxZplaneForFit = medfilt2(maxZplane,[2,2]);
+else
+    maxZplaneForFit = maxZplane;
+end
+
+[psfCenterInX,psfCenterInY,badFit]=runXYfit(maxZplaneForFit);
+
+
+if isnumeric(frameSize) && ~badFit %Zoom into the bead if the user asked for this
+    x=(-frameSize/2 : frameSize/2)+psfCenterInX;
+    y=(-frameSize/2 : frameSize/2)+psfCenterInY;
+    x=round(x);
+    y=round(y);
+
+    maxZplaneForFit = maxZplaneForFit(x,y);
+    maxZplane = maxZplane(x,y);
+    PSFstack = PSFstack(x,y,:);
+
+    [psfCenterInX,psfCenterInY]=runXYfit(maxZplaneForFit);
+
+end
+
+
 %Plot the mid-point of the stack
 clf
-
+s=size(PSFstack);
+set(gcf,'Name',sprintf('Image size: %d x %d',s(1:2)))
 %PSF at mid-point
 axes('Position',[0.03,0.07,0.4,0.4])
-maxZplane = PSFstack(:,:,psfCenterInZ);
 imagesc(maxZplane)
 
 text(size(PSFstack,1)*0.025,...
@@ -118,32 +155,6 @@ else
     set(gca,'XTick',[],'YTick',[])
 end
 
-
-
-% Step Two
-%
-% Find the center of the bead in X and Y by fitting gaussians along these dimensions.
-% We will use these values to show cross-sections of it along X and Y at the level of the image plotted above.
-% Always apply a light median filter to help ensure we get a reasonable fit
-if medFiltSize==1
-    maxZplaneForFit = medfilt2(maxZplane,[2,2]);
-else
-    maxZplaneForFit = maxZplane;
-end
-
-f = fit_Intensity(max(maxZplaneForFit,[],1),1);
-psfCenterInX = round(f.b1);
-if psfCenterInX<0 || psfCenterInX>size(maxZplaneForFit,1)
-    fprintf('PSF centre not found along X dimension. Are your data noisy?\n')
-    psfCenterInX=1;
-end
-
-f = fit_Intensity(max(maxZplaneForFit,[],2),1);
-psfCenterInY = round(f.b1);
-if psfCenterInY<0 || psfCenterInY>size(maxZplaneForFit,2)
-    fprintf('PSF centre not found along Y dimension. Are your data noisy?\n')
-    psfCenterInY=1;
-end
 
 %Add lines to the main X/Y plot showing where we are slicing it to take the cross-sections
 hold on
@@ -408,3 +419,22 @@ function out = roundSig(in,sigFig)
     out = round(in * 10*sigFig)/(10*sigFig);
 
 
+function [psfCenterInX,psfCenterInY,badFit]=runXYfit(im)
+    %Find the peak of the image
+    f = fit_Intensity(max(im,[],1),1);
+    psfCenterInX = round(f.b1);
+
+    badFit=false;
+    if psfCenterInX<0 || psfCenterInX>size(im,1)
+        fprintf('PSF centre not found along X dimension. Are your data noisy?\n')
+        psfCenterInX=1;
+        badFit=true;
+    end
+
+    f = fit_Intensity(max(im,[],2),1);
+    psfCenterInY = round(f.b1);
+    if psfCenterInY<0 || psfCenterInY>size(im,2)
+        fprintf('PSF centre not found along Y dimension. Are your data noisy?\n')
+        psfCenterInY=1;
+        badFit=true;
+    end
