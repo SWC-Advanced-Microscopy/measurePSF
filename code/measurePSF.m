@@ -121,9 +121,9 @@ if isnumeric(frameSize) && ~badFit %Zoom into the bead if the user asked for thi
     x=round(x);
     y=round(y);
 
-    maxZplaneForFit = maxZplaneForFit(x,y);
-    maxZplane = maxZplane(x,y);
-    PSFstack = PSFstack(x,y,:);
+    maxZplaneForFit = maxZplaneForFit(y,x);
+    maxZplane = maxZplane(y,x);
+    PSFstack = PSFstack(y,x,:);
 
     [psfCenterInX,psfCenterInY]=measurePSF.findPSF_centre(maxZplaneForFit);
 
