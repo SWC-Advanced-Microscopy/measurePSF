@@ -5,16 +5,21 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
 %
 % Purpose
 % Calculates the number of microns per pixel along rows and columns from 
-% an imaged grid of known pitch. 
+% an imaged grid of known pitch. NOTE: It's important that most of the grid lines
+% are found since the number of microns per pixel is based upon the median spacing
+% between adjacent identified grid lines. e.g. if the algorithm finds every other
+% line the number of microns per pixel will be half the size it should be. Alternatively, 
+% missing, say, the two outer grid lines one one side will have no effect. Try tweaking
+% cropProp, medFiltSize, and polynomDetrendOrder to capture more grid lines if needed. 
 %
 % 
 % Inputs (required) 
 % inputIM - 2D image of the grid
 %
 % Inputs (optional param/val pairs)
-% gridPitch - pitch of the grid in microns (default is 20)
-% cropProp -  proportion of image edges to trim before processing (default is 0.05)
-% verbose - More output info shown (false by default)
+% gridPitch   - pitch of the grid in microns (default is 20)
+% cropProp    -  proportion of image edges to trim before processing (default is 0.05)
+% verbose     - More output info shown (false by default)
 % medFiltSize - The size of the filter to use for median filtering of the image (6 pixels by default)
 % polynomDetrendOrder - The order of the polynomial used to detrend row and column averages (default: 3)
 %
@@ -45,13 +50,6 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
 % perpendicular with the scan axes, but we suggest you get it correctly aligned to within about 10 
 % degrees (see note above). Make sure the grid is in focus and take and image. Feed this image to 
 % this function.
-%
-%
-% CAUTION:
-% When running this function, check that all grid lines on the image have been identified. If not, 
-% try tweaking cropProp, medFiltSize, and polynomDetrendOrder. 
-% ** The image scale will be miscalculated if not all lines are identified! **
-%
 %
 %
 %
@@ -97,8 +95,7 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
     subplot(2,2,1)
     imagesc(inputIM)
     title(sprintf('Original image (%d by %d)',size(inputIM)))
-    axis square
-
+    axis equal tight
 
 
     rotAx = subplot(2,2,2);
@@ -110,7 +107,7 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
     imR(imR==0)=nan;
     imagesc( imR )
     title(sprintf('Corrected tilt by %0.2f degrees',ang))
-    axis square
+    axis equal tight
 
 
     muCols=nanmean(imR,1);
@@ -179,7 +176,9 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
         hold on 
         h.peaks=plot(locs,pks,'o');
         
-        h.micsPix=gridPitch/mean(diff(locs));
+
+
+        h.micsPix=gridPitch/median(diff(locs));
         axis tight
     end %close peakFinder
 
