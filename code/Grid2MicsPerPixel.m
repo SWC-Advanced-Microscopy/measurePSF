@@ -133,7 +133,7 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
     set(h.peaks,'MarkerEdgeColor','k')
     set(h.peaks,'MarkerFaceColor',[1,1,1]*0.66)
     title(sprintf('rows: %0.3f \\mum/pixel',h.micsPix))
-    addLinesToImage(h,1,'k')
+    addLinesToImage(h,1,'y')
 
 
     %Change the axis tick labels in the in the second figure to reflect the image size
@@ -204,7 +204,7 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
             lWidth=2;
         end
 
-        set(p,'linewidth',lWidth,'color',lineCol);
+        set(p,'linewidth',lWidth,'color',lineCol,'LineStyle','--');
     end %close addLinesToImage
 
 
