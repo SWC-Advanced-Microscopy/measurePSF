@@ -90,7 +90,19 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
 
 
     %PLOT AND CALCULATE
-    clf
+
+    % Only create a plot window if one does not already exist 
+    % (want to avoid writing into existing windows that are doing other stuff)
+    fig = findobj(0,'Tag',mfilename);
+    if isempty(fig)
+        fig = figure;
+        set(fig, 'Tag', mfilename, 'Name', 'Grid measurement')
+    else
+        %Focus 
+        figure(fig)
+        clf
+    end
+
 
     subplot(2,2,1)
     imagesc(inputIM)
@@ -175,7 +187,6 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
         h.line=plot(mu);
         hold on 
         h.peaks=plot(locs,pks,'o');
-        
 
 
         h.micsPix=gridPitch/median(diff(locs));

@@ -131,7 +131,20 @@ end
 
 
 %Plot the mid-point of the stack
-clf
+
+ % Only create a plot window if one does not already exist 
+% (want to avoid writing into existing windows that are doing other stuff)
+fig = findobj(0,'Tag',mfilename);
+if isempty(fig)
+    fig = figure;
+    set(fig, 'Tag', mfilename, 'Name', 'Measure PSF')
+else
+    %Focus 
+    figure(fig)
+    clf
+end
+
+
 s=size(PSFstack);
 set(gcf,'Name',sprintf('Image size: %d x %d',s(1:2)))
 %PSF at mid-point
