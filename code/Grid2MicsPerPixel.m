@@ -1,4 +1,4 @@
-function micsPix=Grid2MicsPerPixel(inputIM,varargin)
+function varargout=Grid2MicsPerPixel(inputIM,varargin)
 % Calculated the number of microns per pixel based on an imaged grid of known pitch
 %
 % function micsPix=Grid2MicsPerPixel(inputIM, 'param', 'val')
@@ -18,7 +18,7 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
 %
 % Inputs (optional param/val pairs)
 % gridPitch   - pitch of the grid in microns (default is 20)
-% cropProp    -  proportion of image edges to trim before processing (default is 0.05)
+% cropProp    -  proportion of image edges to trim before processing (default is 0.0, valid values between 0 and <1)
 % verbose     - More output info shown (false by default)
 % medFiltSize - The size of the filter to use for median filtering of the image (6 pixels by default)
 % polynomDetrendOrder - The order of the polynomial used to detrend row and column averages (default: 3)
@@ -63,7 +63,7 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
     params = inputParser;
     params.CaseSensitive = false;
     params.addParameter('gridPitch', 25, @(x) isnumeric(x) && isscalar(x));
-    params.addParameter('cropProp', 0.05, @(x) isnumeric(x) && isscalar(x) && x>0 && x<1);
+    params.addParameter('cropProp', 0.0, @(x) isnumeric(x) && isscalar(x) && x>=0 && x<1);
     params.addParameter('verbose', false, @(x) islogical(x) || x==0 || x==1);
     params.addParameter('medFiltSize', 6, @(x) isnumeric(x) && isscalar(x));
     params.addParameter('polynomDetrendOrder', 3, @(x) isnumeric(x) && isscalar(x));
@@ -81,8 +81,11 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
     %PREPARE THE IMAGE
     %Crop the image
     inputIM = double(inputIM);
+    origImageSize = size(inputIM);
     cropPix=floor(size(inputIM)*cropProp);
-    inputIM = inputIM(cropPix:end-cropPix, cropPix:end-cropPix);
+    if cropProp>0
+        inputIM = inputIM(cropPix:end-cropPix, cropPix:end-cropPix);
+    end
 
     %Filter the image to get rid of noise that can throw off the peak detection
     inputIM = medfilt2(inputIM,medFiltSize);
@@ -106,7 +109,11 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
 
     subplot(2,2,1)
     imagesc(inputIM)
-    title(sprintf('Original image (%d by %d)',size(inputIM)))
+    if cropProp>0
+        origTitle=title(sprintf('%d x %d (before cropping)', origImageSize));
+    else
+        origTitle=title(sprintf('%d x %d', origImageSize));
+    end
     axis equal tight
 
 
@@ -156,6 +163,15 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
         'YTickLabel', [rowExtent,0])
 
 
+
+    %Update the title on subplot one to report the size of the original image
+    origTitle.String = sprintf('%s -- %d \\mum (rows) x %d \\mum (cols)', ...
+        origTitle.String, round(micsPix.rows*origImageSize(1)), round(micsPix.cols*origImageSize(2)) );
+
+    if nargout>0
+        varargout=micsPix;
+    end
+
     % -----------------------------------------------
     % Nested functions follow
     function h=peakFinder(mu)
@@ -175,7 +191,7 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
         [~,indMax] = max(abs(fft(mu-mean(mu))));
         period = round(length(mu)/indMax);
 
-        fprintf('Period is about %d pixels\n',period)
+        fprintf('Grid period is about %d pixels\n',period)
 
         [pks,locs]=findpeaks(mu,'minpeakheight',std(mu)*0.8,'minpeakdistance', round(period*0.9) );
 
@@ -292,7 +308,7 @@ function micsPix=Grid2MicsPerPixel(inputIM,varargin)
           subplot(1,2,1)
           imagesc(tmp)
         end
-          
+
         tmp(tmp==0)=nan;
 
         m1 = nanmean(tmp,1);
