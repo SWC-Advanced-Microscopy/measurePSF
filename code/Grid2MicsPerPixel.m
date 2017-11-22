@@ -17,7 +17,7 @@ function varargout=Grid2MicsPerPixel(inputIM,varargin)
 % inputIM - 2D image of the grid
 %
 % Inputs (optional param/val pairs)
-% gridPitch   - pitch of the grid in microns (default is 20)
+% gridPitch   - pitch of the grid in microns (default is 25)
 % cropProp    -  proportion of image edges to trim before processing (default is 0.0, valid values between 0 and <1)
 % verbose     - More output info shown (false by default)
 % medFiltSize - The size of the filter to use for median filtering of the image (6 pixels by default)
