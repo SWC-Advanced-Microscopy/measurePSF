@@ -24,9 +24,7 @@ classdef measurePSF < handle
     % zFitOrder - [1 by default]. Number of gaussians to use for the fit of the Z PSF
     % medFiltSize - [1 by default -- no filtering]. If more than one performs a median filtering 
     %               operation on each slice with a filter of this size.
-    % frameSize - [false by default] If a scalar, frameSize is used to zoom into the location of the
-    %             the identified bead. e.g. if frameSize is 50, a 50 by 50 pixel window is centered 
-    %             on the bead. 
+    %
     %
     % OUTPUTS
     % Returns fit objects and various handles (not finalised yet)
@@ -135,14 +133,12 @@ classdef measurePSF < handle
             params.addParamValue('useZmax', 1, @(x) islogical(x) || x==0 || x==1);
             params.addParamValue('zFitOrder', 1, @(x) isnumeric(x) && isscalar(x));
             params.addParamValue('medFiltSize', 1, @(x) isnumeric(x) && isscalar(x));
-            params.addParamValue('frameSize',false, @(x) x==false || (isnumeric(x) && isscalar(x)) )
 
             params.parse(varargin{:});
 
             obj.useMaxIntensityForZpsf = params.Results.useZmax;
             obj.zFitOrder = params.Results.zFitOrder;
             obj.medFiltSize = params.Results.medFiltSize;
-            frameSize = params.Results.frameSize;
 
 
             % Make empty data and generate empty plots using these
@@ -154,22 +150,7 @@ classdef measurePSF < handle
             obj.psfCenterInZ=1;
 
 
-            obj.setUpFigureWindow
-
-            %TODO -- the following will be supersceded by a rectangle that we draw over the image
-            if isnumeric(frameSize) && ~obj.badFit %Zoom into the bead if the user asked for this
-                x=(-frameSize/2 : frameSize/2)+obj.psfCenterInX;
-                y=(-frameSize/2 : frameSize/2)+obj.psfCenterInY;
-                x=round(x);
-                y=round(y);
-
-                obj.maxZplaneForFit = obj.maxZplaneForFit(y,x);
-                obj.maxZplane = obj.maxZplane(y,x);
-                obj.PSFstack = obj.PSFstack(y,x,:);
-
-                obj.findPSF_centre(obj.maxZplaneForFit);
-
-            end
+            obj.setUpFigureWindow % Make the axes and so forth
 
 
             % Set up listeners that will update the plots when the PSF stack is modified or 
