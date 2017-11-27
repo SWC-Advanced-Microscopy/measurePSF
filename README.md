@@ -5,7 +5,10 @@ To run, add measurePSF to your path or `cd` to the directory containing the file
 
 The repository also contains `Grid2MicsPerPixel`, which can be used to measure the number of microns per pixel along x and y by analysing an image of an EM grid. 
 
-The function has been well tested under R2016b. It should also work on R2014b and later. 
+### Requirements
+The function has been well well-tested under R2016b. 
+It should also work on R2014b and later. 
+Reqyures the Curve-Fitting Toolbox and the Image Processing Toolbox.
 
 
 ![cover image](https://raw.githubusercontent.com/raacampbell/measurePSF/gh-pages/realBead.png "Main Window")
