@@ -75,5 +75,6 @@ function [FWHM,p] = plotCrossSectionAndFit(obj,x,y,fitObj,fitRes,flipAxes)
 
     xtick = unique([xAtMax:-stepSize:fitX(1),xAtMax:stepSize:fitX(end)]);
 
-    set(gca,'YTickLabel',[],'XTick',xtick,'XTickLabel', round(xtick-xAtMax,2))
-
+    set(gca,'YTickLabel',[],'XTick',xtick, ...
+        'XTickLabel', round(xtick-xAtMax,2), ...
+        'XLim', [min(x),max(x)])

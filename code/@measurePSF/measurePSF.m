@@ -43,7 +43,8 @@ classdef measurePSF < handle
         hFig % Handle containing the figure
     end
 
-    properties(SetObservable)
+
+    properties (SetObservable)
         PSFstack %The image stack containing the PSF
 
 
@@ -57,7 +58,11 @@ classdef measurePSF < handle
         micsPerPixelZ  = 0.5  %Number of microns per pixel in Z
     end
 
-    properties(SetAccess=protected, Hidden)
+
+    properties (SetObservable, SetAccess=protected, Hidden)
+        % This is the z-plane that contains the brightest region of the bead--we will use this to fit the x/y PSF
+        maxZplane
+        maxZplaneForFit %These are the data used for fitting. They will always have at least a moderate median filter applied
 
         %The following are fit-related parameters
         psfCenterInX
@@ -66,8 +71,12 @@ classdef measurePSF < handle
         badFit
     end
 
-    properties(Hidden)
+    properties (Hidden)
         hPSF_XYmidpointImageAx % The PSF at the estimated mid-point (bottom left image)
+        hPSF_XYmidpointImageIM % Handle to the image object
+        hPS_midPointImageXhairs % The dashed cross-hairs
+        hPSF_midPointText
+
         hxSectionRowsAx
         hxSectionColsAx
         hPSF_ZXax
@@ -77,33 +86,39 @@ classdef measurePSF < handle
 
         hUserSelectedPlaneAx % Handle to the axis showing the user-selected plane within the PSF
         hUserSelectedPlaneIM
+        hUserSelectedPlaneTitle
+
         hSlider % Slider handle
-        
+
+
         drawBox_PushButton 
         fitToBaseWorkSpace_PushButton
 
+        showHelpTextIfTooFewArgsProvided=false
+        listeners={}
     end
 
 
 
 
     methods
-        function obj=measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ,varargin)
+        function obj=measurePSF(inputPSFstack,micsPerPixelXY,micsPerPixelZ,varargin)
 
 
             if nargin<1
-                help(mfilename)
+                if obj.showHelpTextIfTooFewArgsProvided
+                    help(mfilename)
+                end
                 % We will display the default PSF and use the default values for XY and Z pixel size
                 % as defined in the properties section
-                P=load('PSF');
-                obj.PSFstack = P.PSF;
+                % The default PSF is loaded at the end of the constructor
             elseif nargin<3
                 fprintf('\n\n ----> Function requires three input arguments! <---- \n\n')
-                help(mfilename)
+                if obj.showHelpTextIfTooFewArgsProvided
+                    help(mfilename)
+                end
                 return
             end
-
-
 
             params = inputParser;
             params.CaseSensitive = false;
@@ -120,184 +135,54 @@ classdef measurePSF < handle
             frameSize = params.Results.frameSize;
 
 
+            % Make empty data and generate empty plots using these
+            obj.PSFstack = zeros(2^8);
+            obj.maxZplane = zeros(2^8);
+            obj.maxZplaneForFit = zeros(2^8);
+            obj.psfCenterInX=2^7;
+            obj.psfCenterInZ=2^7;
+            obj.psfCenterInZ=1;
 
 
-
-            % Step One
-            %
-            % Estimate the slice that contains center of the PSF in Z by finding the brightest point.
-            obj.denoiseImStackAndFindPSFcenterInZ;
-
-
-
-            % Step Two
-            %
-            % Find the center of the bead in X and Y by fitting gaussians along these dimensions.
-            % We will use these values to show cross-sections of it along X and Y at the level of the image plotted above.
-            % Always apply a moderate median filter to help ensure we get a reasonable fit
-            maxZplane = obj.PSFstack(:,:,obj.psfCenterInZ);
-            if obj.medFiltSize==1
-                maxZplaneForFit = medfilt2(maxZplane,[2,2]);
-            else
-                maxZplaneForFit = maxZplane;
-            end
-
-            obj.findPSF_centre(maxZplaneForFit);
-
-
-            if isnumeric(frameSize) && ~obj.badFit %Zoom into the bead if the user asked for this
-                x=(-frameSize/2 : frameSize/2)+obj.psfCenterInX;
-                y=(-frameSize/2 : frameSize/2)+obj.psfCenterInY;
-                x=round(x);
-                y=round(y);
-
-                maxZplaneForFit = maxZplaneForFit(y,x);
-                maxZplane = maxZplane(y,x);
-                obj.PSFstack = obj.PSFstack(y,x,:);
-
-                obj.findPSF_centre(maxZplaneForFit);
-
-            end
-
-
-            %Plot the mid-point of the stack
+            % Create a figure window 
             obj.hFig = figure;
             obj.hFig.CloseRequestFcn = @obj.windowCloseFcn;
             obj.hFig.Position(3) = 800;
             obj.hFig.Position(4) = 800;
 
-            s=size(obj.PSFstack);
-            set(gcf,'Name',sprintf('Image size: %d x %d',s(1:2)))
-            %PSF at mid-point
+            %Add plot axes and empty plot elements
+
+            % The bottom/left plot showing a cross-section through maximum brightness region
             obj.hPSF_XYmidpointImageAx = axes('Position',[0.03,0.07,0.4,0.4]);
-            imagesc(maxZplane)
-
-            text(size(obj.PSFstack,1)*0.025,...
-                size(obj.PSFstack,2)*0.04,...
-                sprintf('PSF center at slice #%d',obj.psfCenterInZ),...
-                'color','w','VerticalAlignment','top') 
-
-
-            %Optionally, show the axes. Right now, I don't think we want this at all so it's not an input argument 
-            showAxesInMainPSFplot=0;
-            if showAxesInMainPSFplot
-                Xtick = linspace(1,size(maxZplane,1),8);
-                Ytick = linspace(1,size(maxZplane,2),8);
-                set(gca,'XTick',Xtick,'XTickLabel',round(Xtick*obj.micsPerPixelXY,2),...
-                        'YTick',Ytick,'YTickLabel',round(Ytick*obj.micsPerPixelXY,2));
-            else
-                set(gca,'XTick',[],'YTick',[])
-            end
-
-
-            %Add lines to the main X/Y plot showing where we are slicing it to take the cross-sections
+            obj.hPSF_XYmidpointImageIM = imagesc(obj.hPSF_XYmidpointImageAx, obj.maxZplane);
+            %Add place-holder lines to the main X/Y plot showing where we are slicing it to take the cross-sections
             hold on
-            plot(xlim,[obj.psfCenterInY,obj.psfCenterInY],'--w')
-            plot([obj.psfCenterInX,obj.psfCenterInX],ylim,'--w')
+            obj.hPS_midPointImageXhairs(1)=plot(xlim,[0,0],'--w');
+            obj.hPS_midPointImageXhairs(2)=plot([0,0],ylim,'--w');
+            obj.hPSF_midPointText = text(0,0,'', 'color','w', 'VerticalAlignment','top');
             hold off
 
 
             %The cross-section sliced along the rows (the fit shown along the right side of the X/Y PSF)
             obj.hxSectionRowsAx = axes('Position',[0.435,0.07,0.1,0.4]);
-            yvals = maxZplane(:,obj.psfCenterInX);
-            x=(1:length(yvals))*obj.micsPerPixelXY;
-            fitX = obj.fit_Intensity(yvals,obj.micsPerPixelXY,1);
-            obj.plotCrossSectionAndFit(x,yvals,fitX,obj.micsPerPixelXY/2,1);
-            X.xVals=x;
-            X.yVals=yvals;
-            set(gca,'XTickLabel',[])
-
 
             %The cross-section sliced down the columns (fit shown above the X/Y PSF)
             obj.hxSectionColsAx=axes('Position',[0.03,0.475,0.4,0.1]);
-            yvals = maxZplane(obj.psfCenterInY,:);
-            x=(1:length(yvals))*obj.micsPerPixelXY;
-            fitY = obj.fit_Intensity(yvals,obj.micsPerPixelXY);
-            obj.plotCrossSectionAndFit(x,yvals,fitY,obj.micsPerPixelXY/2);
-            Y.xVals=x;
-            Y.yVals=yvals;
-            set(gca,'XTickLabel',[])
 
-
-
-            % Step Three
-            %
-            % We now obtain images showing the PSF's extent in Z
-            % We do this by taking maximum intensity projections or slices through the maximum
+            %Axes for axial PSF cross-sections
             obj.hPSF_ZXax = axes('Position',[0.03,0.6,0.4,0.25]);
-
-
-            %PSF in Z/X (panel above)
-            if obj.useMaxIntensityForZpsf
-                PSF_ZX=squeeze(max(obj.PSFstack,[],1));
-            else
-                PSF_ZX=squeeze(obj.PSFstack(obj.psfCenterInY,:,:));
-            end
-
-            imagesc(PSF_ZX)
-
-            Ytick = linspace(1,size(PSF_ZX,1),3);
-            set(gca,'XAxisLocation','Top',...
-                    'XTick',[],...
-                    'YTick',Ytick,'YTickLabel',round(Ytick*obj.micsPerPixelXY,2));
-
             text(1,1,sprintf('PSF in Z/X'), 'Color','w','VerticalAlignment','top');
-
-            %This is the fitted Z/Y PSF with the FWHM
             obj.hPSF_ZX_fitAx = axes('Position',[0.03,0.85,0.4,0.1]);
-            maxPSF_ZX = max(PSF_ZX,[],1);
-            baseline = sort(maxPSF_ZX);
-            baseline = mean(baseline(1:5));
-            maxPSF_ZX = maxPSF_ZX-baseline;
 
-            fitZX = obj.fit_Intensity(maxPSF_ZX, obj.micsPerPixelZ);
-            x = (1:length(maxPSF_ZX))*obj.micsPerPixelZ;
-            [OUT.ZX.FWHM,OUT.ZX.fitPlot_H] = obj.plotCrossSectionAndFit(x,maxPSF_ZX,fitZX,obj.micsPerPixelZ/4);
-            set(gca,'XAxisLocation','Top')
-
-
-
-
-            %PSF in Z/Y (panel on the right on the right)
             obj.hPSF_ZYax=axes('Position',[0.56,0.07,0.25,0.4]);
-            if obj.useMaxIntensityForZpsf
-                PSF_ZY=squeeze(max(obj.PSFstack,[],2));
-            else
-                PSF_ZY=squeeze(obj.PSFstack(:,obj.psfCenterInX,:));
-            end
-
-            PSF_ZY=rot90(PSF_ZY,3);
-            imagesc(PSF_ZY)
-
-            Xtick = linspace(1,size(PSF_ZY,2),3);
-            set(gca,'YAxisLocation','Right',...
-                    'XTick',Xtick,'XTickLabel',round(Xtick*obj.micsPerPixelXY,2),...
-                    'YTick',[])
-
             text(1,1,sprintf('PSF in Z/Y'), 'Color','w','VerticalAlignment','top');
-
-            %This is the fitted Z/X PSF with the FWHM
             obj.hPSF_ZY_fitAx = axes('Position',[0.8,0.07,0.1,0.4]);
-            maxPSF_ZY = max(PSF_ZY,[],2);
-            baseline = sort(maxPSF_ZY);
-            baseline = mean(baseline(1:5));
-            maxPSF_ZY = maxPSF_ZY-baseline;
-
-            fitZY = obj.fit_Intensity(maxPSF_ZY, obj.micsPerPixelZ);
-            x = (1:length(maxPSF_ZY))*obj.micsPerPixelZ;
-            [OUT.ZY.FWHM, OUT.ZY.fitPlot_H] = obj.plotCrossSectionAndFit(x,maxPSF_ZY,fitZY,obj.micsPerPixelZ/4,1);
-            set(gca,'XAxisLocation','Top')
 
 
-
-            % Step Four
-            %
             % Add a plot with a scroll-bar so we can view the PSF as desires
             obj.hUserSelectedPlaneAx = axes('Position',[0.5,0.55,0.4,0.4]);
-            obj.hUserSelectedPlaneIM=imagesc(maxZplane);
-
-            box on
-            set(gca,'XTick',[],'YTick',[])
+            obj.hUserSelectedPlaneIM = imagesc(obj.maxZplane);
+            set(obj.hUserSelectedPlaneAx,'XTick',[],'YTick',[], 'Box', 'On')
 
             obj.hSlider = uicontrol('Style','Slider', ...
                         'Units','normalized',...
@@ -308,10 +193,9 @@ classdef measurePSF < handle
                         'Tag','DepthSlider',...
                         'Callback', @obj.updateUserSelected );
 
-            title(sprintf('Slice #%d', obj.psfCenterInZ))
+            obj.hUserSelectedPlaneTitle=title(sprintf('Slice #%d', obj.psfCenterInZ));
 
 
-            % Step Five
             % Add further UI elements
             obj.drawBox_PushButton = uicontrol('Style', 'PushButton', 'Units', 'Normalized', ...
                 'Position', [0.025, 0.025, 0.10, 0.04], 'String', 'Select bead');
@@ -322,16 +206,47 @@ classdef measurePSF < handle
                 'Callback', @obj.copyFitToBaseWorkSpace);
 
 
-            if isempty(obj.PSFstack)
-                P=load('PSF');
+            obj.findPSF_centreInXY(obj.maxZplaneForFit);
+
+            %TODO -- the following will be supersceded by a rectangle that we draw over the image
+            if isnumeric(frameSize) && ~obj.badFit %Zoom into the bead if the user asked for this
+                x=(-frameSize/2 : frameSize/2)+obj.psfCenterInX;
+                y=(-frameSize/2 : frameSize/2)+obj.psfCenterInY;
+                x=round(x);
+                y=round(y);
+
+                obj.maxZplaneForFit = obj.maxZplaneForFit(y,x);
+                obj.maxZplane = obj.maxZplane(y,x);
+                obj.PSFstack = obj.PSFstack(y,x,:);
+
+                obj.findPSF_centre(obj.maxZplaneForFit);
+
+            end
+
+
+            % Set up listeners that will update the plots when the PSF stack is modified or 
+            % other relevant properties are changed. 
+            obj.listeners{end+1} = addlistener(obj, 'PSFstack', 'PostSet', @obj.plotNewImageStack);
+            obj.listeners{end+1} = addlistener(obj, 'maxZplane', 'PostSet', @obj.fitPSFandUpdateSlicePlots);
+
+
+
+            % If no PSF stack was provided, we loads the default
+            if nargin>1
+                obj.PSFstack = inputPSFstack;
+            else
+                P = load('PSF');
                 obj.PSFstack = P.PSF;
             end
-        end
+
+        end %Close constructor
 
 
         function delete(obj)
+            cellfun(@delete,obj.listeners)
             obj.hFig.delete
-        end
+        end %Close destructor
+
 
         function windowCloseFcn(obj,~,~)
             % This runs when the user closes the figure window
@@ -339,23 +254,22 @@ classdef measurePSF < handle
         end %close windowCloseFcn
 
 
-
         function denoiseImStackAndFindPSFcenterInZ(obj)
             % Estimate the slice that contains center of the PSF in Z by finding the brightest point.
             obj.PSFstack = double(obj.PSFstack);
-            for ii=1:size(obj.PSFstack,3)
+            for ii = 1:size(obj.PSFstack,3)
                 obj.PSFstack(:,:,ii) =  medfilt2(obj.PSFstack(:,:,ii),[obj.medFiltSize,obj.medFiltSize]);
             end
             obj.PSFstack = obj.PSFstack - median(obj.PSFstack(:)); %subtract the baseline because the Gaussian fit doesn't have an offset parameter
 
             %Further clean the image stack since we will use the max command to find the peak location
             DS = imresize(obj.PSFstack,0.25); 
-            for ii=1:size(DS,3)
+            for ii = 1:size(DS,3)
                 DS(:,:,ii) = conv2(DS(:,:,ii),ones(2),'same');
             end
             Z = max(squeeze(max(DS))); 
 
-            z=max(squeeze(max(DS)));
+            z = max(squeeze(max(DS)));
             f = obj.fit_Intensity(z,1,1); 
             obj.psfCenterInZ = round(f.b1);
 
@@ -364,24 +278,175 @@ classdef measurePSF < handle
                     obj.psfCenterInZ,size(obj.PSFstack,3))
                 fprintf('Setting centre to mid-point of stack\n')
                 obj.psfCenterInZ=round(size(obj.PSFstack,3));
-                return
             end
-        end
+
+            obj.maxZplane = obj.PSFstack(:,:,obj.psfCenterInZ);
+            % We will use this plane to find the bead in X and Y by fitting gaussians along these dimensions.
+            % We will use these values to show cross-sections of it along X and Y.
+            % Always apply a moderate median filter to help ensure we get a reasonable fit
+            if obj.medFiltSize==1
+                obj.maxZplaneForFit = medfilt2(obj.maxZplane,[2,2]); %Filter this plane alone if no filtering was requested
+            else
+                obj.maxZplaneForFit = obj.maxZplane;
+            end
+
+        end %Cilose denoiseImStackAndFindPSFcenterInZ
 
 
 
         %-----------------------------------------------------------------------------
         % Callback functions follow
+        function plotNewImageStack(obj,~,~)
+            %This is run when the PSFstack property is changed
+            s=size(obj.PSFstack);
+            obj.hFig.Name = sprintf('Image size: %d x %d',s(1:2));
+
+            %Clean the stack and find the mid-point and produce a filtered image plane at this point
+            obj.denoiseImStackAndFindPSFcenterInZ;
+
+            %Plot the mid-point of the stack
+            obj.hPSF_XYmidpointImageIM.CData = obj.maxZplane;
+
+            %Update overlay text
+            obj.hPSF_midPointText.Position(1) = size(obj.PSFstack,1)*0.025;
+            obj.hPSF_midPointText.Position(2) = size(obj.PSFstack,2)*0.04;
+            obj.hPSF_midPointText.String = sprintf('PSF center at slice #%d',obj.psfCenterInZ);
+
+            % Find the X/Y max location (TODO: in future this coould be of a sub-region defined by a rectangle)
+            obj.findPSF_centreInXY(obj.maxZplaneForFit);
+
+            % Modify the lines to show where we are slicing it to take the cross-sections
+            obj.setCrossSectionLinesInMainPSFImage %TODO -- when this becomes a callback this line can be removed
+
+
+
+            %Optionally, show the axes. Right now, I don't think we want this at all so it's not an input argument 
+            showAxesInMainPSFplot=0;
+            if showAxesInMainPSFplot
+                Xtick = linspace(1,size(obj.maxZplane,1),8);
+                Ytick = linspace(1,size(obj.maxZplane,2),8);
+                set(obj.PSF_XYmidpointImageAx,'XTick',Xtick,'XTickLabel',round(Xtick*obj.micsPerPixelXY,2),...
+                        'YTick',Ytick,'YTickLabel',round(Ytick*obj.micsPerPixelXY,2));
+            else
+                set(obj.hPSF_XYmidpointImageAx,'XTick',[],'YTick',[])
+            end
+
+            % Place image into the top/right plot and update the slider
+            obj.hUserSelectedPlaneIM.CData = obj.maxZplane;
+            set(obj.hSlider, 'Max',size(obj.PSFstack,3),...
+                        'Value',obj.psfCenterInZ)
+            obj.hUserSelectedPlaneTitle.String = sprintf('Slice #%d', obj.psfCenterInZ);
+
+        end % plotNewImageStack
+
+        function setCrossSectionLinesInMainPSFImage(obj,~,~)
+            %Set new cross-hair location on the bottom/left image based upon the 
+            %x/y centroid of the bead (PSF)
+            set(obj.hPS_midPointImageXhairs(1), 'XData', obj.hPSF_XYmidpointImageAx.XLim, ...
+                'YData', [obj.psfCenterInY,obj.psfCenterInY])
+            set(obj.hPS_midPointImageXhairs(2), 'XData', [obj.psfCenterInX,obj.psfCenterInX], ...
+                'YData', obj.hPSF_XYmidpointImageAx.YLim)
+        end %close setCrossSectionLinesInMainPSFImage
+
+        function fitPSFandUpdateSlicePlots(obj,~,~)
+            % This callback is run whenever the raw data are updated or
+            % whenever properties that might affect the fit are updated.
+
+            %The cross-section sliced along the rows (the fit shown along the right side of the X/Y PSF)
+            axes(obj.hxSectionRowsAx);
+            cla %TODO -- This isn't great, but it works (see below)
+            yvals = obj.maxZplane(:,obj.psfCenterInX);
+            x=(1:length(yvals))*obj.micsPerPixelXY;
+            fitX = obj.fit_Intensity(yvals,obj.micsPerPixelXY,1);
+            obj.plotCrossSectionAndFit(x,yvals,fitX,obj.micsPerPixelXY/2,1); %TODO -- Would be best to change plot object props and not CLA each time
+            X.xVals=x;
+            X.yVals=yvals;
+            set(obj.hxSectionRowsAx,'XTickLabel',[])
+
+
+            %The cross-section sliced down the columns (fit shown above the X/Y PSF)
+            axes(obj.hxSectionColsAx);
+            cla
+            yvals = obj.maxZplane(obj.psfCenterInY,:);
+            x=(1:length(yvals))*obj.micsPerPixelXY;
+            fitY = obj.fit_Intensity(yvals,obj.micsPerPixelXY);
+            obj.plotCrossSectionAndFit(x,yvals,fitY,obj.micsPerPixelXY/2);
+            Y.xVals=x;
+            Y.yVals=yvals;
+            set(obj.hxSectionColsAx,'XTickLabel',[])
+
+            % Obtain images showing the PSF's extent in Z
+            % We do this by taking maximum intensity projections or slices through the maximum
+
+            %PSF in Z/X (upper panel)
+            if obj.useMaxIntensityForZpsf
+                PSF_ZX=squeeze(max(obj.PSFstack,[],1));
+            else
+                PSF_ZX=squeeze(obj.PSFstack(obj.psfCenterInY,:,:));
+            end
+
+            imagesc(obj.hPSF_ZXax, PSF_ZX)
+
+            Ytick = linspace(1,size(PSF_ZX,1),3);
+            set(obj.hPSF_ZXax,'XAxisLocation','Top',...
+                    'XTick',[],...
+                    'YTick',Ytick,'YTickLabel',round(Ytick*obj.micsPerPixelXY,2));
+
+            %This is the fitted Z/Y PSF with the FWHM
+            axes(obj.hPSF_ZX_fitAx)
+            cla
+            maxPSF_ZX = max(PSF_ZX,[],1);
+            baseline = sort(maxPSF_ZX);
+            baseline = mean(baseline(1:5));
+            maxPSF_ZX = maxPSF_ZX-baseline;
+
+            fitZX = obj.fit_Intensity(maxPSF_ZX, obj.micsPerPixelZ);
+            x = (1:length(maxPSF_ZX))*obj.micsPerPixelZ;
+            [OUT.ZX.FWHM,OUT.ZX.fitPlot_H] = obj.plotCrossSectionAndFit(x,maxPSF_ZX,fitZX,obj.micsPerPixelZ/4);
+            set(obj.hPSF_ZX_fitAx,'XAxisLocation','Top')
+
+
+
+            % PSF in Z/Y (panel on the right on the right)
+            if obj.useMaxIntensityForZpsf
+                PSF_ZY=squeeze(max(obj.PSFstack,[],2));
+            else
+                PSF_ZY=squeeze(obj.PSFstack(:,obj.psfCenterInX,:));
+            end
+
+            PSF_ZY=rot90(PSF_ZY,3);
+            imagesc(obj.hPSF_ZYax, PSF_ZY)
+
+            Xtick = linspace(1,size(PSF_ZY,2),3);
+            set(obj.hPSF_ZYax,'YAxisLocation','Right',...
+                    'XTick',Xtick,'XTickLabel',round(Xtick*obj.micsPerPixelXY,2),...
+                    'YTick',[])
+
+            %This is the fitted Z/X PSF with the FWHM
+            axes(obj.hPSF_ZY_fitAx);
+            cla
+            maxPSF_ZY = max(PSF_ZY,[],2);
+            baseline = sort(maxPSF_ZY);
+            baseline = mean(baseline(1:5));
+            maxPSF_ZY = maxPSF_ZY-baseline;
+
+            fitZY = obj.fit_Intensity(maxPSF_ZY, obj.micsPerPixelZ);
+            x = (1:length(maxPSF_ZY))*obj.micsPerPixelZ;
+            [OUT.ZY.FWHM, OUT.ZY.fitPlot_H] = obj.plotCrossSectionAndFit(x,maxPSF_ZY,fitZY,obj.micsPerPixelZ/4,1);
+            set(obj.hPSF_ZY_fitAx,'XAxisLocation','Top')
+        end
+
+
         function updateUserSelected(obj,~,~)
             % Runs when the user moves the slider
-
             thisSlice = round(get(obj.hSlider,'Value'));
             obj.hUserSelectedPlaneIM.CData = obj.PSFstack(:,:,thisSlice);
 
             caxis([min(obj.PSFstack(:)), max(obj.PSFstack(:))])
 
-            title(sprintf('Slice #%d %0.2f \\mum', thisSlice, (obj.psfCenterInZ-thisSlice)*obj.micsPerPixelZ ))
+            obj.hUserSelectedPlaneTitle.String = sprintf('Slice #%d', thisSlice);
         end
+
 
         function copyFitToBaseWorkSpace(obj,~,~)
 

@@ -1,4 +1,4 @@
-function findPSF_centre(obj,im)
+function findPSF_centreInXY(obj,im)
     % Used by measurePSF to find the maximum of a 2D image 
     %
     %
