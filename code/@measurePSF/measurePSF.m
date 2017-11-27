@@ -39,8 +39,8 @@ classdef measurePSF < handle
     % Curve-Fitting Toolbox, Image Processing Toolbox
 
 
-    properties
-        hFig % Handle containing the figure
+    properties (SetAccess=protected)
+        PSFstats  %All stats relating to the PSF are stored here. These can be exported to the base workspace using a button
     end
 
 
@@ -72,6 +72,7 @@ classdef measurePSF < handle
     end
 
     properties (Hidden)
+        hFig % Handle containing the figure
         hPSF_XYmidpointImageAx % The PSF at the estimated mid-point (bottom left image)
         hPSF_XYmidpointImageIM % Handle to the image object
         hPS_midPointImageXhairs % The dashed cross-hairs
@@ -363,6 +364,8 @@ classdef measurePSF < handle
             X.yVals=yvals;
             set(obj.hxSectionRowsAx,'XTickLabel',[])
 
+            obj.PSFstats.X.fit = fitX;
+            obj.PSFstats.X.data = X;
 
             %The cross-section sliced down the columns (fit shown above the X/Y PSF)
             axes(obj.hxSectionColsAx);
@@ -374,6 +377,9 @@ classdef measurePSF < handle
             Y.xVals=x;
             Y.yVals=yvals;
             set(obj.hxSectionColsAx,'XTickLabel',[])
+
+            obj.PSFstats.Y.fit = fitY;
+            obj.PSFstats.Y.data = Y;
 
             % Obtain images showing the PSF's extent in Z
             % We do this by taking maximum intensity projections or slices through the maximum
@@ -405,6 +411,8 @@ classdef measurePSF < handle
             [OUT.ZX.FWHM,OUT.ZX.fitPlot_H] = obj.plotCrossSectionAndFit(x,maxPSF_ZX,fitZX,obj.micsPerPixelZ/4);
             set(obj.hPSF_ZX_fitAx,'XAxisLocation','Top')
 
+            obj.PSFstats.ZX.im = maxPSF_ZX;
+            obj.PSFstats.ZX.fit = fitZX;
 
 
             % PSF in Z/Y (panel on the right on the right)
@@ -434,6 +442,9 @@ classdef measurePSF < handle
             x = (1:length(maxPSF_ZY))*obj.micsPerPixelZ;
             [OUT.ZY.FWHM, OUT.ZY.fitPlot_H] = obj.plotCrossSectionAndFit(x,maxPSF_ZY,fitZY,obj.micsPerPixelZ/4,1);
             set(obj.hPSF_ZY_fitAx,'XAxisLocation','Top')
+
+            obj.PSFstats.ZY.im = maxPSF_ZY;
+            obj.PSFstats.ZY.fit = fitZY;
         end
 
 
@@ -449,26 +460,15 @@ classdef measurePSF < handle
 
 
         function copyFitToBaseWorkSpace(obj,~,~)
-
-            %TODO: if fit is not present return
-            if 1
+            % Copy the PSFstats property to the base workspace. 
+            if isempty(obj.PSFstats)
                 return
             end
 
-            %TODO: if fit is present assemble structure and copy to base workspace
-            varName = PSFfit;
+            varName = 'PSFstats';
             fprintf('Copying PSF fit to base work space as variable "%s"\n', varName)
 
-            OUT.Y.fit  = fitY;
-            OUT.Y.data  = Y;
-            OUT.X.fit  = fitX;
-            OUT.X.data  = X;
-            OUT.ZY.fit = fitZY;
-            OUT.ZX.fit = fitZY;
-            OUT.ZX.im = PSF_ZX;
-            OUT.ZY.im = PSF_ZY;
-
-            assignin('base',varName, OUT)
+            assignin('base',varName, obj.PSFstats)
         end
 
 
