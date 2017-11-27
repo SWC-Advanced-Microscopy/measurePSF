@@ -39,11 +39,21 @@ function [FWHM,p] = plotCrossSectionAndFit(obj,x,y,fitObj,fitRes,flipAxes)
     FWHM = (length(yvals)-halfMaxInd)*fitRes*2;
 
 
+    %The FWHM area
+    deltaIndVals  = length(yvals)-halfMaxInd; % Number of index values between the peak and the FWHM point
+    inds = (maxInd-deltaIndVals):(maxInd+deltaIndVals);
+
+    if any(inds>length(fitX))
+        FWHM = [];
+        p=[];        
+        fprintf('Plotting of FWHM curve failed in measurePSF.plotCrossSectionAndFit -- Values out of range.\n')
+        return
+    end
+
+
     %Plot
     hold on
-    %The FWHM area
-    deltaIndVals  = length(yvals)-halfMaxInd ;%number of index values between the peak and the FWHM point
-    inds = (maxInd-deltaIndVals):(maxInd+deltaIndVals);
+
     p(1)=area(fitX(inds),fitY(inds));
 
     set(p,'FaceColor','k','EdgeColor','none')

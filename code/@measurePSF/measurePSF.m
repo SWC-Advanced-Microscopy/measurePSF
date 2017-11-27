@@ -69,8 +69,15 @@ classdef measurePSF < handle
         psfCenterInY
         psfCenterInZ
         badFit
+
+        zoomedArea % Area to zoom into if the user has drawn a rectangle over the bottom/left image. 
+                   % Should be [bottom_pos, left_pos, width, height]
+                   % See "areaSelector" and "resetView" callbacks.
     end
 
+    properties (Hidden, SetAccess=protected)
+        PSFstack_Orig %The original (unzoomed) stack
+    end
 
     properties (Hidden)
         hFig % Handle containing the figure
@@ -93,7 +100,8 @@ classdef measurePSF < handle
         hSlider % Slider handle
 
 
-        drawBox_PushButton 
+        drawBox_PushButton
+        reset_PushButton
         fitToBaseWorkSpace_PushButton
 
         showHelpTextIfTooFewArgsProvided=false
@@ -167,15 +175,19 @@ classdef measurePSF < handle
             % Set up listeners that will update the plots when the PSF stack is modified or 
             % other relevant properties are changed. 
             obj.listeners{end+1} = addlistener(obj, 'PSFstack', 'PostSet', @obj.plotNewImageStack);
-            obj.listeners{end+1} = addlistener(obj, 'maxZplane', 'PostSet', @obj.fitPSFandUpdateSlicePlots);
-
+            obj.listeners{end+1} = addlistener(obj, 'maxZplaneForFit', 'PostSet', @obj.fitPSFandUpdateSlicePlots);
+            %obj.listeners{end+1} = addlistener(obj, 'zoomedArea', 'PostSet', @obj.fitPSFandUpdateSlicePlots); %so zooming works
 
 
             % If no PSF stack was provided, we loads the default
             if nargin>1
+                obj.zoomedArea = [1,1,size(inputPSFstack,1)-1,size(inputPSFstack,2)-1];
+                obj.PSFstack_Orig = inputPSFstack;
                 obj.PSFstack = inputPSFstack;
             else
                 P = load('PSF');
+                obj.zoomedArea = [1,1,size(P.PSF,1)-1,size(P.PSF,2)-1];
+                obj.PSFstack_Orig = P.PSF;
                 obj.PSFstack = P.PSF;
             end
 
@@ -185,13 +197,13 @@ classdef measurePSF < handle
         function delete(obj)
             cellfun(@delete,obj.listeners)
             obj.hFig.delete
-        end %Close destructor
+        end % Close destructor
 
 
         function windowCloseFcn(obj,~,~)
             % This runs when the user closes the figure window
             obj.delete % simply call the destructor
-        end %close windowCloseFcn
+        end % Close windowCloseFcn
 
 
         function denoiseImStackAndFindPSFcenterInZ(obj)
@@ -230,7 +242,7 @@ classdef measurePSF < handle
                 obj.maxZplaneForFit = obj.maxZplane;
             end
 
-        end %Cilose denoiseImStackAndFindPSFcenterInZ
+        end %Close denoiseImStackAndFindPSFcenterInZ
 
 
 
@@ -252,10 +264,6 @@ classdef measurePSF < handle
             obj.hPSF_midPointText.Position(2) = size(obj.PSFstack,2)*0.04;
             obj.hPSF_midPointText.String = sprintf('PSF center at slice #%d',obj.psfCenterInZ);
 
-            % Modify the lines to show where we are slicing it to take the cross-sections
-            obj.setCrossSectionLinesInMainPSFImage %TODO -- when this becomes a callback this line can be removed
-
-
 
             %Optionally, show the axes. Right now, I don't think we want this at all so it's not an input argument 
             showAxesInMainPSFplot=0;
@@ -265,16 +273,22 @@ classdef measurePSF < handle
                 set(obj.PSF_XYmidpointImageAx,'XTick',Xtick,'XTickLabel',round(Xtick*obj.micsPerPixelXY,2),...
                         'YTick',Ytick,'YTickLabel',round(Ytick*obj.micsPerPixelXY,2));
             else
-                set(obj.hPSF_XYmidpointImageAx,'XTick',[],'YTick',[])
+                set(obj.hPSF_XYmidpointImageAx,'XTick',[],'YTick',[], ...
+                    'XLim',[0,size(obj.PSFstack,1)], ...
+                    'YLim',[0,size(obj.PSFstack,2)])
             end
 
             % Place image into the top/right plot and update the slider
             obj.hUserSelectedPlaneIM.CData = obj.maxZplane;
             set(obj.hSlider, 'Max',size(obj.PSFstack,3),...
                         'Value',obj.psfCenterInZ)
-            obj.hUserSelectedPlaneTitle.String = sprintf('Slice #%d', obj.psfCenterInZ);
 
-        end % plotNewImageStack
+
+            % Modify the lines to show where we are slicing it to take the cross-sections
+            obj.setCrossSectionLinesInMainPSFImage 
+
+            obj.hUserSelectedPlaneTitle.String = sprintf('Slice #%d', obj.psfCenterInZ);
+        end % Close plotNewImageStack
 
 
         function setCrossSectionLinesInMainPSFImage(obj,~,~)
@@ -284,7 +298,7 @@ classdef measurePSF < handle
                 'YData', [obj.psfCenterInY,obj.psfCenterInY])
             set(obj.hPS_midPointImageXhairs(2), 'XData', [obj.psfCenterInX,obj.psfCenterInX], ...
                 'YData', obj.hPSF_XYmidpointImageAx.YLim)
-        end %close setCrossSectionLinesInMainPSFImage
+        end % Close setCrossSectionLinesInMainPSFImage
 
 
         function fitPSFandUpdateSlicePlots(obj,~,~)
@@ -386,7 +400,7 @@ classdef measurePSF < handle
 
             obj.PSFstats.ZY.im = maxPSF_ZY;
             obj.PSFstats.ZY.fit = fitZY;
-        end
+        end % Close fitPSFandUpdateSlicePlots
 
 
         function updateUserSelected(obj,~,~)
@@ -397,7 +411,7 @@ classdef measurePSF < handle
             caxis([min(obj.PSFstack(:)), max(obj.PSFstack(:))])
 
             obj.hUserSelectedPlaneTitle.String = sprintf('Slice #%d', thisSlice);
-        end
+        end %Close updateUserSelected
 
 
         function copyFitToBaseWorkSpace(obj,~,~)
@@ -410,7 +424,34 @@ classdef measurePSF < handle
             fprintf('Copying PSF fit to base work space as variable "%s"\n', varName)
 
             assignin('base',varName, obj.PSFstats)
-        end
+        end % Close copyFitToBaseWorkSpace
+
+
+        function areaSelector(obj,~,~)
+            %select a sub-region of the bottom left plots
+            h = imrect(obj.hPSF_XYmidpointImageAx);
+            rect_pos = wait(h);
+            obj.zoomedArea = round([rect_pos(1:2), mean(rect_pos(3:4)), mean(rect_pos(3:4))]);
+            delete(h)
+            za = obj.zoomedArea;
+
+            obj.PSFstack = obj.PSFstack(za(1):za(1)+za(3), za(2):za(2)+za(4), :);
+
+            obj.updateUserSelected
+
+        end % Close areaSelector
+
+        function resetView(obj,~,~)
+            % Unzoom other panels
+            resetSize = [1,1,size(obj.PSFstack_Orig,1)-1,size(obj.PSFstack_Orig,2)-1];
+
+            %Only apply if different to avoid hitting listeners    
+            if ~isequal(obj.zoomedArea,resetSize)
+                obj.zoomedArea=resetSize;
+                obj.PSFstack = obj.PSFstack_Orig;
+                obj.updateUserSelected
+            end
+        end % Close areaSelector
 
 
     end % close methods
