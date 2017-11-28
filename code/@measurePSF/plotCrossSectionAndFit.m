@@ -1,14 +1,24 @@
-function [FWHM,p] = plotCrossSectionAndFit(x,y,fitObj,fitRes,flipAxes)
+function [FWHM,p] = plotCrossSectionAndFit(obj,x,y,fitObj,fitRes,flipAxes)
     % Used by measurePSF to plot the fit cross-sections
     %
     %
+    % INPUTS
     % x - x data
     % y - y data
     % fitObj - the fit object produced by measurePSF.fit_Intensity that is associated with these data
     % fitRes - the resolution in microns of the fitted curve. This is used to obtain the FWHM
     % flipAxes - set to true to flip x/y axes for the plots long the right. 
-    
-    if nargin<5
+    %
+    % OUTPUTS (returns empty fitObj is empty)
+    % FWHM - the full-width-half-max
+    % p - plot handle of the fit
+
+    if isempty(fitObj)
+        FWHM = [];
+        p=[];
+        return
+    end
+    if nargin<6
         flipAxes = 0;
     end
 
@@ -29,11 +39,21 @@ function [FWHM,p] = plotCrossSectionAndFit(x,y,fitObj,fitRes,flipAxes)
     FWHM = (length(yvals)-halfMaxInd)*fitRes*2;
 
 
+    %The FWHM area
+    deltaIndVals  = length(yvals)-halfMaxInd; % Number of index values between the peak and the FWHM point
+    inds = (maxInd-deltaIndVals):(maxInd+deltaIndVals);
+
+    if any(inds>length(fitX))
+        FWHM = [];
+        p=[];
+        fprintf('Plotting of FWHM curve failed in measurePSF.plotCrossSectionAndFit -- Values out of range.\n')
+        return
+    end
+
+
     %Plot
     hold on
-    %The FWHM area
-    deltaIndVals  = length(yvals)-halfMaxInd ;%number of index values between the peak and the FWHM point
-    inds = (maxInd-deltaIndVals):(maxInd+deltaIndVals);
+
     p(1)=area(fitX(inds),fitY(inds));
 
     set(p,'FaceColor','k','EdgeColor','none')
@@ -53,7 +73,7 @@ function [FWHM,p] = plotCrossSectionAndFit(x,y,fitObj,fitRes,flipAxes)
         view(90,90) % flip graph onto its side
     end
 
-    
+
     title(sprintf('FWHM: %0.2f \\mum',FWHM))
 
     axis tight
@@ -65,5 +85,6 @@ function [FWHM,p] = plotCrossSectionAndFit(x,y,fitObj,fitRes,flipAxes)
 
     xtick = unique([xAtMax:-stepSize:fitX(1),xAtMax:stepSize:fitX(end)]);
 
-    set(gca,'YTickLabel',[],'XTick',xtick,'XTickLabel', measurePSF.round(xtick-xAtMax,2))
-
+    set(gca,'YTickLabel',[],'XTick',xtick, ...
+        'XTickLabel', round(xtick-xAtMax,2), ...
+        'XLim', [min(x),max(x)])
