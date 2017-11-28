@@ -320,6 +320,7 @@ classdef measurePSF < handle
 
             Ytick = linspace(1,size(PSF_ZX,1),3);
             set(obj.hPSF_ZXax,'XAxisLocation','Top',...
+                    'CLim', [min(PSF_ZX(:)),max(PSF_ZX(:))], ...
                     'XTick',[],...
                     'YTick',Ytick,'YTickLabel',round(Ytick*obj.micsPerPixelXY,2));
 
@@ -358,8 +359,9 @@ classdef measurePSF < handle
             obj.hPSF_ZYax.NextPlot='Replace';
 
             Xtick = linspace(1,size(PSF_ZY,2),3);
-            set(obj.hPSF_ZYax,'YAxisLocation','Right',...
-                    'XTick',Xtick,'XTickLabel',round(Xtick*obj.micsPerPixelXY,2),...
+            set(obj.hPSF_ZYax,'YAxisLocation','Right', ... 
+                    'CLim', [min(PSF_ZY(:)),max(PSF_ZY(:))], ...
+                    'XTick',Xtick,'XTickLabel',round(Xtick*obj.micsPerPixelXY,2), ...
                     'YTick',[])
 
             %This is the fitted Z/X PSF with the FWHM
@@ -410,6 +412,8 @@ classdef measurePSF < handle
             %Move the dashed lines on the cross-section plots
             obj.hPSF_ZX_currentZplane.XData = [thisSlice,thisSlice];
             obj.hPSF_ZY_currentZplane.YData = [thisSlice,thisSlice];
+
+            obj.hUserSelectedPlaneAx.CLim = obj.hPSF_XYmidpointImageAx.CLim; %Don't change the lookup table
 
         end %Close updateUserSelected
 
