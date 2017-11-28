@@ -1,4 +1,4 @@
-function [fitresult, gof] = fit_Intensity(Y,micsPerPix,numberOfTerms)
+function [fitresult, gof] = fit_Intensity(obj,Y,micsPerPix,numberOfTerms)
     % Fit PSF intensity profile with a Gaussian
     %
     % function [fitresult, gof] = fit_Intensity(Y,micsPerPix,numberOfTerms)
@@ -13,7 +13,7 @@ function [fitresult, gof] = fit_Intensity(Y,micsPerPix,numberOfTerms)
     %            if using this function to determine the index of the peak)
     %  numberOfTerms - number of terms in the Gaussian. Use 1 for a regular 
     %               Gaussian. 2 if kurtosis of the raw data seem high.
-    %
+    %               By default we use the value in obj.zFitOrder
     %
     % Outputs
     %  fitresult - a fit object representing the fit.
@@ -21,8 +21,15 @@ function [fitresult, gof] = fit_Intensity(Y,micsPerPix,numberOfTerms)
     %
     %  See also FIT, CFIT, SFIT.
 
-    if nargin<3
-        numberOfTerms=1;
+    if license('test','curve_fitting_toolbox') == false
+        fprintf('No curve fitting toolbox, not returning a fit\n')
+        fitresult=[];
+        gof=[];
+        return
+    end
+
+    if nargin<4
+        numberOfTerms=obj.zFitOrder;
     end
 
     Y = Y(:);
