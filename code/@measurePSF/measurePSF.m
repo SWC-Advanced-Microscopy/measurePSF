@@ -5,18 +5,16 @@ classdef measurePSF < handle
     %
     % Purpose
     % Fit and display a PSF. Reports FWHM to on-screen figure
-    % Note: currently uses two-component fits for the PSF in Z. This may be a bad choice
-    %       for 2-photon PSFs or PSFs which are sparsely sampled in Z. Will need to look 
-    %       at real data and decide what to do about the Z-fits. So far only tried simulated
-    %       PSFs.
     %
     %
     % DEMO MODE - run with no input arguments
     %
     % INPUTS (required)
     % PSFstack  - a 3-D array (imagestack). First layer should be that nearest the objective
-    % micsPerPixelXY - number of microns per pixel in X and Y
     % micsPerPixelZ  - number of microns per pixel in Z (i.e. distance between adjacent Z planes)
+    % micsPerPixelXY - number of microns per pixel in X and Y
+    % (if the number of microns per pixel is not supplied or is empty, the FWHM estimate for 
+    %  that dimension is not displayed to screen)
     %
     % INPUTS (optional param/val pairs)
     % useZmax - [false by default] if true we use the max intensity projection
@@ -51,9 +49,11 @@ classdef measurePSF < handle
         medFiltSize % size of the median filter used to clean up the image stack
 
 
-        % The following are default values
-        micsPerPixelXY = 0.05 %Number of microns per pixel in X/Y
-        micsPerPixelZ  = 0.5  %Number of microns per pixel in Z
+        % The following are default values. If they aren't changed 
+        % (along with the "reportFWHM" properties being true) then
+        % the associted FWHM value is not reported.
+        micsPerPixelXY=1 % Number of microns per pixel in X/Y
+        micsPerPixelZ=1  % Number of microns per pixel in Z
     end
 
 
@@ -104,29 +104,41 @@ classdef measurePSF < handle
 
         showHelpTextIfTooFewArgsProvided=false
         listeners={}
+
+        % If user does not supply a pixel size then the associated FWHM value will not be reported nto screen 
+        reportFWHMxy=false
+        reportFWHMz=false
     end
 
 
 
 
     methods
-        function obj=measurePSF(inputPSFstack,micsPerPixelXY,micsPerPixelZ,varargin)
+        function obj=measurePSF(inputPSFstack,micsPerPixelZ,micsPerPixelXY,varargin)
 
 
-            if nargin<1
+            if nargin<1 || isempty(inputPSFstack)
                 if obj.showHelpTextIfTooFewArgsProvided
                     help(mfilename)
                 end
+                demoMode=true;
                 % We will display the default PSF and use the default values for XY and Z pixel size
                 % as defined in the properties section
                 % The default PSF is loaded at the end of the constructor
-            elseif nargin<3
-                fprintf('\n\n ----> Function requires three input arguments! <---- \n\n')
-                if obj.showHelpTextIfTooFewArgsProvided
-                    help(mfilename)
-                end
-                return
+            else
+                demoMode=false;
             end
+
+            if nargin>1 && isnumeric(micsPerPixelZ) && isscalar(micsPerPixelZ)
+                obj.micsPerPixelZ = micsPerPixelZ;
+                obj.reportFWHMz=true;
+            end
+
+            if nargin>2 && isnumeric(micsPerPixelXY) && isscalar(micsPerPixelXY)
+                obj.micsPerPixelXY = micsPerPixelXY;
+                obj.reportFWHMxy=true;
+            end
+
 
             params = inputParser;
             params.CaseSensitive = false;
@@ -161,15 +173,15 @@ classdef measurePSF < handle
 
 
             % If no PSF stack was provided, we loads the default
-            if nargin>1
-                obj.zoomedArea = [1,1,size(inputPSFstack,1)-1,size(inputPSFstack,2)-1];
-                obj.PSFstack_Orig = inputPSFstack;
-                obj.PSFstack = inputPSFstack;
-            else
+            if demoMode
                 P = load('PSF');
                 obj.zoomedArea = [1,1,size(P.PSF,1)-1,size(P.PSF,2)-1];
                 obj.PSFstack_Orig = P.PSF;
                 obj.PSFstack = P.PSF;
+            else
+                obj.zoomedArea = [1,1,size(inputPSFstack,1)-1,size(inputPSFstack,2)-1];
+                obj.PSFstack_Orig = inputPSFstack;
+                obj.PSFstack = inputPSFstack;
             end
 
         end %Close constructor
@@ -261,8 +273,7 @@ classdef measurePSF < handle
 
             % Place image into the top/right plot and update the slider
             obj.hUserSelectedPlaneIM.CData = obj.maxZplane;
-            set(obj.hSlider, 'Max',size(obj.PSFstack,3),...
-                        'Value',obj.psfCenterInZ)
+            set(obj.hSlider, 'Max',size(obj.PSFstack,3), 'Value',obj.psfCenterInZ)
 
 
             % Modify the lines to show where we are slicing it to take the cross-sections
@@ -300,6 +311,10 @@ classdef measurePSF < handle
             X.yVals=yvals;
             set(obj.hxSectionRowsAx,'XTickLabel',[])
 
+            %Supress title with FWHM estimate if no mics per pixel was provided
+            if ~obj.reportFWHMxy
+                title('')
+            end
             obj.PSFstats.X.fit = fitX;
             obj.PSFstats.X.data = X;
 
@@ -314,6 +329,10 @@ classdef measurePSF < handle
             Y.yVals=yvals;
             set(obj.hxSectionColsAx,'XTickLabel',[])
 
+            %Supress title with FWHM estimate if no mics per pixel was provided
+            if ~obj.reportFWHMxy
+                title('')
+            end
             obj.PSFstats.Y.fit = fitY;
             obj.PSFstats.Y.data = Y;
 
@@ -347,6 +366,10 @@ classdef measurePSF < handle
             [OUT.ZX.FWHM,OUT.ZX.fitPlot_H] = obj.plotCrossSectionAndFit(x,maxPSF_ZX,fitZX,obj.micsPerPixelZ/4);
             set(obj.hPSF_ZX_fitAx,'XAxisLocation','Top')
 
+            %Supress title with FWHM estimate if no mics per pixel was provided
+            if ~obj.reportFWHMz
+                title('')
+            end
             obj.PSFstats.ZX.im = maxPSF_ZX;
             obj.PSFstats.ZX.fit = fitZX;
 
@@ -379,6 +402,10 @@ classdef measurePSF < handle
             [OUT.ZY.FWHM, OUT.ZY.fitPlot_H] = obj.plotCrossSectionAndFit(x,maxPSF_ZY,fitZY,obj.micsPerPixelZ/4,1);
             set(obj.hPSF_ZY_fitAx,'XAxisLocation','Top')
 
+            %Supress title with FWHM estimate if no mics per pixel was provided
+            if ~obj.reportFWHMz
+                title('')
+            end
             obj.PSFstats.ZY.im = maxPSF_ZY;
             obj.PSFstats.ZY.fit = fitZY;
         end % Close fitPSFandUpdateSlicePlots
