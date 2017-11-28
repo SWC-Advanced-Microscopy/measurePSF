@@ -3,8 +3,13 @@ classdef measurePSF < handle
     %
     % measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ,obj.useMaxIntensityForZpsf)
     %
-    % Purpose
-    % Fit and display a PSF. Reports FWHM to on-screen figure
+    % USAGE
+    % Fit and display a PSF. Reports FWHM to on-screen figure with simple GUI elements
+    % for interacting with it. The brightest bead is automatically found and used to estimate
+    % the PSF, however the function does not zoom in to the bead. To do this, click on 
+    % "Select bead", draw a box around the desired bead in the bottom/left plot, then 
+    % double-click to select. The other plots will update. Zoom back out again by clicking
+    % "Reset view".
     %
     %
     % DEMO MODE - run with no input arguments
@@ -19,13 +24,36 @@ classdef measurePSF < handle
     % INPUTS (optional param/val pairs)
     % useZmax - [false by default] if true we use the max intensity projection
     %                   for the Z PSFs. This is likely necessary if the PSF is very tilted.
-    % zFitOrder - [1 by default]. Number of gaussians to use for the fit of the Z PSF
+    % zFitOrder - [1 by default]. Number of Gaussians to use for the fit of the Z PSF
     % medFiltSize - [1 by default -- no filtering]. If more than one performs a median filtering 
     %               operation on each slice with a filter of this size.
     %
     %
     % OUTPUTS
-    % Returns fit objects and various handles (not finalised yet)
+    % Press the "PSF data to workspace" button to return a structure containing useful 
+    % data to the base workspace. The "PSFstats" structure contains:
+    %
+    %
+    %          fitStats: [1x1 struct]
+    %          PSFstack: [256x256x50 double] % This is the image stack used for the plots in the GUI
+    %    micsPerPixelXY: 0.0100              % Microns per pixel supplied by user
+    %     micsPerPixelZ: 0.0500              % Microns per pixel supplied by user
+    %    figureSnapshot: [800x800x3 uint8]   % Snapshot of figure window which you may view with "imshow"
+    %
+    % PSFstats.fitStats contains:
+    %
+    %                 X: [1x1 struct]
+    %                 Y: [1x1 struct]
+    %                ZX: [1x1 struct]
+    %                ZY: [1x1 struct]
+    %            FWHMxy: 0.1100
+    %             FWHMz: 0.4500
+    %
+    % Where the first four fields have detailed fit statistics for each of axes where
+    % a FWHM was esitimated. e.g. PSFstats.fitStats.X contains:
+    %
+    %     fit: [1x1 cfit]
+    %    data: [1x1 struct]
     %
     %
     % Rob Campbell - Basel 2016
@@ -51,7 +79,7 @@ classdef measurePSF < handle
 
         % The following are default values. If they aren't changed 
         % (along with the "reportFWHM" properties being true) then
-        % the associted FWHM value is not reported.
+        % the associated FWHM value is not reported.
         micsPerPixelXY=1 % Number of microns per pixel in X/Y
         micsPerPixelZ=1  % Number of microns per pixel in Z
     end
@@ -74,7 +102,7 @@ classdef measurePSF < handle
     end
 
     properties (Hidden, SetAccess=protected)
-        PSFstack_Orig %The original (unzoomed) stack
+        PSFstack_Orig %The original (un-zoomed) stack
     end
 
     properties (Hidden)
@@ -105,7 +133,7 @@ classdef measurePSF < handle
         showHelpTextIfTooFewArgsProvided=false
         listeners={}
 
-        % If user does not supply a pixel size then the associated FWHM value will not be reported nto screen 
+        % If user does not supply a pixel size then the associated FWHM value will not be reported to screen 
         reportFWHMxy=false
         reportFWHMz=false
     end
@@ -169,7 +197,6 @@ classdef measurePSF < handle
             % other relevant properties are changed. 
             obj.listeners{end+1} = addlistener(obj, 'PSFstack', 'PostSet', @obj.plotNewImageStack);
             obj.listeners{end+1} = addlistener(obj, 'maxZplaneForFit', 'PostSet', @obj.fitPSFandUpdateSlicePlots);
-            %obj.listeners{end+1} = addlistener(obj, 'zoomedArea', 'PostSet', @obj.fitPSFandUpdateSlicePlots); %so zooming works
 
 
             % If no PSF stack was provided, we loads the default
@@ -198,44 +225,6 @@ classdef measurePSF < handle
             obj.delete % simply call the destructor
         end % Close windowCloseFcn
 
-
-        function denoiseImStackAndFindPSFcenterInZ(obj)
-            % Estimate the slice that contains center of the PSF in Z by finding the brightest point.
-            obj.PSFstack = double(obj.PSFstack);
-            for ii = 1:size(obj.PSFstack,3)
-                obj.PSFstack(:,:,ii) =  medfilt2(obj.PSFstack(:,:,ii),[obj.medFiltSize,obj.medFiltSize]);
-            end
-            obj.PSFstack = obj.PSFstack - median(obj.PSFstack(:)); %subtract the baseline because the Gaussian fit doesn't have an offset parameter
-
-            %Further clean the image stack since we will use the max command to find the peak location
-            DS = imresize(obj.PSFstack,0.25); 
-            for ii = 1:size(DS,3)
-                DS(:,:,ii) = conv2(DS(:,:,ii),ones(2),'same');
-            end
-            Z = max(squeeze(max(DS))); 
-
-            z = max(squeeze(max(DS)));
-            f = obj.fit_Intensity(z,1,1); 
-            obj.psfCenterInZ = round(f.b1);
-
-            if obj.psfCenterInZ > size(obj.PSFstack,3) || obj.psfCenterInZ<1
-                fprintf('PSF center in Z estimated as slice %d. That is out of range. PSF stack has %d slices\n',...
-                    obj.psfCenterInZ,size(obj.PSFstack,3))
-                fprintf('Setting centre to mid-point of stack\n')
-                obj.psfCenterInZ=round(size(obj.PSFstack,3));
-            end
-
-            obj.maxZplane = obj.PSFstack(:,:,obj.psfCenterInZ);
-            % We will use this plane to find the bead in X and Y by fitting gaussians along these dimensions.
-            % We will use these values to show cross-sections of it along X and Y.
-            % Always apply a moderate median filter to help ensure we get a reasonable fit
-            if obj.medFiltSize==1
-                obj.maxZplaneForFit = medfilt2(obj.maxZplane,[2,2]); %Filter this plane alone if no filtering was requested
-            else
-                obj.maxZplaneForFit = obj.maxZplane;
-            end
-
-        end %Close denoiseImStackAndFindPSFcenterInZ
 
 
 
@@ -297,44 +286,12 @@ classdef measurePSF < handle
             % This callback is run whenever the raw data are updated or
             % whenever properties that might affect the fit are updated.
 
-             % Find the X/Y max location (TODO: in future this coould be of a sub-region defined by a rectangle)
+             % Find the X/Y max location and update the properties psfCenterInX and psfCenterInY
             obj.findPSF_centreInXY(obj.maxZplaneForFit);
 
-            %The cross-section sliced along the rows (the fit shown along the right side of the X/Y PSF)
-            axes(obj.hxSectionRowsAx);
-            cla %TODO -- This isn't great, but it works (see below)
-            yvals = obj.maxZplane(:,obj.psfCenterInX);
-            x=(1:length(yvals))*obj.micsPerPixelXY;
-            fitX = obj.fit_Intensity(yvals,obj.micsPerPixelXY,1);
-            obj.plotCrossSectionAndFit(x,yvals,fitX,obj.micsPerPixelXY/2,1); %TODO -- Would be best to change plot object props and not CLA each time
-            X.xVals=x;
-            X.yVals=yvals;
-            set(obj.hxSectionRowsAx,'XTickLabel',[])
 
-            %Supress title with FWHM estimate if no mics per pixel was provided
-            if ~obj.reportFWHMxy
-                title('')
-            end
-            obj.PSFstats.X.fit = fitX;
-            obj.PSFstats.X.data = X;
+            OUT=obj.updateXYfits;
 
-            %The cross-section sliced down the columns (fit shown above the X/Y PSF)
-            axes(obj.hxSectionColsAx);
-            cla
-            yvals = obj.maxZplane(obj.psfCenterInY,:);
-            x=(1:length(yvals))*obj.micsPerPixelXY;
-            fitY = obj.fit_Intensity(yvals,obj.micsPerPixelXY);
-            obj.plotCrossSectionAndFit(x,yvals,fitY,obj.micsPerPixelXY/2);
-            Y.xVals=x;
-            Y.yVals=yvals;
-            set(obj.hxSectionColsAx,'XTickLabel',[])
-
-            %Supress title with FWHM estimate if no mics per pixel was provided
-            if ~obj.reportFWHMxy
-                title('')
-            end
-            obj.PSFstats.Y.fit = fitY;
-            obj.PSFstats.Y.data = Y;
 
             % Obtain images showing the PSF's extent in Z
             % We do this by taking maximum intensity projections or slices through the maximum
@@ -366,7 +323,7 @@ classdef measurePSF < handle
             [OUT.ZX.FWHM,OUT.ZX.fitPlot_H] = obj.plotCrossSectionAndFit(x,maxPSF_ZX,fitZX,obj.micsPerPixelZ/4);
             set(obj.hPSF_ZX_fitAx,'XAxisLocation','Top')
 
-            %Supress title with FWHM estimate if no mics per pixel was provided
+            %Suppress title with FWHM estimate if no mics per pixel was provided
             if ~obj.reportFWHMz
                 title('')
             end
@@ -402,12 +359,26 @@ classdef measurePSF < handle
             [OUT.ZY.FWHM, OUT.ZY.fitPlot_H] = obj.plotCrossSectionAndFit(x,maxPSF_ZY,fitZY,obj.micsPerPixelZ/4,1);
             set(obj.hPSF_ZY_fitAx,'XAxisLocation','Top')
 
-            %Supress title with FWHM estimate if no mics per pixel was provided
+            %Suppress title with FWHM estimate if no mics per pixel was provided
             if ~obj.reportFWHMz
                 title('')
             end
             obj.PSFstats.ZY.im = maxPSF_ZY;
             obj.PSFstats.ZY.fit = fitZY;
+
+            %Add PSF FWHM to stats if appropriate
+            if obj.reportFWHMxy
+                obj.PSFstats.FWHMxy = mean([OUT.XYcols.FWHM,OUT.XYrows.FWHM]);
+            else
+                obj.PSFstats.FWHMxy = nan;
+            end
+
+            if obj.reportFWHMxy
+                obj.PSFstats.FWHMz = mean([OUT.ZY.FWHM,OUT.ZX.FWHM]);
+            else
+                obj.PSFstats.FWHMz = nan;
+            end
+
         end % Close fitPSFandUpdateSlicePlots
 
 
@@ -431,7 +402,26 @@ classdef measurePSF < handle
             varName = 'PSFstats';
             fprintf('Copying PSF fit to base work space as variable "%s"\n', varName)
 
-            assignin('base',varName, obj.PSFstats)
+            OUT.fitStats = obj.PSFstats;
+            OUT.PSFstack = obj.PSFstack;
+
+            if obj.reportFWHMxy
+                OUT.micsPerPixelXY = obj.micsPerPixelXY;
+            else
+                OUT.micsPerPixelXY = nan;
+            end
+
+            if obj.reportFWHMz
+                OUT.micsPerPixelZ = obj.micsPerPixelZ;
+            else
+                OUT.micsPerPixelZ = nan;
+            end
+
+            %Take snapshot of figure window
+            snap = getframe(obj.hFig);
+            OUT.figureSnapshot = snap.cdata;
+
+            assignin('base',varName, OUT)
         end % Close copyFitToBaseWorkSpace
 
 
@@ -450,7 +440,7 @@ classdef measurePSF < handle
         end % Close areaSelector
 
         function resetView(obj,~,~)
-            % Unzoom other panels
+            % Un-zoom other panels
             resetSize = [1,1,size(obj.PSFstack_Orig,1)-1,size(obj.PSFstack_Orig,2)-1];
 
             %Only apply if different to avoid hitting listeners    

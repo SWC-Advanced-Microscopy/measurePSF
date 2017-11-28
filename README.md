@@ -15,4 +15,5 @@ Reqyures the Curve-Fitting Toolbox and the Image Processing Toolbox.
 
 
 # Change-Log
+* 28th Nov 2017 -- Improve output data and don't display FWHM for directions in which the user defined no microns per pixel.
 * 27th Nov 2017 -- Convert `measurePSF` to a class so adding new features is easier.

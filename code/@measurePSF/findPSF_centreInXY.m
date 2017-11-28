@@ -29,3 +29,4 @@ function findPSF_centreInXY(obj,im)
         obj.psfCenterInY=1;
         obj.badFit=true;
     end
+end
