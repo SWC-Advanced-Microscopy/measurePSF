@@ -46,8 +46,8 @@ classdef measurePSF < handle
     %                 Y: [1x1 struct]
     %                ZX: [1x1 struct]
     %                ZY: [1x1 struct]
-    %            FWHMxy: 0.1100
-    %             FWHMz: 0.4500
+    %            FWHMxy: 0.3100 % This of the average of the two fits along the rows and columns
+    %             FWHMz: 3.4500 % This is the average of the ZX and ZY fits
     %
     % Where the first four fields have detailed fit statistics for each of axes where
     % a FWHM was esitimated. e.g. PSFstats.fitStats.X contains:
@@ -391,7 +391,7 @@ classdef measurePSF < handle
                 obj.PSFstats.FWHMxy = nan;
             end
 
-            if obj.reportFWHMxy
+            if obj.reportFWHMz
                 obj.PSFstats.FWHMz = mean([OUT.ZY.FWHM,OUT.ZX.FWHM]);
             else
                 obj.PSFstats.FWHMz = nan;
