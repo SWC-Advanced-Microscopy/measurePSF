@@ -114,14 +114,19 @@ classdef measurePSF < handle
 
         hxSectionRowsAx
         hxSectionColsAx
+
         hPSF_ZXax
+        hPSF_ZX_currentZplane % Plot handle for current z-plane line
         hPSF_ZX_fitAx
+
         hPSF_ZYax
+        hPSF_ZY_currentZplane % Plot handle for current z-plane line
         hPSF_ZY_fitAx
 
         hUserSelectedPlaneAx % Handle to the axis showing the user-selected plane within the PSF
         hUserSelectedPlaneIM
         hUserSelectedPlaneTitle
+
 
         hSlider % Slider handle
 
@@ -202,17 +207,20 @@ classdef measurePSF < handle
             % If no PSF stack was provided, we loads the default
             if demoMode
                 P = load('PSF');
-                obj.zoomedArea = [1,1,size(P.PSF,1)-1,size(P.PSF,2)-1];
-                obj.PSFstack_Orig = P.PSF;
-                obj.PSFstack = P.PSF;
+                obj.addNewStack(P.PSF)
             else
-                obj.zoomedArea = [1,1,size(inputPSFstack,1)-1,size(inputPSFstack,2)-1];
-                obj.PSFstack_Orig = inputPSFstack;
-                obj.PSFstack = inputPSFstack;
+                obj.addNewStack(inputPSFstack)
             end
 
         end %Close constructor
 
+        function addNewStack(obj,newStack)
+            % Replace the current image stack with a new one (or add a stack on startup)
+            obj.zoomedArea = [1,1,size(newStack,1)-1,size(newStack,2)-1];
+            obj.PSFstack_Orig = newStack;
+            obj.PSFstack = newStack;
+            obj.updateUserSelected %Ensure the white lines showing the current user z-plane are correct
+        end
 
         function delete(obj)
             cellfun(@delete,obj.listeners)
@@ -286,12 +294,13 @@ classdef measurePSF < handle
             % This callback is run whenever the raw data are updated or
             % whenever properties that might affect the fit are updated.
 
+
+            userZdepth = round(get(obj.hSlider,'Value')); %So we can plot the currently shown z-plane
+
              % Find the X/Y max location and update the properties psfCenterInX and psfCenterInY
             obj.findPSF_centreInXY(obj.maxZplaneForFit);
 
-
             OUT=obj.updateXYfits;
-
 
             % Obtain images showing the PSF's extent in Z
             % We do this by taking maximum intensity projections or slices through the maximum
@@ -304,6 +313,10 @@ classdef measurePSF < handle
             end
 
             imagesc(obj.hPSF_ZXax, PSF_ZX)
+
+            obj.hPSF_ZXax.NextPlot='Add';
+            obj.hPSF_ZX_currentZplane = plot(obj.hPSF_ZXax,[userZdepth, userZdepth], obj.hPSF_ZXax.YLim, ':w');
+            obj.hPSF_ZXax.NextPlot='Replace';
 
             Ytick = linspace(1,size(PSF_ZX,1),3);
             set(obj.hPSF_ZXax,'XAxisLocation','Top',...
@@ -330,7 +343,6 @@ classdef measurePSF < handle
             obj.PSFstats.ZX.im = maxPSF_ZX;
             obj.PSFstats.ZX.fit = fitZX;
 
-
             % PSF in Z/Y (panel on the right on the right)
             if obj.useMaxIntensityForZpsf
                 PSF_ZY=squeeze(max(obj.PSFstack,[],2));
@@ -340,6 +352,10 @@ classdef measurePSF < handle
 
             PSF_ZY=rot90(PSF_ZY,3);
             imagesc(obj.hPSF_ZYax, PSF_ZY)
+
+            obj.hPSF_ZYax.NextPlot='Add';
+            obj.hPSF_ZY_currentZplane = plot(obj.hPSF_ZYax, obj.hPSF_ZYax.XLim, [userZdepth, userZdepth], ':w');
+            obj.hPSF_ZYax.NextPlot='Replace';
 
             Xtick = linspace(1,size(PSF_ZY,2),3);
             set(obj.hPSF_ZYax,'YAxisLocation','Right',...
@@ -390,6 +406,11 @@ classdef measurePSF < handle
             caxis([min(obj.PSFstack(:)), max(obj.PSFstack(:))])
 
             obj.hUserSelectedPlaneTitle.String = sprintf('Slice #%d', thisSlice);
+
+            %Move the dashed lines on the cross-section plots
+            obj.hPSF_ZX_currentZplane.XData = [thisSlice,thisSlice];
+            obj.hPSF_ZY_currentZplane.YData = [thisSlice,thisSlice];
+
         end %Close updateUserSelected
 
 
