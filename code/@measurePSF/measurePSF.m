@@ -1,7 +1,7 @@
 classdef measurePSF < handle
     % Display PSF and measure its size in X, Y, and Z
     %
-    % measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ,obj.useMaxIntensityForZpsf)
+    % measurePSF(PSFstack,micsPerPixelZ,micsPerPixelXY,obj.useMaxIntensityForZpsf)
     %
     % USAGE
     % Fit and display a PSF. Reports FWHM to on-screen figure with simple GUI elements
