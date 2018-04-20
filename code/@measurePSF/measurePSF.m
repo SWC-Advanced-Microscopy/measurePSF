@@ -215,6 +215,9 @@ classdef measurePSF < handle
         end %Close constructor
 
         function addNewStack(obj,newStack)
+
+            newStack = double(newStack);
+            newStack = newStack - min(newStack(:));  %needed in case the amps are offset from zero
             % Replace the current image stack with a new one (or add a stack on startup)
             obj.zoomedArea = [1,1,size(newStack,1)-1,size(newStack,2)-1];
             obj.PSFstack_Orig = newStack;
@@ -242,7 +245,8 @@ classdef measurePSF < handle
             %This is run when the PSFstack property is changed
             s=size(obj.PSFstack);
             obj.hFig.Name = sprintf('Image size: %d x %d',s(1:2));
-
+            obj.hFig.Position(1) = 15;
+            obj.hFig.Position(2) = 50;
             %Clean the stack and find the mid-point and produce a filtered image plane at this point
             obj.denoiseImStackAndFindPSFcenterInZ;
 
@@ -453,12 +457,12 @@ classdef measurePSF < handle
         function areaSelector(obj,~,~)
             %select a sub-region of the bottom left plots
             h = imrect(obj.hPSF_XYmidpointImageAx);
-            rect_pos = wait(h);
+            rect_pos = wait(h)
             obj.zoomedArea = round([rect_pos(1:2), mean(rect_pos(3:4)), mean(rect_pos(3:4))]);
             delete(h)
-            za = obj.zoomedArea;
+            za = obj.zoomedArea
 
-            obj.PSFstack = obj.PSFstack(za(1):za(1)+za(3), za(2):za(2)+za(4), :);
+            obj.PSFstack = obj.PSFstack(za(2):za(2)+za(3), za(1):za(1)+za(4), :);
 
             obj.updateUserSelected
 
