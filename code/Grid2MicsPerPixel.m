@@ -81,6 +81,10 @@ function varargout=Grid2MicsPerPixel(inputIM,varargin)
     %PREPARE THE IMAGE
     %Crop the image
     inputIM = double(inputIM);
+    %Subtract offset
+    tmp = imresize(inputIM,0.2);
+    inputIM = inputIM - min(tmp(:));
+    
     origImageSize = size(inputIM);
     cropPix=floor(size(inputIM)*cropProp);
     if cropProp>0

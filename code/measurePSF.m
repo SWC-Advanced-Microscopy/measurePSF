@@ -71,9 +71,14 @@ frameSize = params.Results.frameSize;
 %
 % Estimate the slice that contains center of the PSF in Z by finding the brightest point.
 PSFstack = double(PSFstack);
+PSFstack = PSFstack-min(PSFstack(:)); %needed in case the amps are offset from zero
+
 for ii=1:size(PSFstack,3)
 	PSFstack(:,:,ii) = 	medfilt2(PSFstack(:,:,ii),[medFiltSize,medFiltSize]);
 end
+
+
+%Trim off the offset
 PSFstack = PSFstack - median(PSFstack(:)); %subtract the baseline because the Gaussian fit doesn't have an offset parameter
 
 %Clean up the PSF because we're using max
@@ -92,12 +97,6 @@ if psfCenterInZ > size(PSFstack,3) || psfCenterInZ<1
         psfCenterInZ,size(PSFstack,3))
     return
 end
-
-midZ=round(size(PSFstack,3)/2); %The calculated mid-point of the PSF stack
-
-
-
-
 
 
 % Step Two
