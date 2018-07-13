@@ -5,6 +5,24 @@ To run, add measurePSF to your path or `cd` to the directory containing the file
 
 The repository also contains `Grid2MicsPerPixel`, which can be used to measure the number of microns per pixel along x and y by analyzing an image of an EM grid. 
 
+
+### Measuring FOV size with an EM grid
+You can use a copper EM grid of known pitch to measure the FOV your microscope. 
+We use part number 2145C from [2spi.com](http://www.2spi.com/category/grids)
+These grids have a pitch of 25 microns with 19 micron holes. 
+To set up the grid on a slide:
+
+* Use a dissection scope and forceps to position the grid on a glass slide such that the grid lines are square with the edges of the slide. 
+This will make positioning the grid under the microscope a lot easier. 
+* Place a coverslip over the grid and seal with nail varnish. 
+
+To image the slide:
+* Copper will autofluoresce when illuminated by a 2-photon laser. 
+* Use any 2p wavelength and very low power e.g. 3 mW. 
+* The grid should be oriented so that it's aligned relatively closely with the scan axes (i.e. the edges of the image). 
+This will make it easier to see distortions by eye and also to run `Grid2MicsPerPixel`.
+* Make sure the grid is in focus. Average images if needed. Feed the image into `Grid2MicsPerPixel` to measure the FOV.
+
 ### Requirements
 The function has been well well-tested under R2016b and later. 
 It should also work on R2016a. It's known to fail on 2015b and earlier.
