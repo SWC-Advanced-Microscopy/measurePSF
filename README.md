@@ -5,6 +5,22 @@ To run, add measurePSF to your path or `cd` to the directory containing the file
 
 The repository also contains `Grid2MicsPerPixel`, which can be used to measure the number of microns per pixel along x and y by analyzing an image of an EM grid. 
 
+### Obtaining a PSF in ScanImage with averaging and fastZ
+You will achieve this by doing a slow z-stack with the fast-z device.
+
+* Using the slow-z device and reading its position, determine the depth at which you wish to start imaging and note how far below it you wish to go. 
+* Place objective at the top of the stack you wish to acquire with the slow-z motor.
+* Un-check the `Enable` box for the fast-z under `FAST Z CONTROLS`.
+* In the same window set `# Slices` and `Step/Slice` (microns per step) to cover the range of depths you need. 
+  Sampling every 0.25 microns is nice for a 2-photon z-stack. 
+* In the same window set the `Scan Type` to `Step`.
+* Check `Sec Z` in `MOTOR CONTROLS`.
+* Set the `Frame Rolling Average Factor` in `IMAGE CONTROLS` to the number of frames you wish to average. 
+  40 frames is probably good enough.
+* Check `Save` in `MAIN CONTROLS` and set `# Avg` to the same number of frames (e.g. 40).
+* Set the right-hand box in the `Frames Done` line in `MAIN CONTROLS` to the number of images you are averaging.
+* Press `GRAB` in `MAIN CONTROLS` to acquire a stack
+* If the shutter opening and closing is annoying then set `hSI.hStackManager.shutterCloseMinZStepSize` to a value larger than you step size. 
 
 ### Measuring FOV size with an EM grid
 You can use a copper EM grid of known pitch to measure the FOV your microscope. 
