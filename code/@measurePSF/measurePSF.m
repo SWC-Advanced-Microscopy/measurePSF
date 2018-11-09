@@ -1,7 +1,7 @@
 classdef measurePSF < handle
     % Display PSF and measure its size in X, Y, and Z
     %
-    % measurePSF(PSFstack,micsPerPixelXY,micsPerPixelZ,obj.useMaxIntensityForZpsf)
+    % measurePSF(PSFstack,micsPerPixelZ,micsPerPixelXY,obj.useMaxIntensityForZpsf)
     %
     % USAGE
     % Fit and display a PSF. Reports FWHM to on-screen figure with simple GUI elements
@@ -46,8 +46,8 @@ classdef measurePSF < handle
     %                 Y: [1x1 struct]
     %                ZX: [1x1 struct]
     %                ZY: [1x1 struct]
-    %            FWHMxy: 0.1100
-    %             FWHMz: 0.4500
+    %            FWHMxy: 0.3100 % This of the average of the two fits along the rows and columns
+    %             FWHMz: 3.4500 % This is the average of the ZX and ZY fits
     %
     % Where the first four fields have detailed fit statistics for each of axes where
     % a FWHM was esitimated. e.g. PSFstats.fitStats.X contains:
@@ -215,6 +215,9 @@ classdef measurePSF < handle
         end %Close constructor
 
         function addNewStack(obj,newStack)
+
+            newStack = double(newStack);
+            newStack = newStack - min(newStack(:));  %needed in case the amps are offset from zero
             % Replace the current image stack with a new one (or add a stack on startup)
             obj.zoomedArea = [1,1,size(newStack,1)-1,size(newStack,2)-1];
             obj.PSFstack_Orig = newStack;
@@ -242,7 +245,8 @@ classdef measurePSF < handle
             %This is run when the PSFstack property is changed
             s=size(obj.PSFstack);
             obj.hFig.Name = sprintf('Image size: %d x %d',s(1:2));
-
+            obj.hFig.Position(1) = 15;
+            obj.hFig.Position(2) = 50;
             %Clean the stack and find the mid-point and produce a filtered image plane at this point
             obj.denoiseImStackAndFindPSFcenterInZ;
 
@@ -391,7 +395,7 @@ classdef measurePSF < handle
                 obj.PSFstats.FWHMxy = nan;
             end
 
-            if obj.reportFWHMxy
+            if obj.reportFWHMz
                 obj.PSFstats.FWHMz = mean([OUT.ZY.FWHM,OUT.ZX.FWHM]);
             else
                 obj.PSFstats.FWHMz = nan;
@@ -453,12 +457,12 @@ classdef measurePSF < handle
         function areaSelector(obj,~,~)
             %select a sub-region of the bottom left plots
             h = imrect(obj.hPSF_XYmidpointImageAx);
-            rect_pos = wait(h);
+            rect_pos = wait(h)
             obj.zoomedArea = round([rect_pos(1:2), mean(rect_pos(3:4)), mean(rect_pos(3:4))]);
             delete(h)
-            za = obj.zoomedArea;
+            za = obj.zoomedArea
 
-            obj.PSFstack = obj.PSFstack(za(1):za(1)+za(3), za(2):za(2)+za(4), :);
+            obj.PSFstack = obj.PSFstack(za(2):za(2)+za(3), za(1):za(1)+za(4), :);
 
             obj.updateUserSelected
 
