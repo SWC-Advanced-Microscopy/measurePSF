@@ -1,4 +1,4 @@
-function recordPSF(micronsToImage, stepSizeInMicrons)
+function varargout=recordPSF(micronsToImage, stepSizeInMicrons)
 
 % function recordPSF(micronsToImage, stepSizeInMicrons)
 %
@@ -9,6 +9,21 @@ function recordPSF(micronsToImage, stepSizeInMicrons)
 % the number of frames entered in the ScanImage IMAGE CONTROLS window.
 % Data will be saved to a TIFF on the desktop in a directory called
 % "PSF". This will be made if needed. 
+%
+% Inputs
+% micronsToImage - total depth to image in microns
+% stepSizeInMicrons - number of microns between each z step
+%
+% Outputs
+% Optionally returns path to the TIFF.
+%
+%
+% Examples
+% 1) Record a 12 micron stack every 0.25 microns
+% >> recordPSF(12) 
+%
+% 2) Record a 20 micron stack every 0.5 microns and return path to tiff 
+% >> F=recordPSF(20,0.5);
 %
 %
 % Rob Campbell - SWC Nov 2018
@@ -71,8 +86,8 @@ function recordPSF(micronsToImage, stepSizeInMicrons)
     stackManSlowFastZ = API.hStackManager.slowStackWithFastZ;
 
     loggingEnabled = API.hChannels.loggingEnable; 
-    logAveFact = API.hScan2D.logAverageFactor; %Set to framestoAverage
-    framesPerSlice = API.hStackManager.framesPerSlice; %This will be framestoAverage
+    logAveFact = API.hScan2D.logAverageFactor;
+    framesPerSlice = API.hStackManager.framesPerSlice;
 
     logFileStem = API.hScan2D.logFileStem;
     logFilePath = API.hScan2D.logFilePath;
@@ -100,9 +115,10 @@ function recordPSF(micronsToImage, stepSizeInMicrons)
         API.hScan2D.logFilePath=PSFdir;
         API.hScan2D.logFileCounter=1;
 
-        API.hStackManager.framesPerSlice = framesToAverage; %This will be framestoAverage
-        API.hScan2D.logAverageFactor = framesToAverage; %Set to framestoAverage
+        API.hStackManager.framesPerSlice = framesToAverage;
+        API.hScan2D.logAverageFactor = framesToAverage;
 
+        API.hDisplay.volumeDisplayStyle='Current'; % We won't bother about retaining this
     catch ME
         %If something went wrong we revert the scan settings
         fprintf('Failed to set scan settings\n')
@@ -111,19 +127,28 @@ function recordPSF(micronsToImage, stepSizeInMicrons)
         return
     end
 
+
     % Start the acquisition and wait for it to finish
-    API.hDisplay.volumeDisplayStyle='Current';
     API.startGrab
     while 1
-        if strcmp(API.acqState,'idle')
+        if strcmp(API.acqState,'idle') %Break when finished
             break
         end
         pause(0.25)
     end
 
-
-    fprintf('Saved data to %s_01.tif\n', fullfile(PSFdir,fileStem))
     revertScanSettings
+
+    % Report where the file was saved
+    D = dir([fullfile(PSFdir,fileStem),'*']);
+    pathToTiff = fullfile(PSFdir,D.name)
+    fprintf('Saved data to %s\n', pathToTiff)
+
+
+
+    if nargout>0
+        varargout{1} = pathToTiff;
+    end
 
 
 
