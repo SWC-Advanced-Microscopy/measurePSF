@@ -17,7 +17,7 @@ To measure the PSF you can either use the included `recordPSF` function or manua
 * Move the focus *down* to the lowest point you wish to image and press press "Zero Z" in MOTOR CONTROLS
 * Now focus back up to where you want to start the stack and press "Read Pos" in MOTOR CONTROLS. 
 This is the number of microns you will acquire (ignore the negative sign if present). 
-* Run `recordPSF` with number of microns obtained above as the first input argument. This will obtain the stack with a 0.25 micron resolution using the averaging you have set. The save loction is reported to screen. You can define a different z resolution using the second input argument. 
+* Run `recordPSF` with number of microns obtained above as the first input argument. This will obtain the stack with a 0.25 micron resolution using the averaging you have set. e.g. `recordPSF(12)` for a 12 micron stack. The save loction is reported to screen. You can define a different z resolution using the second input argument. 
 
 To view the PSF you would do something like:
 ```
@@ -79,6 +79,7 @@ Requires the Curve-Fitting Toolbox and the Image Processing Toolbox.
 
 
 # Change-Log
+* 9th Nov 2018 -- Add `recordPSF`
 * 28th Nov 2017 -- Simple GUI for interactive cropping of a desired bead.
 * 28th Nov 2017 -- Improve output data and don't display FWHM for directions in which the user defined no microns per pixel.
 * 27th Nov 2017 -- Convert `measurePSF` to a class so adding new features is easier.
