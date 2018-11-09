@@ -5,9 +5,36 @@ To run, add measurePSF to your path or `cd` to the directory containing the file
 
 The repository also contains `Grid2MicsPerPixel`, which can be used to measure the number of microns per pixel along x and y by analyzing an image of an EM grid. 
 
-### Obtaining a PSF in ScanImage with averaging and fastZ
-To get a good image of sub-micron bead I generally zoom to about 20 or 25x and an image size of 1024 by 1024. 
-I take z-plane every 0.25 microns and average about 40 images per per plane. 
+## Obtaining a PSF in ScanImage with averaging and fastZ
+To get a good image of sub-micron bead I generally zoom to about 20 or 25x and an image size of 256 by 256. 
+I take z-plane every 0.25 microns and average about 25 to 40 images per per plane. 
+To measure the PSF you can either use the included `recordPSF` function or manually set up ScanImage. 
+
+## Using `recordPSF` to obtain a PSF
+* Find a bead, zoom in. 
+* Select only one channel to save in the CHANNELS window.
+* Set the averaging to the quantity you wish to use.
+* Move the focus *down* to the lowest point you wish to image and press press "Zero Z" in MOTOR CONTROLS
+* Now focus back up to where you want to start the stack and press "Read Pos" in MOTOR CONTROLS. 
+This is the number of microns you will acquire (ignore the negative sign if present). 
+* Run `recordPSF` with number of microns obtained above as the first input argument. This will obtain the stack with a 0.25 micron resolution using the averaging you have set. The save loction is reported to screen. You can define a different z resolution using the second input argument. 
+
+To view the PSF you would do something like:
+```
+>> [~,TT]=scanimage.util.opentif('PSF_2018-31-09_12-11-21_00001.tif');
+>> size(TT)
+
+ans =
+
+   256   256     1     1    64
+
+>> TT= squeeze(TT);
+>> measurePSF(TT,0.25);
+>> 
+```
+
+
+## Manually setting up ScanImage to record a PSF with averaging
 It's not obvious how to do the averaging.
 This is the protocol for doing a slow z-stack with the fast-z device.
 
@@ -25,7 +52,7 @@ This is the protocol for doing a slow z-stack with the fast-z device.
 * Press `GRAB` in `MAIN CONTROLS` to acquire a stack
 * If the shutter opening and closing is annoying then set `hSI.hStackManager.shutterCloseMinZStepSize` to a value larger than you step size. 
 
-### Measuring FOV size with an EM grid
+## Measuring FOV size with an EM grid
 You can use a copper EM grid of known pitch to measure the FOV your microscope. 
 We use part number 2145C from [2spi.com](http://www.2spi.com/category/grids)
 These grids have a pitch of 25 microns with 19 micron holes. 
