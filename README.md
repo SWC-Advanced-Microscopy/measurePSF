@@ -6,8 +6,9 @@ To run, add measurePSF to your path or `cd` to the directory containing the file
 The repository also contains `Grid2MicsPerPixel`, which can be used to measure the number of microns per pixel along x and y by analyzing an image of an EM grid. 
 
 ## Obtaining a PSF in ScanImage with averaging and fastZ
-To get a good image of sub-micron bead I generally zoom to about 20 or 25x and an image size of 256 by 256. 
+To get a good image of sub-micron bead I generally zoom to about 20x or 25x and use an image size of 256 by 256 pixels. 
 I take z-plane every 0.25 microns and average about 25 to 40 images per per plane. 
+It's not worth doing more because we'll be fitting a curve to z-intensity profile.
 To measure the PSF you can either use the included `recordPSF` function or manually set up ScanImage. 
 
 ## Using `recordPSF` to obtain a PSF
@@ -35,8 +36,8 @@ ans =
 
 
 ## Manually setting up ScanImage to record a PSF with averaging
-It's not obvious how to do the averaging.
-This is the protocol for doing a slow z-stack with the fast-z device.
+These instructions explain how to set up ScanImage to obtain an averaged fast z stack. 
+These instructions are pretty much what `recordPSF` does, so if that's not working for you just follow the steps below.
 
 * Using the slow-z device and reading its position, determine the depth at which you wish to start imaging and note how far below it you wish to go. 
 * Place objective at the top of the stack you wish to acquire with the slow-z motor.
