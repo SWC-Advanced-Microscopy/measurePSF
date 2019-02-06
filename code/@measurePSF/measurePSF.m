@@ -457,7 +457,7 @@ classdef measurePSF < handle
         function areaSelector(obj,~,~)
             %select a sub-region of the bottom left plots
             h = imrect(obj.hPSF_XYmidpointImageAx);
-            rect_pos = wait(h)
+            rect_pos = wait(h);
             obj.zoomedArea = round([rect_pos(1:2), mean(rect_pos(3:4)), mean(rect_pos(3:4))]);
             delete(h)
             za = obj.zoomedArea
