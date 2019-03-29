@@ -141,7 +141,7 @@ function varargout=recordPSF(micronsToImage, stepSizeInMicrons)
 
     % Report where the file was saved
     D = dir([fullfile(PSFdir,fileStem),'*']);
-    pathToTiff = fullfile(PSFdir,D.name)
+    pathToTiff = fullfile(PSFdir,D.name);
     fprintf('Saved data to %s\n', pathToTiff)
 
 
