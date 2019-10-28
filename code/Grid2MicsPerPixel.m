@@ -54,6 +54,8 @@ function varargout=Grid2MicsPerPixel(inputIM,varargin)
 %
 %
 % Rob Campbell - Basel 2016
+%
+% Requires the Stats Toolbox
 
 
     if nargin<1
