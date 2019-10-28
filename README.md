@@ -73,7 +73,7 @@ This will make it easier to see distortions by eye and also to run `Grid2MicsPer
 ### Requirements
 The function has been well well-tested under R2016b and later. 
 It should also work on R2016a. It's known to fail on 2015b and earlier.
-Requires the Curve-Fitting Toolbox and the Image Processing Toolbox.
+Requires the Curve-Fitting Toolbox, the Image Processing Toolbox, and the Stats Toolbox.
 
 
 ![cover image](https://raw.githubusercontent.com/raacampbell/measurePSF/gh-pages/realBead.png "Main Window")
