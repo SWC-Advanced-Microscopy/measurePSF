@@ -174,7 +174,7 @@ classdef measurePSF < handle
             end
 
             % Load PSF stack if it was provided as a file
-            if ischar(inputPSFstack)
+            if nargin>0 && ischar(inputPSFstack)
                 fname=inputPSFstack;
                 if ~exist(fname,'file')
                     fprintf('%s does not exist. Not loading.\n',fname)
@@ -427,6 +427,7 @@ classdef measurePSF < handle
 
         function updateUserSelected(obj,~,~)
             % Runs when the user moves the slider
+            tic
             thisSlice = round(get(obj.hSlider,'Value'));
             obj.hUserSelectedPlaneIM.CData = obj.PSFstack(:,:,thisSlice);
 
@@ -439,7 +440,7 @@ classdef measurePSF < handle
             obj.hPSF_ZY_currentZplane.YData = [thisSlice,thisSlice];
 
             obj.hUserSelectedPlaneAx.CLim = obj.hPSF_XYmidpointImageAx.CLim; %Don't change the lookup table
-
+            toc
         end %Close updateUserSelected
 
 
