@@ -1,9 +1,16 @@
 function denoiseImStackAndFindPSFcenterInZ(obj)
     % Estimate the slice that contains center of the PSF in Z by finding the brightest point.
 
+
     obj.PSFstack = double(obj.PSFstack);
-    for ii = 1:size(obj.PSFstack,3)
-        obj.PSFstack(:,:,ii) =  medfilt2(obj.PSFstack(:,:,ii),[obj.medFiltSize,obj.medFiltSize]);
+
+    if obj.medFiltSize>1
+        fprintf('median filtering PSF stack with %d by %d filter', obj.medFiltSize,obj.medFiltSize)
+        for ii = 1:size(obj.PSFstack,3)
+            fprintf('.')
+            obj.PSFstack(:,:,ii) =  medfilt2(obj.PSFstack(:,:,ii),[obj.medFiltSize,obj.medFiltSize]);
+        end
+        fprintf('\n')
     end
     obj.PSFstack = obj.PSFstack - median(obj.PSFstack(:)); %subtract the baseline because the Gaussian fit doesn't have an offset parameter
 
