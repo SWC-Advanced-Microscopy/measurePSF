@@ -21,6 +21,8 @@ function [fitresult, gof] = fit_Intensity(obj,Y,micsPerPix,numberOfTerms)
     %
     %  See also FIT, CFIT, SFIT.
 
+    obj.reportMethodEntry
+
     v=ver; 
     if isempty(strmatch('Curve Fitting', {v.Name}))
         fprintf('*** No curve fitting toolbox, not returning a fit ***\n')

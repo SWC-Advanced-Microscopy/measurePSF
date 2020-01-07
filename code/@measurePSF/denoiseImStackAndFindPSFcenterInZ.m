@@ -1,6 +1,6 @@
 function denoiseImStackAndFindPSFcenterInZ(obj)
     % Estimate the slice that contains center of the PSF in Z by finding the brightest point.
-
+    obj.reportMethodEntry
 
     obj.PSFstack = double(obj.PSFstack);
 

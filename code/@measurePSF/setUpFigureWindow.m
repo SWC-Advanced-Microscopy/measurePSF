@@ -1,6 +1,7 @@
 function setUpFigureWindow(obj)
     % Set up the measurePSF figure window by placing empty axes and 
     % place-holder plot elements that will later be updated. 
+    obj.reportMethodEntry
 
     % Create a figure window 
     obj.hFig = figure;
