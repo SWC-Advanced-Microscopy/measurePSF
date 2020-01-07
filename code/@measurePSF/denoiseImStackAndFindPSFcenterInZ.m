@@ -16,7 +16,14 @@ function denoiseImStackAndFindPSFcenterInZ(obj)
 
     z = max(squeeze(max(DS)));
     f = obj.fit_Intensity(z,1,1); 
-    obj.psfCenterInZ = round(f.b1);
+
+    if isempty(f)
+        % Probably no curve fitting toolbox
+        obj.psfCenterInZ = round(size(DS,3)/2);
+    else
+        obj.psfCenterInZ = round(f.b1);
+    end
+
 
     if obj.psfCenterInZ > size(obj.PSFstack,3) || obj.psfCenterInZ<1
         fprintf('PSF center in Z estimated as slice %d. That is out of range. PSF stack has %d slices\n',...
