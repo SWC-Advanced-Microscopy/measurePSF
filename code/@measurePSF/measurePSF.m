@@ -15,7 +15,8 @@ classdef measurePSF < handle
     % DEMO MODE - run with no input arguments
     %
     % INPUTS (required)
-    % PSFstack  - a 3-D array (imagestack). First layer should be that nearest the objective
+    % PSFstack  - Either: A 3-D array (imagestack). First layer should be that nearest the objective
+    %                 OR: Path to a file containing a TIFF stack with one channel.
     % micsPerPixelZ  - number of microns per pixel in Z (i.e. distance between adjacent Z planes)
     % micsPerPixelXY - number of microns per pixel in X and Y
     % (if the number of microns per pixel is not supplied or is empty, the FWHM estimate for 
@@ -54,6 +55,16 @@ classdef measurePSF < handle
     %
     %     fit: [1x1 cfit]
     %    data: [1x1 struct]
+    %
+    %
+    %
+    % EXAMPLES:
+    % One
+    % >> T=load3Dtiff('PSF_2019-59-15_16-11-55_00001.tif');
+    % >> measurePSF(T,0.5,0.1)
+    %
+    % Two
+    % >> measurePSF('PSF_2019-59-15_16-11-55_00001.tif',0.5,0.1)
     %
     %
     % Rob Campbell - Basel 2016
@@ -160,6 +171,16 @@ classdef measurePSF < handle
                 % The default PSF is loaded at the end of the constructor
             else
                 demoMode=false;
+            end
+
+            % Load PSF stack if it was provided as a file
+            if ischar(inputPSFstack)
+                fname=inputPSFstack;
+                if ~exist(fname,'file')
+                    fprintf('%s does not exist. Not loading.\n',fname)
+                    return
+                end
+                inputPSFstack = load3Dtiff(fname);
             end
 
             if nargin>1 && isnumeric(micsPerPixelZ) && isscalar(micsPerPixelZ)
