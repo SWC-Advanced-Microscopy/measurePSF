@@ -13,8 +13,10 @@ function varargout=Grid2MicsPerPixel(inputIM,varargin)
 % cropProp, medFiltSize, and polynomDetrendOrder to capture more grid lines if needed. 
 %
 % 
-% Inputs (required) 
-% inputIM - 2D image of the grid
+% Inputs
+% inputIM - 2D image of the grid. If empty, the function attempts to extract the grid
+%           image from ScanImage. The function also attempts this if no input arguments
+%           are provided. 
 %
 % Inputs (optional param/val pairs)
 % gridPitch   - pitch of the grid in microns (default is 25)
@@ -52,14 +54,35 @@ function varargout=Grid2MicsPerPixel(inputIM,varargin)
 % this function.
 %
 %
+% Examples
+% The following are ways of obtaining a grid image directly from ScanImage
+% >> Grid2MicsPerPixel
+% >> Grid2MicsPerPixel([])
+% >> Grid2MicsPerPixel([],'medFiltSize',3)
+%
+% You can also feed in a specific grid image
+% >> someImage = imread('someImage.tiff');
+% >> Grid2MicsPerPixel(someImage)
+%
 %
 % Rob Campbell - Basel 2016
 %
 % Requires the Stats Toolbox
 
 
-    if nargin<1
-        help(mfilename)
+
+    % Attempt to get data from ScanImage
+    if nargin<1 || isempty(inputIM)
+        T=sibridge.getCurrentImage;
+        if isempty(T)
+            return 
+        end
+        if length(T)>1
+            fprintf('Averaging %d channels\n', length(T))
+            inputIM = mean(cat(3,T{:}),3);
+        elseif length(T)==1
+            inputIM=T{1};
+        end
     end
 
     params = inputParser;
