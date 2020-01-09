@@ -83,6 +83,9 @@ function varargout=Grid2MicsPerPixel(inputIM,varargin)
         elseif length(T)==1
             inputIM=T{1};
         end
+        scanImageConnected=true;
+    else
+        scanImageConnected=false;
     end
 
     params = inputParser;
