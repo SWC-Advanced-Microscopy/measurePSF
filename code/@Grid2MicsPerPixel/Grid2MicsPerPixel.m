@@ -1,14 +1,12 @@
 classdef Grid2MicsPerPixel < handle
 
     properties
-
         % The following properties have default values defined in the constructor
         gridPitch
         verbose
         cropProp
         polynomDetrendOrder
         medFiltSize
-
 
         % The grid image
         gridIm
@@ -28,6 +26,12 @@ classdef Grid2MicsPerPixel < handle
         micsPix %Structure storing the number of microns per pixel
 
     end % properties
+
+
+    properties (SetObservable)
+        scanImageConnected %If true, ScanImage is presented and connected
+    end
+
 
     methods
         function obj=Grid2MicsPerPixel(inputIM,varargin)
@@ -105,19 +109,10 @@ classdef Grid2MicsPerPixel < handle
 
             % Attempt to get data from ScanImage
             if nargin<1 || isempty(inputIM)
-                T=sibridge.getCurrentImage;
-                if isempty(T)
-                    return 
-                end
-                if length(T)>1
-                    fprintf('Averaging %d channels\n', length(T))
-                    inputIM = mean(cat(3,T{:}),3);
-                elseif length(T)==1
-                    inputIM=T{1};
-                end
-                scanImageConnected=true;
+                inputIM = obj.getCurrentImageFromScanImageAsArray;
+                obj.scanImageConnected=true;
             else
-                scanImageConnected=false;
+                obj.scanImageConnected=false;
             end
 
             params = inputParser;
@@ -138,8 +133,6 @@ classdef Grid2MicsPerPixel < handle
             obj.medFiltSize = [medFiltSize,medFiltSize];
 
 
-
-
             obj.prepareImageForDisplay(inputIM) %This needs running whenever a new image is loaded
 
             obj.createAndFocusFigWindow
@@ -156,6 +149,18 @@ classdef Grid2MicsPerPixel < handle
         end % destructor
 
 
+    end % methods
+
+
+    % The following are hidden methods
+
+    methods (Hidden)
+        % These are in separate files
+        bestAng = findGridAngle(obj,im)
+        buildFigure(obj)
+    end
+
+    methods (Hidden)
         function createAndFocusFigWindow(obj)
             % Only create a plot window if one does not already exist 
             % (want to avoid writing into existing windows that are doing other stuff)
@@ -170,7 +175,6 @@ classdef Grid2MicsPerPixel < handle
                 clf
             end
         end % createAndFocusFigWindow
-
 
         function prepareImageForDisplay(obj, inputIM)
             % crop, filter, and align the raw input image with axes as needed and populate the gridIm variable
@@ -274,7 +278,23 @@ classdef Grid2MicsPerPixel < handle
             set(p,'linewidth',lWidth,'color',lineColor,'LineStyle','--');
         end %close addLinesToImage
 
-    end % methods
 
+        function siImage = getCurrentImageFromScanImageAsArray(obj)
+            % Check if ScanImage is connected and extract from it the current
+            % image as an array. Return this as an output argument.
+            T=sibridge.getCurrentImage;
+            if isempty(T)
+                return 
+            end
+
+            if length(T)>1
+                fprintf('Averaging %d channels\n', length(T))
+                siImage = mean(cat(3,T{:}),3);
+            elseif length(T)==1
+                siImage=T{1};
+            end
+        end % getCurrentImageFromScanImageAsArray
+
+    end
 end % classdef
 
