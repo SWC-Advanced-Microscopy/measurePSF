@@ -155,6 +155,7 @@ classdef Grid2MicsPerPixel < handle
         % The following are methods the user might want to call 
         function newGridFromSI(obj,~,~)
             % Get a new image from ScanImage, process, and display results
+            % Run on button press
             inputIM = obj.getCurrentImageFromScanImageAsArray;
             if isempty(inputIM)
                 return
@@ -168,6 +169,7 @@ classdef Grid2MicsPerPixel < handle
 
         function applyCurrentPixelSizeToSI(obj,~,~)
             % Apply the average FOV size along rows and columns to ScanImage
+            % Run on button press
             if isempty(obj.micsPix)
                 return
             end
@@ -176,11 +178,19 @@ classdef Grid2MicsPerPixel < handle
         end % applyCurrentPixelSizeToSI
 
 
+        function returnData(obj,~,~)
+            % Run on button press
+            obj.printPixelSizeToScreen
+            fprintf('Placing data in base workspace as "GRID_DATA"\n')
+            assignin('base','GRID_DATA',obj.micsPix)
+        end
+
+
         function printPixelSizeToScreen(obj)
-            fprintf('%0.3f mics/pix along columns (width=%0.1f microns)\n', ...
-                obj.micsPix.cols, obj.micsPix.colFOV)
-            fprintf('%0.3f mics/pix along rows (width=%0.1f microns)\n', ...
-                obj.micsPix.rows, obj.micsPix.rowFOV)
+            fprintf('\n%0.3f mics/pix along columns (width=%0.1f microns)\n', ...
+                obj.micsPix.micsPixCols, obj.micsPix.colFOV)
+            fprintf('%0.3f mics/pix along rows (width=%0.1f microns)\n\n', ...
+                obj.micsPix.micsPixRows, obj.micsPix.rowFOV)
         end % printPixelSizeToScreen
 
     end % methods

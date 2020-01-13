@@ -33,8 +33,8 @@ function buildFigure(obj)
 
     subplot(2,2,3)
     h=obj.peakFinder(obj.muCols);
-    obj.micsPix.cols = h.micsPix;
-    obj.micsPix.colFOV = obj.micsPix.cols*origImageSize(2);
+    obj.micsPix.micsPixCols = h.micsPix;
+    obj.micsPix.colFOV = obj.micsPix.micsPixCols*origImageSize(2);
     set(h.line,'color',[1,0.3,0.3], 'linewidth',1);
     set(h.peaks,'MarkerEdgeColor',[0.66,0,0])
     set(h.peaks,'MarkerFaceColor',[1,0.66,0.66])
@@ -43,8 +43,8 @@ function buildFigure(obj)
 
     subplot(2,2,4)
     h=obj.peakFinder(obj.muRows);
-    obj.micsPix.rows = h.micsPix;
-    obj.micsPix.rowFOV = obj.micsPix.rows*origImageSize(1);
+    obj.micsPix.micsPixRows = h.micsPix;
+    obj.micsPix.rowFOV = obj.micsPix.micsPixRows*origImageSize(1);
     set(h.line,'color',[1,1,1]*0.3, 'linewidth',1);
     set(h.peaks,'MarkerEdgeColor','k')
     set(h.peaks,'MarkerFaceColor',[1,1,1]*0.66)
@@ -63,17 +63,22 @@ function buildFigure(obj)
 
     %Update the title on subplot one to report the size of the original image
     origTitle.String = sprintf('%s -- %d \\mum (rows) x %d \\mum (cols)', ...
-        origTitle.String, round(obj.micsPix.rows*origImageSize(1)), round(obj.micsPix.cols*origImageSize(2)) );
+        origTitle.String, ...
+        round(obj.micsPix.micsPixRows*origImageSize(1)), ...
+        round(obj.micsPix.micsPixCols*origImageSize(2)) );
 
     obj.printPixelSizeToScreen %Report to screen the pixel size and FOV
 
 
     % If ScanImage is connected we bring up buttons the user can use to refresh the display
     if obj.scanImageConnected
+        obj.hButtonApplyFOV = uicontrol('Style','PushButton','String','Return Data', ...
+            'Position', [5,5,80,30], 'Callback', @obj.returnData);
         obj.hButtonNewIm =    uicontrol('Style','PushButton','String','New Image', ....
-            'Position',[5,5,80,30], 'Callback', @obj.newGridFromSI);
+            'Position', [85,5,80,30], 'Callback', @obj.newGridFromSI);
         obj.hButtonApplyFOV = uicontrol('Style','PushButton','String','Apply FOV', ...
-            'Position',[90,5,80,30], 'Callback', @obj.applyCurrentPixelSizeToSI);
+            'Position', [165,5,80,30], 'Callback', @obj.applyCurrentPixelSizeToSI);
+
     end
 end
 
