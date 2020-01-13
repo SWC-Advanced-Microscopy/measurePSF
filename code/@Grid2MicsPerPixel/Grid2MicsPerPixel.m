@@ -15,6 +15,7 @@ classdef Grid2MicsPerPixel < handle
 
         % Plot object handles
         hFig
+        figName = 'Grid2MicsPerPixel'
         hRotatedAx % Axes in which the grid image has been rotated
 
         % Any listeners should be attached to this cell array
@@ -149,6 +150,18 @@ classdef Grid2MicsPerPixel < handle
         end % destructor
 
 
+        function newGridFromSI(obj)
+            % Get a new image from ScanImage, process, and display results
+            inputIM = obj.getCurrentImageFromScanImageAsArray;
+            if isempty(inputIM)
+                return
+            end
+            obj.prepareImageForDisplay(inputIM) %This needs running whenever a new image is loaded
+
+            obj.createAndFocusFigWindow
+            obj.buildFigure
+        end %newGridFromSI
+
     end % methods
 
 
@@ -164,10 +177,10 @@ classdef Grid2MicsPerPixel < handle
         function createAndFocusFigWindow(obj)
             % Only create a plot window if one does not already exist 
             % (want to avoid writing into existing windows that are doing other stuff)
-            fig = findobj(0,'Tag',mfilename);
+            fig = findobj(0,'Tag',obj.figName);
             if isempty(fig)
                 obj.hFig = figure;
-                set(fig, 'Tag', mfilename, 'Name', 'Grid measurement')
+                set(fig, 'Tag', obj.figName, 'Name', 'Grid measurement')
             else
                 %Focus
                 obj.hFig = fig;
