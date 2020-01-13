@@ -80,8 +80,7 @@ Requires the Curve-Fitting Toolbox, the Image Processing Toolbox, and the Stats 
 
 
 # Change-Log
-13/01 13:30
-09/01 11:10-11:45 = 35 minutes
+* 2020/01/13 -- Convert Grid2MicsPerPixel to a class and add buttons to interact with SI (v3.45)
 * 2020/01/08 -- Grid2MicsPerPixel optionally can extract the grid image directly from ScanImage (v1.45)
 * 2018/11/09 -- Add `recordPSF` (v1.0)
 * 2017/11/28 -- Simple GUI for interactive cropping of a desired bead.
