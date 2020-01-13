@@ -17,6 +17,8 @@ classdef Grid2MicsPerPixel < handle
         hFig
         figName = 'Grid2MicsPerPixel'
         hRotatedAx % Axes in which the grid image has been rotated
+        hButtonNewIm
+        hButtonApplyFOV
 
         % Any listeners should be attached to this cell array
         listeners = {}
@@ -151,7 +153,7 @@ classdef Grid2MicsPerPixel < handle
 
 
         % The following are methods the user might want to call 
-        function newGridFromSI(obj)
+        function newGridFromSI(obj,~,~)
             % Get a new image from ScanImage, process, and display results
             inputIM = obj.getCurrentImageFromScanImageAsArray;
             if isempty(inputIM)
@@ -164,7 +166,7 @@ classdef Grid2MicsPerPixel < handle
         end %newGridFromSI
 
 
-        function applyCurrentPixelSizeToSI(obj)
+        function applyCurrentPixelSizeToSI(obj,~,~)
             % Apply the average FOV size along rows and columns to ScanImage
             if isempty(obj.micsPix)
                 return
@@ -199,7 +201,7 @@ classdef Grid2MicsPerPixel < handle
             fig = findobj(0,'Tag',obj.figName);
             if isempty(fig)
                 obj.hFig = figure;
-                set(fig, 'Tag', obj.figName, 'Name', 'Grid measurement')
+                set(obj.hFig, 'Tag', obj.figName, 'Name', 'Grid measurement')
             else
                 %Focus
                 obj.hFig = fig;

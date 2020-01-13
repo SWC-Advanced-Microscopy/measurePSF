@@ -66,6 +66,15 @@ function buildFigure(obj)
         origTitle.String, round(obj.micsPix.rows*origImageSize(1)), round(obj.micsPix.cols*origImageSize(2)) );
 
     obj.printPixelSizeToScreen %Report to screen the pixel size and FOV
+
+
+    % If ScanImage is connected we bring up buttons the user can use to refresh the display
+    if obj.scanImageConnected
+        obj.hButtonNewIm =    uicontrol('Style','PushButton','String','New Image', ....
+            'Position',[5,5,80,30], 'Callback', @obj.newGridFromSI);
+        obj.hButtonApplyFOV = uicontrol('Style','PushButton','String','Apply FOV', ...
+            'Position',[90,5,80,30], 'Callback', @obj.applyCurrentPixelSizeToSI);
+    end
 end
 
   
