@@ -150,6 +150,7 @@ classdef Grid2MicsPerPixel < handle
         end % destructor
 
 
+        % The following are methods the user might want to call 
         function newGridFromSI(obj)
             % Get a new image from ScanImage, process, and display results
             inputIM = obj.getCurrentImageFromScanImageAsArray;
@@ -161,6 +162,24 @@ classdef Grid2MicsPerPixel < handle
             obj.createAndFocusFigWindow
             obj.buildFigure
         end %newGridFromSI
+
+
+        function applyCurrentPixelSizeToSI(obj)
+            % Apply the average FOV size along rows and columns to ScanImage
+            if isempty(obj.micsPix)
+                return
+            end
+            mu = mean([obj.micsPix.rowFOV, obj.micsPix.colFOV]);
+            sibridge.setObjectiveResolution(mu)
+        end % applyCurrentPixelSizeToSI
+
+
+        function printPixelSizeToScreen(obj)
+            fprintf('%0.3f mics/pix along columns (width=%0.1f microns)\n', ...
+                obj.micsPix.cols, obj.micsPix.colFOV)
+            fprintf('%0.3f mics/pix along rows (width=%0.1f microns)\n', ...
+                obj.micsPix.rows, obj.micsPix.rowFOV)
+        end % printPixelSizeToScreen
 
     end % methods
 

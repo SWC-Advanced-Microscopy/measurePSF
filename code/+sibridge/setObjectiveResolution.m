@@ -1,7 +1,7 @@
 function setObjectiveResolution(imSizeInMicrons)
 % Set the FOV in ScanImage from a measured FOV
 %
-% function hSI = sibridge.setObjectiveResolution
+% function hSI = sibridge.setObjectiveResolution(imSizeInMicrons)
 %
 % Purpose
 % Sets the scanimage "objectiveResolution" property so that 
@@ -11,7 +11,7 @@ function setObjectiveResolution(imSizeInMicrons)
 %
 %
 % Inputs
-% imSizeInMicrons
+% imSizeInMicrons - size of the FOV in microns
 %
 %
 % Outputs none
