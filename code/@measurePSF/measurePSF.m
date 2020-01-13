@@ -250,7 +250,9 @@ classdef measurePSF < handle
 
         function delete(obj)
             cellfun(@delete,obj.listeners)
-            obj.hFig.delete
+            if ~isempty(obj.hFig)
+                obj.hFig.delete
+            end
         end % Close destructor
 
 

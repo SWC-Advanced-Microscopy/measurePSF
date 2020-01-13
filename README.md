@@ -80,8 +80,9 @@ Requires the Curve-Fitting Toolbox, the Image Processing Toolbox, and the Stats 
 
 
 # Change-Log
-* 2020/01/08 -- Grid2MicsPerPixel optionally can extract the grid image directly from ScanImage
-* 2018/11/09 -- Add `recordPSF`
+* 2020/01/13 -- Convert Grid2MicsPerPixel to a class and add buttons to interact with SI (v3.45)
+* 2020/01/08 -- Grid2MicsPerPixel optionally can extract the grid image directly from ScanImage (v1.45)
+* 2018/11/09 -- Add `recordPSF` (v1.0)
 * 2017/11/28 -- Simple GUI for interactive cropping of a desired bead.
 * 2017/11/28 -- Improve output data and don't display FWHM for directions in which the user defined no microns per pixel.
 * 2017/11/27 -- Convert `measurePSF` to a class so adding new features is easier.
