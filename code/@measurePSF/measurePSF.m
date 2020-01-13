@@ -1,7 +1,7 @@
 classdef measurePSF < handle
     % Display PSF and measure its size in X, Y, and Z
     %
-    % measurePSF(PSFstack,micsPerPixelZ,micsPerPixelXY,obj.useMaxIntensityForZpsf)
+    % measurePSF(PSFstack,micsPerPixelZ,micsPerPixelXY)
     %
     % USAGE
     % Fit and display a PSF. Reports FWHM to on-screen figure with simple GUI elements
@@ -15,7 +15,8 @@ classdef measurePSF < handle
     % DEMO MODE - run with no input arguments
     %
     % INPUTS (required)
-    % PSFstack  - a 3-D array (imagestack). First layer should be that nearest the objective
+    % PSFstack  - Either: A 3-D array (imagestack). First layer should be that nearest the objective
+    %                 OR: Path to a file containing a TIFF stack with one channel.
     % micsPerPixelZ  - number of microns per pixel in Z (i.e. distance between adjacent Z planes)
     % micsPerPixelXY - number of microns per pixel in X and Y
     % (if the number of microns per pixel is not supplied or is empty, the FWHM estimate for 
@@ -54,6 +55,16 @@ classdef measurePSF < handle
     %
     %     fit: [1x1 cfit]
     %    data: [1x1 struct]
+    %
+    %
+    %
+    % EXAMPLES:
+    % One
+    % >> T=load3Dtiff('PSF_2019-59-15_16-11-55_00001.tif');
+    % >> measurePSF(T,0.5,0.1)
+    %
+    % Two
+    % >> measurePSF('PSF_2019-59-15_16-11-55_00001.tif',0.5,0.1)
     %
     %
     % Rob Campbell - Basel 2016
@@ -141,6 +152,8 @@ classdef measurePSF < handle
         % If user does not supply a pixel size then the associated FWHM value will not be reported to screen 
         reportFWHMxy=false
         reportFWHMz=false
+
+        verbose = false % If true we report to screen debugging information of various sorts
     end
 
 
@@ -160,6 +173,16 @@ classdef measurePSF < handle
                 % The default PSF is loaded at the end of the constructor
             else
                 demoMode=false;
+            end
+
+            % Load PSF stack if it was provided as a file
+            if nargin>0 && ischar(inputPSFstack)
+                fname=inputPSFstack;
+                if ~exist(fname,'file')
+                    fprintf('%s does not exist. Not loading.\n',fname)
+                    return
+                end
+                inputPSFstack = load3Dtiff(fname);
             end
 
             if nargin>1 && isnumeric(micsPerPixelZ) && isscalar(micsPerPixelZ)
@@ -240,10 +263,21 @@ classdef measurePSF < handle
 
 
 
+        function reportMethodEntry(obj)
+            % Print to screen the name of the method that was just entered
+            if ~obj.verbose
+                return
+            end
+            ST=dbstack;
+            fprintf('Entered method %s\n',ST(2).name)
+
+        end % Close reportMethodEntry
+
 
         %-----------------------------------------------------------------------------
         % Callback functions follow
         function plotNewImageStack(obj,~,~)
+            obj.reportMethodEntry
             %This is run when the PSFstack property is changed
             s=size(obj.PSFstack);
             obj.hFig.Name = sprintf('Image size: %d x %d',s(1:2));
@@ -289,6 +323,7 @@ classdef measurePSF < handle
         function setCrossSectionLinesInMainPSFImage(obj,~,~)
             %Set new cross-hair location on the bottom/left image based upon the 
             %x/y centroid of the bead (PSF)
+            obj.reportMethodEntry
             set(obj.hPS_midPointImageXhairs(1), 'XData', obj.hPSF_XYmidpointImageAx.XLim, ...
                 'YData', [obj.psfCenterInY,obj.psfCenterInY])
             set(obj.hPS_midPointImageXhairs(2), 'XData', [obj.psfCenterInX,obj.psfCenterInX], ...
@@ -299,7 +334,7 @@ classdef measurePSF < handle
         function fitPSFandUpdateSlicePlots(obj,~,~)
             % This callback is run whenever the raw data are updated or
             % whenever properties that might affect the fit are updated.
-
+            obj.reportMethodEntry
 
             userZdepth = round(get(obj.hSlider,'Value')); %So we can plot the currently shown z-plane
 
@@ -408,6 +443,7 @@ classdef measurePSF < handle
 
         function updateUserSelected(obj,~,~)
             % Runs when the user moves the slider
+            obj.reportMethodEntry
             thisSlice = round(get(obj.hSlider,'Value'));
             obj.hUserSelectedPlaneIM.CData = obj.PSFstack(:,:,thisSlice);
 
@@ -426,6 +462,7 @@ classdef measurePSF < handle
 
         function copyFitToBaseWorkSpace(obj,~,~)
             % Copy the PSFstats property to the base workspace. 
+            obj.reportMethodEntry
             if isempty(obj.PSFstats)
                 return
             end
@@ -457,9 +494,10 @@ classdef measurePSF < handle
 
 
         function areaSelector(obj,~,~)
+            obj.reportMethodEntry
             %select a sub-region of the bottom left plots
             h = imrect(obj.hPSF_XYmidpointImageAx);
-            rect_pos = wait(h)
+            rect_pos = wait(h);
             obj.zoomedArea = round([rect_pos(1:2), mean(rect_pos(3:4)), mean(rect_pos(3:4))]);
             delete(h)
             za = obj.zoomedArea
@@ -470,7 +508,9 @@ classdef measurePSF < handle
 
         end % Close areaSelector
 
+
         function resetView(obj,~,~)
+            obj.reportMethodEntry
             % Un-zoom other panels
             resetSize = [1,1,size(obj.PSFstack_Orig,1)-1,size(obj.PSFstack_Orig,2)-1];
 
@@ -482,6 +522,6 @@ classdef measurePSF < handle
             end
         end % Close areaSelector
 
-
     end % close methods
-end
+
+end % close class

@@ -193,7 +193,7 @@ classdef Grid2MicsPerPixel < handle
             obj.gridIm = medfilt2(obj.gridIm,obj.medFiltSize);
 
             % Rotate image so it's square with axes
-            obj.imRotatedAngle=obj.findGridAngle(obj.gridIm,obj.verbose);
+            obj.imRotatedAngle=obj.findGridAngle(obj.gridIm);
 
             obj.gridIm = imrotate(obj.gridIm,obj.imRotatedAngle,'crop') ;
             obj.gridIm(obj.gridIm==0)=nan;

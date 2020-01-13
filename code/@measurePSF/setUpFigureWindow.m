@@ -1,6 +1,7 @@
 function setUpFigureWindow(obj)
     % Set up the measurePSF figure window by placing empty axes and 
     % place-holder plot elements that will later be updated. 
+    obj.reportMethodEntry
 
     % Create a figure window 
     obj.hFig = figure;
@@ -49,8 +50,9 @@ function setUpFigureWindow(obj)
                         'Min',1,...
                         'Max',size(obj.PSFstack,3),...
                         'Value',obj.psfCenterInZ,...
-                        'Tag','DepthSlider',...
-                        'Callback', @obj.updateUserSelected );
+                        'Tag','DepthSlider');
+
+    obj.listeners{end+1} = addlistener(obj.hSlider, 'Value', 'PreSet',@obj.updateUserSelected);
 
     obj.hUserSelectedPlaneTitle=title(sprintf('Slice #%d', obj.psfCenterInZ));
 

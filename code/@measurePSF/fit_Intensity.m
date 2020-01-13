@@ -21,8 +21,11 @@ function [fitresult, gof] = fit_Intensity(obj,Y,micsPerPix,numberOfTerms)
     %
     %  See also FIT, CFIT, SFIT.
 
-    if license('test','curve_fitting_toolbox') == false
-        fprintf('No curve fitting toolbox, not returning a fit\n')
+    obj.reportMethodEntry
+
+    v=ver; 
+    if isempty(strmatch('Curve Fitting', {v.Name}))
+        fprintf('*** No curve fitting toolbox, not returning a fit ***\n')
         fitresult=[];
         gof=[];
         return
