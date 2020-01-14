@@ -76,7 +76,7 @@ Requires the Curve-Fitting Toolbox, the Image Processing Toolbox, and the Stats 
 
 
 # Change-Log
-16:10
+* 2020/01/14 -- Add button that allows the current image to be saved to the desktop (v6.25)
 * 2020/01/14 -- Add edit boxes and checkboxes to allow the user to modify on the fly what would otherwise have been input arguments. (v5.75)
 * 2020/01/14 -- Get voxel size from ScanImage TIFF header. (v4.75)
 * 2020/01/14 -- If no input args to measurePSF, bring up the load GUI. (v4.25) [+0.75]
