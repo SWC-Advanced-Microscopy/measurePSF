@@ -56,12 +56,14 @@ function [FWHM,p] = plotCrossSectionAndFit(obj,x,y,fitObj,fitRes,flipAxes)
 
     p(1)=area(fitX(inds),fitY(inds));
 
-    set(p,'FaceColor','k','EdgeColor','none')
+    set(p,'FaceColor','r','EdgeColor','none')
+
     if verLessThan('matlab','8.6')
-        set(p,'FaceColor',[0.8,0.8,0.8]);
+        set(p,'FaceColor',[1.0,0.85,0.85]);
     else
         set(p,'FaceAlpha',0.15);
     end
+
     %The fit
     p(2)=plot(fitX,fitY,'-','linewidth',2,'color',[1,0.5,0.5]);
 

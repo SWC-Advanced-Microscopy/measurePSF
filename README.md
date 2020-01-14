@@ -25,17 +25,10 @@ This is the number of microns you will acquire (ignore the negative sign if pres
 
 To view the PSF you would do something like:
 ```
->> [~,TT]=scanimage.util.opentif('PSF_2018-31-09_12-11-21_00001.tif');
->> size(TT)
-
-ans =
-
-   256   256     1     1    64
-
->> TT= squeeze(TT);
->> measurePSF(TT,0.25);
->> 
+>> measurePSF('PSF_2018-31-09_12-11-21_00001.tif');
 ```
+The voxel size is extract automatically from the header information in the file if this is ScanImage file. 
+Otherwise, this information can be provided using the second and third input arguments. 
 
 
 ## Manually setting up ScanImage to record a PSF with averaging
@@ -83,6 +76,9 @@ Requires the Curve-Fitting Toolbox, the Image Processing Toolbox, and the Stats 
 
 
 # Change-Log
+* 2020/01/14 -- Add button that allows the current image to be saved to the desktop (v6.25)
+* 2020/01/14 -- Add edit boxes and checkboxes to allow the user to modify on the fly what would otherwise have been input arguments. (v5.75)
+* 2020/01/14 -- Get voxel size from ScanImage TIFF header. (v4.75)
 * 2020/01/14 -- If no input args to measurePSF, bring up the load GUI. (v4.25) [+0.75]
 * 2020/01/13 -- Convert Grid2MicsPerPixel to a class and add buttons to interact with SI (v3.45)
 * 2020/01/08 -- Grid2MicsPerPixel optionally can extract the grid image directly from ScanImage (v1.45)

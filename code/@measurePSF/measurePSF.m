@@ -1,7 +1,7 @@
 classdef measurePSF < handle
     % Display PSF and measure its size in X, Y, and Z
     %
-    % measurePSF(PSFstack,micsPerPixelZ,micsPerPixelXY)
+    % measurePSF(PSFstack,varargin)
     %
     % USAGE
     % Fit and display a PSF. Reports FWHM to on-screen figure with simple GUI elements
@@ -12,18 +12,17 @@ classdef measurePSF < handle
     % "Reset view".
     %
     % 
-    % To 
-    % DEMO MODE - run: measurePSF('demo')
+    % To run a demo: measurePSF('demo')
     %
-    % INPUTS (required)
+    %
+    % INPUTS (optional)
     % PSFstack  - Either: A 3-D array (imagestack). First layer should be that nearest the objective
     %                 OR: Path to a file containing a TIFF stack with one channel.
-    % micsPerPixelZ  - number of microns per pixel in Z (i.e. distance between adjacent Z planes)
-    % micsPerPixelXY - number of microns per pixel in X and Y
-    % (if the number of microns per pixel is not supplied or is empty, the FWHM estimate for 
-    %  that dimension is not displayed to screen)
+    %                 OR: If empty or no input arguments then a file load GUI is presented. 
     %
     % INPUTS (optional param/val pairs)
+    % micsPixZ - number of microns per pixel in Z (i.e. distance between adjacent Z planes)
+    % micsPixXY - number of microns per pixel in X and Y
     % useZmax - [false by default] if true we use the max intensity projection
     %                   for the Z PSFs. This is likely necessary if the PSF is very tilted.
     % zFitOrder - [1 by default]. Number of Gaussians to use for the fit of the Z PSF
@@ -60,23 +59,21 @@ classdef measurePSF < handle
     %
     %
     % EXAMPLES:
-    % One
-    % >> T=load3Dtiff('PSF_2019-59-15_16-11-55_00001.tif');
-    % >> measurePSF(T,0.5,0.1);
-    %
-    % Two
-    % >> measurePSF('PSF_2019-59-15_16-11-55_00001.tif',0.5,0.1);
-    %
-    % Three: demo mode
-    % >> measurePSF('demo');
-    %
-    % Four: bring up file load GUI
+    % One: bring up file-load GUI and extract voxel size automatically if this is a ScanImage TIFF
     % >> measurePSF;
     %
+    % Two: Feed in a matrix and define the voxel size
+    % >> T=mpsf_tools.load3Dtiff('PSF_2019-59-15_16-11-55_00001.tif');
+    % >> measurePSF(T, 'micsPixZ',0.5, 'micsPixXY',0.1);
+    %
+    % Three: load a specific file from disk at the command line and also manually specify Z voxel size
+    % >> measurePSF('PSF_2019-59-15_16-11-55_00001.tif', 'micsPixZ',0.5);
+    %
+    % Four: demo mode
+    % >> measurePSF('demo');
     %
     %
     % Rob Campbell - Basel 2016
-    %
     %
     % Requires:
     % Curve-Fitting Toolbox, Image Processing Toolbox
@@ -149,10 +146,15 @@ classdef measurePSF < handle
 
         hSlider % Slider handle
 
-
         drawBox_PushButton
         reset_PushButton
         fitToBaseWorkSpace_PushButton
+        saveImage_PushButton
+
+        useMaxIntensityForZpsf_checkBox
+        zFitOrder_editBox
+        medFiltSize_editBox
+
 
         showHelpTextIfTooFewArgsProvided=false
         listeners={}
@@ -168,7 +170,7 @@ classdef measurePSF < handle
 
 
     methods
-        function obj=measurePSF(inputPSFstack,micsPerPixelZ,micsPerPixelXY,varargin)
+        function obj=measurePSF(inputPSFstack,varargin)
 
             % If no input arguments are provided, we bring up the load GUI
             if nargin==0
@@ -192,38 +194,59 @@ classdef measurePSF < handle
                 demoMode=false;
             end
 
-            % Load PSF stack if it was provided as a file
-            if nargin>0 && ischar(inputPSFstack)
-                fname=inputPSFstack;
-                if ~exist(fname,'file')
-                    fprintf('%s does not exist. Not loading.\n',fname)
-                    return
-                end
-                inputPSFstack = load3Dtiff(fname);
-            end
-
-            if nargin>1 && isnumeric(micsPerPixelZ) && isscalar(micsPerPixelZ)
-                obj.micsPerPixelZ = micsPerPixelZ;
-                obj.reportFWHMz=true;
-            end
-
-            if nargin>2 && isnumeric(micsPerPixelXY) && isscalar(micsPerPixelXY)
-                obj.micsPerPixelXY = micsPerPixelXY;
-                obj.reportFWHMxy=true;
-            end
-
+            % Parse optional param/val pairs
 
             params = inputParser;
             params.CaseSensitive = false;
             params.addParamValue('useZmax', 1, @(x) islogical(x) || x==0 || x==1);
             params.addParamValue('zFitOrder', 1, @(x) isnumeric(x) && isscalar(x));
             params.addParamValue('medFiltSize', 1, @(x) isnumeric(x) && isscalar(x));
+            params.addParamValue('micsPixZ', [], @(x) isnumeric(x) && isscalar(x));
+            params.addParamValue('micsPixXY',[], @(x) isnumeric(x) && isscalar(x));
 
             params.parse(varargin{:});
 
             obj.useMaxIntensityForZpsf = params.Results.useZmax;
             obj.zFitOrder = params.Results.zFitOrder;
             obj.medFiltSize = params.Results.medFiltSize;
+            micsPerPixelZ = params.Results.micsPixZ;
+            micsPerPixelXY = params.Results.micsPixXY;
+
+
+            % Load PSF stack if it was provided as a file
+            if ischar(inputPSFstack)
+                fname=inputPSFstack;
+                if ~exist(fname,'file')
+                    fprintf('%s does not exist. Not loading.\n',fname)
+                    return
+                end
+                inputPSFstack = mpsf_tools.load3Dtiff(fname);
+
+                %If this is a ScanImage stack we can pull out the voxel size
+                header=sibridge.readTifHeader(fname);
+                if ~isempty(header)
+                    if ~exist('micsPerPixelZ','var') || isempty(micsPerPixelZ) %So user-supplied values take priority
+                        micsPerPixelZ = header.stackZStepSize;
+                    end
+                    if ~exist('micsPerPixelXY','var') || isempty(micsPerPixelZ)
+                        fov=diff(header.imagingFovUm(1:2));
+                        micsPerPixelXY=fov/header.linesPerFrame;
+                    end
+                end
+            end % ischar(inputPSFstack)
+
+
+            if exist('micsPerPixelZ','var') && isnumeric(micsPerPixelZ) && isscalar(micsPerPixelZ)
+                obj.micsPerPixelZ = micsPerPixelZ;
+                obj.reportFWHMz=true;
+            end
+
+            if exist('micsPerPixelXY','var') && isnumeric(micsPerPixelXY) && isscalar(micsPerPixelXY)
+                obj.micsPerPixelXY = micsPerPixelXY;
+                obj.reportFWHMxy=true;
+            end
+
+
 
 
             % Make empty data and generate empty plots using these
@@ -242,7 +265,9 @@ classdef measurePSF < handle
             % other relevant properties are changed. 
             obj.listeners{end+1} = addlistener(obj, 'PSFstack', 'PostSet', @obj.plotNewImageStack);
             obj.listeners{end+1} = addlistener(obj, 'maxZplaneForFit', 'PostSet', @obj.fitPSFandUpdateSlicePlots);
-
+            obj.listeners{end+1} = addlistener(obj, 'useMaxIntensityForZpsf', 'PostSet', @obj.redrawGUI);
+            obj.listeners{end+1} = addlistener(obj, 'medFiltSize', 'PostSet', @obj.redrawGUI);
+            obj.listeners{end+1} = addlistener(obj, 'zFitOrder', 'PostSet', @obj.redrawGUI);
 
             % If no PSF stack was provided, we loads the default
             if demoMode
@@ -255,7 +280,6 @@ classdef measurePSF < handle
         end %Close constructor
 
         function addNewStack(obj,newStack)
-
             newStack = double(newStack);
             newStack = newStack - min(newStack(:));  %needed in case the amps are offset from zero
             % Replace the current image stack with a new one (or add a stack on startup)
@@ -264,6 +288,7 @@ classdef measurePSF < handle
             obj.PSFstack = newStack;
             obj.updateUserSelected %Ensure the white lines showing the current user z-plane are correct
         end
+
 
         function delete(obj)
             cellfun(@delete,obj.listeners)
@@ -517,7 +542,7 @@ classdef measurePSF < handle
             rect_pos = wait(h);
             obj.zoomedArea = round([rect_pos(1:2), mean(rect_pos(3:4)), mean(rect_pos(3:4))]);
             delete(h)
-            za = obj.zoomedArea
+            za = obj.zoomedArea;
 
             obj.PSFstack = obj.PSFstack(za(2):za(2)+za(3), za(1):za(1)+za(4), :);
 
@@ -538,6 +563,45 @@ classdef measurePSF < handle
                 obj.updateUserSelected
             end
         end % Close areaSelector
+
+
+        function redrawGUI(obj,~,~)
+            % Used to apply changes to setting such as median filter size
+            % This is called by a listener on the properties themselves.
+            obj.PSFstack = obj.PSFstack_Orig;            
+        end % Close redrawGUI
+
+
+        function maxIntCallback(obj,~,~)
+            obj.useMaxIntensityForZpsf = obj.useMaxIntensityForZpsf_checkBox.Value;
+        end % Close maxIntCallback
+
+
+        function medFiltSizeCallback(obj,~,~)
+            newVal = str2double(obj.medFiltSize_editBox.String);
+            if isnan(newVal) || newVal<=0
+                obj.medFiltSize_editBox.String = num2str(obj.medFiltSize);
+            else
+                obj.medFiltSize=newVal;
+            end
+        end % Close medFiltSizeCallback
+
+
+        function zFitOrderCallback(obj,~,~)
+            newVal = str2double(obj.zFitOrder_editBox.String);
+            if isnan(newVal) || newVal<=0
+                obj.zFitOrder_editBox.String = num2str(obj.zFitOrder);
+            else
+                obj.zFitOrder=newVal;
+            end
+        end % Close medFiltSizeCallback
+
+
+        function saveImage(obj,~,~)
+            fname = fullfile(mpsf_tools.logpath,[datestr(now,'yymmdd_HHMM'),'_PSF.pdf']);
+            print('-dpdf','-bestfit',fname)
+            fprintf('Saved image to: %s\n',fname)
+        end % Close saveImage
 
     end % close methods
 
