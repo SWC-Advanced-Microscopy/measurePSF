@@ -193,7 +193,7 @@ classdef measurePSF < handle
             end
 
             % Load PSF stack if it was provided as a file
-            if nargin>0 && ischar(inputPSFstack)
+            if ischar(inputPSFstack)
                 fname=inputPSFstack;
                 if ~exist(fname,'file')
                     fprintf('%s does not exist. Not loading.\n',fname)
