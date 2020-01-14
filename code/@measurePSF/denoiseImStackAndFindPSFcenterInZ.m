@@ -4,14 +4,23 @@ function denoiseImStackAndFindPSFcenterInZ(obj)
 
     obj.PSFstack = double(obj.PSFstack);
 
+
     if obj.medFiltSize>1
         fprintf('median filtering PSF stack with %d by %d filter', obj.medFiltSize,obj.medFiltSize)
-        for ii = 1:size(obj.PSFstack,3)
-            fprintf('.')
-            obj.PSFstack(:,:,ii) =  medfilt2(obj.PSFstack(:,:,ii),[obj.medFiltSize,obj.medFiltSize]);
+        if mod(obj.medFiltSize,2)==1
+            % If odd, we can use the faster medfilt3
+            obj.PSFstack = medfilt3(obj.PSFstack,[obj.medFiltSize,obj.medFiltSize,1]);
+        else
+            %Otherwise more slowly loop through each layer
+            for ii = 1:size(obj.PSFstack,3)
+                fprintf('.')
+                obj.PSFstack(:,:,ii) =  medfilt2(obj.PSFstack(:,:,ii),[obj.medFiltSize,obj.medFiltSize]);
+            end
         end
         fprintf('\n')
-    end
+     end
+
+
     obj.PSFstack = obj.PSFstack - median(obj.PSFstack(:)); %subtract the baseline because the Gaussian fit doesn't have an offset parameter
 
             %Further clean the image stack since we will use the max command to find the peak location
