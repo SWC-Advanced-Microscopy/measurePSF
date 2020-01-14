@@ -1,7 +1,7 @@
 classdef measurePSF < handle
     % Display PSF and measure its size in X, Y, and Z
     %
-    % measurePSF(PSFstack,micsPerPixelZ,micsPerPixelXY)
+    % measurePSF(PSFstack,varargin)
     %
     % USAGE
     % Fit and display a PSF. Reports FWHM to on-screen figure with simple GUI elements
@@ -12,18 +12,17 @@ classdef measurePSF < handle
     % "Reset view".
     %
     % 
-    % To 
-    % DEMO MODE - run: measurePSF('demo')
+    % To run a demo: measurePSF('demo')
     %
-    % INPUTS (required)
+    %
+    % INPUTS (optional)
     % PSFstack  - Either: A 3-D array (imagestack). First layer should be that nearest the objective
     %                 OR: Path to a file containing a TIFF stack with one channel.
-    % micsPerPixelZ  - number of microns per pixel in Z (i.e. distance between adjacent Z planes)
-    % micsPerPixelXY - number of microns per pixel in X and Y
-    % (if the number of microns per pixel is not supplied or is empty, the FWHM estimate for 
-    %  that dimension is not displayed to screen)
+    %                 OR: If empty or no input arguments then a file load GUI is presented. 
     %
     % INPUTS (optional param/val pairs)
+    % micsPixZ - number of microns per pixel in Z (i.e. distance between adjacent Z planes)
+    % micsPixXY - number of microns per pixel in X and Y
     % useZmax - [false by default] if true we use the max intensity projection
     %                   for the Z PSFs. This is likely necessary if the PSF is very tilted.
     % zFitOrder - [1 by default]. Number of Gaussians to use for the fit of the Z PSF
@@ -63,21 +62,18 @@ classdef measurePSF < handle
     % One: bring up file-load GUI and extract voxel size automatically if this is a ScanImage TIFF
     % >> measurePSF;
     %
-    % Two: Feed in a matrix and define the vixel size
+    % Two: Feed in a matrix and define the voxel size
     % >> T=load3Dtiff('PSF_2019-59-15_16-11-55_00001.tif');
-    % >> measurePSF(T,0.5,0.1);
+    % >> measurePSF(T, 'micsPixZ',0.5, 'micsPixXY',0.1);
     %
-    % Three: load a specific file from disk at the command line and also manually specify voxel size
-    % >> measurePSF('PSF_2019-59-15_16-11-55_00001.tif',0.5,0.1);
+    % Three: load a specific file from disk at the command line and also manually specify Z voxel size
+    % >> measurePSF('PSF_2019-59-15_16-11-55_00001.tif', 'micsPixZ',0.5);
     %
     % Four: demo mode
     % >> measurePSF('demo');
     %
     %
-    %
-    %
     % Rob Campbell - Basel 2016
-    %
     %
     % Requires:
     % Curve-Fitting Toolbox, Image Processing Toolbox
@@ -169,7 +165,7 @@ classdef measurePSF < handle
 
 
     methods
-        function obj=measurePSF(inputPSFstack,micsPerPixelZ,micsPerPixelXY,varargin)
+        function obj=measurePSF(inputPSFstack,varargin)
 
             % If no input arguments are provided, we bring up the load GUI
             if nargin==0
@@ -192,6 +188,25 @@ classdef measurePSF < handle
             else
                 demoMode=false;
             end
+
+            % Parse optional param/val pairs
+
+            params = inputParser;
+            params.CaseSensitive = false;
+            params.addParamValue('useZmax', 1, @(x) islogical(x) || x==0 || x==1);
+            params.addParamValue('zFitOrder', 1, @(x) isnumeric(x) && isscalar(x));
+            params.addParamValue('medFiltSize', 1, @(x) isnumeric(x) && isscalar(x));
+            params.addParamValue('micsPixZ', [], @(x) isnumeric(x) && isscalar(x));
+            params.addParamValue('micsPixXY',[], @(x) isnumeric(x) && isscalar(x));
+
+            params.parse(varargin{:});
+
+            obj.useMaxIntensityForZpsf = params.Results.useZmax;
+            obj.zFitOrder = params.Results.zFitOrder;
+            obj.medFiltSize = params.Results.medFiltSize;
+            micsPerPixelZ = params.Results.micsPixZ;
+            micsPerPixelXY = params.Results.micsPixXY;
+
 
             % Load PSF stack if it was provided as a file
             if ischar(inputPSFstack)
@@ -227,17 +242,6 @@ classdef measurePSF < handle
             end
 
 
-            params = inputParser;
-            params.CaseSensitive = false;
-            params.addParamValue('useZmax', 1, @(x) islogical(x) || x==0 || x==1);
-            params.addParamValue('zFitOrder', 1, @(x) isnumeric(x) && isscalar(x));
-            params.addParamValue('medFiltSize', 1, @(x) isnumeric(x) && isscalar(x));
-
-            params.parse(varargin{:});
-
-            obj.useMaxIntensityForZpsf = params.Results.useZmax;
-            obj.zFitOrder = params.Results.zFitOrder;
-            obj.medFiltSize = params.Results.medFiltSize;
 
 
             % Make empty data and generate empty plots using these
