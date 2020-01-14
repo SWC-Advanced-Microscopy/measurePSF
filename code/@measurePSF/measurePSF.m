@@ -11,8 +11,9 @@ classdef measurePSF < handle
     % double-click to select. The other plots will update. Zoom back out again by clicking
     % "Reset view".
     %
-    %
-    % DEMO MODE - run with no input arguments
+    % 
+    % To 
+    % DEMO MODE - run: measurePSF('demo')
     %
     % INPUTS (required)
     % PSFstack  - Either: A 3-D array (imagestack). First layer should be that nearest the objective
@@ -61,10 +62,17 @@ classdef measurePSF < handle
     % EXAMPLES:
     % One
     % >> T=load3Dtiff('PSF_2019-59-15_16-11-55_00001.tif');
-    % >> measurePSF(T,0.5,0.1)
+    % >> measurePSF(T,0.5,0.1);
     %
     % Two
-    % >> measurePSF('PSF_2019-59-15_16-11-55_00001.tif',0.5,0.1)
+    % >> measurePSF('PSF_2019-59-15_16-11-55_00001.tif',0.5,0.1);
+    %
+    % Three: demo mode
+    % >> measurePSF('demo');
+    %
+    % Four: bring up file load GUI
+    % >> measurePSF;
+    %
     %
     %
     % Rob Campbell - Basel 2016
@@ -162,11 +170,20 @@ classdef measurePSF < handle
     methods
         function obj=measurePSF(inputPSFstack,micsPerPixelZ,micsPerPixelXY,varargin)
 
+            % If no input arguments are provided, we bring up the load GUI
+            if nargin==0
+                [fname, pname]=uigetfile({'*.tif';'*.tiff'},'Select PSF stack','MultiSelect','off');
+                if ~ischar(fname) && fname==0
+                    return
+                end
+                inputPSFstack = fullfile(pname,fname);
+            end
 
-            if nargin<1 || isempty(inputPSFstack)
+            if nargin==1 && ischar(inputPSFstack) && strcmp(inputPSFstack,'demo')
                 if obj.showHelpTextIfTooFewArgsProvided
                     help(mfilename)
                 end
+                inputPSFstack=[];
                 demoMode=true;
                 % We will display the default PSF and use the default values for XY and Z pixel size
                 % as defined in the properties section

@@ -1,7 +1,10 @@
 # measurePSF
 
 MATLAB routine to measure a microscope point-spread function (PSF) based upon an image-stack of a sub-micron bead. 
-To run, add measurePSF to your path or `cd` to the directory containing the file. To run a demo, just run the command `measurePSF`. You should then get a figure window much like the one below. Read the help text. 
+To run, add the measurePSF `code` directory to your MATLAB path. 
+To run a demo, just run the command `measurePSF('demo')`. 
+You should then get a figure window much like the one below. 
+Read the help text. 
 
 The repository also contains `Grid2MicsPerPixel`, which can be used to measure the number of microns per pixel along x and y by analyzing an image of an EM grid. 
 
@@ -80,6 +83,7 @@ Requires the Curve-Fitting Toolbox, the Image Processing Toolbox, and the Stats 
 
 
 # Change-Log
+* 2020/01/14 -- If no input args to measurePSF, bring up the load GUI. (v4.25) [+0.75]
 * 2020/01/13 -- Convert Grid2MicsPerPixel to a class and add buttons to interact with SI (v3.45)
 * 2020/01/08 -- Grid2MicsPerPixel optionally can extract the grid image directly from ScanImage (v1.45)
 * 2018/11/09 -- Add `recordPSF` (v1.0)
