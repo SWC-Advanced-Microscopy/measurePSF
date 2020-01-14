@@ -146,10 +146,15 @@ classdef measurePSF < handle
 
         hSlider % Slider handle
 
-
         drawBox_PushButton
         reset_PushButton
         fitToBaseWorkSpace_PushButton
+
+
+        useMaxIntensityForZpsf_checkBox
+        zFitOrder_editBox
+        medFiltSize_editBox
+
 
         showHelpTextIfTooFewArgsProvided=false
         listeners={}
@@ -260,7 +265,9 @@ classdef measurePSF < handle
             % other relevant properties are changed. 
             obj.listeners{end+1} = addlistener(obj, 'PSFstack', 'PostSet', @obj.plotNewImageStack);
             obj.listeners{end+1} = addlistener(obj, 'maxZplaneForFit', 'PostSet', @obj.fitPSFandUpdateSlicePlots);
-
+            obj.listeners{end+1} = addlistener(obj, 'useMaxIntensityForZpsf', 'PostSet', @obj.redrawGUI);
+            obj.listeners{end+1} = addlistener(obj, 'medFiltSize', 'PostSet', @obj.redrawGUI);
+            obj.listeners{end+1} = addlistener(obj, 'zFitOrder', 'PostSet', @obj.redrawGUI);
 
             % If no PSF stack was provided, we loads the default
             if demoMode
@@ -273,7 +280,6 @@ classdef measurePSF < handle
         end %Close constructor
 
         function addNewStack(obj,newStack)
-
             newStack = double(newStack);
             newStack = newStack - min(newStack(:));  %needed in case the amps are offset from zero
             % Replace the current image stack with a new one (or add a stack on startup)
@@ -282,6 +288,7 @@ classdef measurePSF < handle
             obj.PSFstack = newStack;
             obj.updateUserSelected %Ensure the white lines showing the current user z-plane are correct
         end
+
 
         function delete(obj)
             cellfun(@delete,obj.listeners)
@@ -535,7 +542,7 @@ classdef measurePSF < handle
             rect_pos = wait(h);
             obj.zoomedArea = round([rect_pos(1:2), mean(rect_pos(3:4)), mean(rect_pos(3:4))]);
             delete(h)
-            za = obj.zoomedArea
+            za = obj.zoomedArea;
 
             obj.PSFstack = obj.PSFstack(za(2):za(2)+za(3), za(1):za(1)+za(4), :);
 
@@ -556,6 +563,39 @@ classdef measurePSF < handle
                 obj.updateUserSelected
             end
         end % Close areaSelector
+
+
+        function redrawGUI(obj,~,~)
+            % Used to apply changes to setting such as median filter size
+            % This is called by a listener on the properties themselves.
+            obj.PSFstack = obj.PSFstack_Orig;            
+        end % Close redrawGUI
+
+
+        function maxIntCallback(obj,~,~)
+            obj.useMaxIntensityForZpsf = obj.useMaxIntensityForZpsf_checkBox.Value;
+        end % Close maxIntCallback
+
+
+        function medFiltSizeCallback(obj,~,~)
+            newVal = str2double(obj.medFiltSize_editBox.String);
+            if isnan(newVal) || newVal<=0
+                obj.medFiltSize_editBox.String = num2str(obj.medFiltSize);
+            else
+                obj.medFiltSize=newVal;
+            end
+        end % Close medFiltSizeCallback
+
+
+        function zFitOrderCallback(obj,~,~)
+            newVal = str2double(obj.zFitOrder_editBox.String);
+            if isnan(newVal) || newVal<=0
+                obj.zFitOrder_editBox.String = num2str(obj.zFitOrder);
+            else
+                obj.zFitOrder=newVal;
+            end
+        end % Close zFitOrderCallback
+
 
     end % close methods
 
