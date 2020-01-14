@@ -63,7 +63,7 @@ classdef measurePSF < handle
     % >> measurePSF;
     %
     % Two: Feed in a matrix and define the voxel size
-    % >> T=load3Dtiff('PSF_2019-59-15_16-11-55_00001.tif');
+    % >> T=mpsf_tools.load3Dtiff('PSF_2019-59-15_16-11-55_00001.tif');
     % >> measurePSF(T, 'micsPixZ',0.5, 'micsPixXY',0.1);
     %
     % Three: load a specific file from disk at the command line and also manually specify Z voxel size
@@ -149,7 +149,7 @@ classdef measurePSF < handle
         drawBox_PushButton
         reset_PushButton
         fitToBaseWorkSpace_PushButton
-
+        saveImage_PushButton
 
         useMaxIntensityForZpsf_checkBox
         zFitOrder_editBox
@@ -220,7 +220,7 @@ classdef measurePSF < handle
                     fprintf('%s does not exist. Not loading.\n',fname)
                     return
                 end
-                inputPSFstack = load3Dtiff(fname);
+                inputPSFstack = mpsf_tools.load3Dtiff(fname);
 
                 %If this is a ScanImage stack we can pull out the voxel size
                 header=sibridge.readTifHeader(fname);
@@ -594,8 +594,14 @@ classdef measurePSF < handle
             else
                 obj.zFitOrder=newVal;
             end
-        end % Close zFitOrderCallback
+        end % Close medFiltSizeCallback
 
+
+        function saveImage(obj,~,~)
+            fname = fullfile(mpsf_tools.logpath,[datestr(now,'yymmdd_HHMM'),'_PSF.pdf']);
+            print('-dpdf','-bestfit',fname)
+            fprintf('Saved image to: %s\n',fname)
+        end % Close saveImage
 
     end % close methods
 
