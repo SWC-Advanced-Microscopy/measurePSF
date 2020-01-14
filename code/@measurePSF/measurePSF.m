@@ -60,18 +60,19 @@ classdef measurePSF < handle
     %
     %
     % EXAMPLES:
-    % One
+    % One: bring up file-load GUI and extract voxel size automatically if this is a ScanImage TIFF
+    % >> measurePSF;
+    %
+    % Two: Feed in a matrix and define the vixel size
     % >> T=load3Dtiff('PSF_2019-59-15_16-11-55_00001.tif');
     % >> measurePSF(T,0.5,0.1);
     %
-    % Two
+    % Three: load a specific file from disk at the command line and also manually specify voxel size
     % >> measurePSF('PSF_2019-59-15_16-11-55_00001.tif',0.5,0.1);
     %
-    % Three: demo mode
+    % Four: demo mode
     % >> measurePSF('demo');
     %
-    % Four: bring up file load GUI
-    % >> measurePSF;
     %
     %
     %
@@ -200,14 +201,27 @@ classdef measurePSF < handle
                     return
                 end
                 inputPSFstack = load3Dtiff(fname);
-            end
 
-            if nargin>1 && isnumeric(micsPerPixelZ) && isscalar(micsPerPixelZ)
+                %If this is a ScanImage stack we can pull out the voxel size
+                header=sibridge.readTifHeader(fname);
+                if ~isempty(header)
+                    if ~exist('micsPerPixelZ','var') || isempty(micsPerPixelZ) %So user-supplied values take priority
+                        micsPerPixelZ = header.stackZStepSize;
+                    end
+                    if ~exist('micsPerPixelXY','var') || isempty(micsPerPixelZ)
+                        fov=diff(header.imagingFovUm(1:2));
+                        micsPerPixelXY=fov/header.linesPerFrame;
+                    end
+                end
+            end % ischar(inputPSFstack)
+
+
+            if exist('micsPerPixelZ','var') && isnumeric(micsPerPixelZ) && isscalar(micsPerPixelZ)
                 obj.micsPerPixelZ = micsPerPixelZ;
                 obj.reportFWHMz=true;
             end
 
-            if nargin>2 && isnumeric(micsPerPixelXY) && isscalar(micsPerPixelXY)
+            if exist('micsPerPixelXY','var') && isnumeric(micsPerPixelXY) && isscalar(micsPerPixelXY)
                 obj.micsPerPixelXY = micsPerPixelXY;
                 obj.reportFWHMxy=true;
             end
