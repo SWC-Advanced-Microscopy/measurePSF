@@ -1,0 +1,13 @@
+How to make an EM grid test slide for measuring FOV size
+
+
+You can use a copper EM grid of known pitch to measure the FOV your microscope. 
+We use part number 2145C from [2spi.com](http://www.2spi.com/category/grids)
+These grids have a pitch of 25 microns with 19 micron holes. 
+To set up the grid on a slide:
+
+* Use a dissection scope and forceps to position the grid on a glass slide such that the grid lines are square with the edges of the slide. 
+This will make positioning the grid under the microscope a lot easier. 
+* Place a coverslip over the grid and seal with nail varnish. 
+
+
