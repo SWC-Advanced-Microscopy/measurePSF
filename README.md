@@ -72,14 +72,14 @@ Requires the Curve-Fitting Toolbox, the Image Processing Toolbox, and the Stats 
 
 
 # Change-Log
-* 2020/01/30 -- Add "mpsf_tools.meanFrame" for displaying a rolling frame average (v7.5)
-* 2020/01/14 -- Add button that allows the current image to be saved to the desktop (v6.25)
-* 2020/01/14 -- Add edit boxes and checkboxes to allow the user to modify on the fly what would otherwise have been input arguments. (v5.75)
-* 2020/01/14 -- Get voxel size from ScanImage TIFF header. (v4.75)
-* 2020/01/14 -- If no input args to measurePSF, bring up the load GUI. (v4.25) [+0.75]
-* 2020/01/13 -- Convert Grid2MicsPerPixel to a class and add buttons to interact with SI (v3.45)
-* 2020/01/08 -- Grid2MicsPerPixel optionally can extract the grid image directly from ScanImage (v1.45)
-* 2018/11/09 -- Add `recordPSF` (v1.0)
+* 2020/01/30 -- Add "mpsf_tools.meanFrame" for displaying a rolling frame average.
+* 2020/01/14 -- Add button that allows the current image to be saved to the desktop.
+* 2020/01/14 -- Add edit boxes and checkboxes to allow the user to modify on the fly what would otherwise have been input arguments.
+* 2020/01/14 -- Get voxel size from ScanImage TIFF header.
+* 2020/01/14 -- If no input args to measurePSF, bring up the load GUI.
+* 2020/01/13 -- Convert Grid2MicsPerPixel to a class and add buttons to interact with SI.
+* 2020/01/08 -- Grid2MicsPerPixel optionally can extract the grid image directly from ScanImage.
+* 2018/11/09 -- Add `recordPSF`.
 * 2017/11/28 -- Simple GUI for interactive cropping of a desired bead.
 * 2017/11/28 -- Improve output data and don't display FWHM for directions in which the user defined no microns per pixel.
 * 2017/11/27 -- Convert `measurePSF` to a class so adding new features is easier.
