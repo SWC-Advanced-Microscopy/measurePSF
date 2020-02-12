@@ -228,7 +228,7 @@ classdef measurePSF < handle
                     if ~exist('micsPerPixelZ','var') || isempty(micsPerPixelZ) %So user-supplied values take priority
                         micsPerPixelZ = header.stackZStepSize;
                     end
-                    if ~exist('micsPerPixelXY','var') || isempty(micsPerPixelZ)
+                    if ~exist('micsPerPixelXY','var') || isempty(micsPerPixelXY)
                         fov=diff(header.imagingFovUm(1:2));
                         micsPerPixelXY=fov/header.linesPerFrame;
                     end
