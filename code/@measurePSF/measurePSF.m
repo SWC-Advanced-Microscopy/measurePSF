@@ -598,7 +598,7 @@ classdef measurePSF < handle
 
 
         function saveImage(obj,~,~)
-            fname = fullfile(mpsf_tools.logpath,[datestr(now,'yymmdd_HHMM'),'_PSF.pdf']);
+            fname = fullfile(mpsf_tools.logpath,[datestr(now,'yyyy-mm-dd_HH-MM-SS'),'_PSF.pdf']);
             print('-dpdf','-bestfit',fname)
             fprintf('Saved image to: %s\n',fname)
         end % Close saveImage
