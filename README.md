@@ -74,6 +74,7 @@ This code has been written in collaboration with [Fred Marbach](https://www.sain
 
 
 # Change-Log
+* 2020/02/12 -- bugfixes v2.75
 * 2020/01/30 -- Add "mpsf_tools.meanFrame" for displaying a rolling frame average.
 * 2020/01/14 -- Add button that allows the current image to be saved to the desktop.
 * 2020/01/14 -- Add edit boxes and checkboxes to allow the user to modify on the fly what would otherwise have been input arguments.
