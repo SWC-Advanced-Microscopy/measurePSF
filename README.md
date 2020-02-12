@@ -69,6 +69,8 @@ It should also work on R2016a. It's known to fail on 2015b and earlier.
 Requires the Curve-Fitting Toolbox, the Image Processing Toolbox, and the Stats Toolbox.
 
 
+### Acknowledgments
+This code has been written in collaboration with [Fred Marbach](https://www.sainsburywellcome.org/web/people/fred-marbach) ([SWC](https://www.sainsburywellcome.org)), and Bruno Pichler and Mark Walling of [INSS](https://www.inss.org.uk/). 
 
 
 # Change-Log
