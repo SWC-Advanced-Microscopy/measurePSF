@@ -1,4 +1,4 @@
-function [FWHM,p] = plotCrossSectionAndFit(obj,x,y,fitObj,fitRes,flipAxes)
+function [FWHM,p] = plotCrossSectionAndFit(obj,x,y,fitObj,fitRes,flipAxes,plotAxStr)
     % Used by measurePSF to plot the fit cross-sections
     %
     %
@@ -8,6 +8,8 @@ function [FWHM,p] = plotCrossSectionAndFit(obj,x,y,fitObj,fitRes,flipAxes)
     % fitObj - the fit object produced by measurePSF.fit_Intensity that is associated with these data
     % fitRes - the resolution in microns of the fitted curve. This is used to obtain the FWHM
     % flipAxes - set to true to flip x/y axes for the plots long the right. 
+    % plotAxStr - a string to indicate which axes are being plotted (e.g. 'XZ'). This is added to the 
+    %             title string.
     %
     % OUTPUTS (returns empty fitObj is empty)
     % FWHM - the full-width-half-max
@@ -20,6 +22,9 @@ function [FWHM,p] = plotCrossSectionAndFit(obj,x,y,fitObj,fitRes,flipAxes)
     end
     if nargin<6
         flipAxes = 0;
+    end
+    if nargin<7
+        plotAxStr='';
     end
 
     %Generate x data 
@@ -76,7 +81,7 @@ function [FWHM,p] = plotCrossSectionAndFit(obj,x,y,fitObj,fitRes,flipAxes)
     end
 
 
-    title(sprintf('FWHM: %0.2f \\mum',FWHM))
+    title(sprintf('%s FWHM: %0.2f \\mum',plotAxStr,FWHM))
 
     axis tight
     grid on

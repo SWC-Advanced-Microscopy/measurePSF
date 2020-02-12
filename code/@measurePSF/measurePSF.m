@@ -417,7 +417,7 @@ classdef measurePSF < handle
 
             fitZX = obj.fit_Intensity(maxPSF_ZX, obj.micsPerPixelZ);
             x = (1:length(maxPSF_ZX))*obj.micsPerPixelZ;
-            [OUT.ZX.FWHM,OUT.ZX.fitPlot_H] = obj.plotCrossSectionAndFit(x,maxPSF_ZX,fitZX,obj.micsPerPixelZ/4);
+            [OUT.ZX.FWHM,OUT.ZX.fitPlot_H] = obj.plotCrossSectionAndFit(x,maxPSF_ZX,fitZX,obj.micsPerPixelZ/4,0,'XZ');
             set(obj.hPSF_ZX_fitAx,'XAxisLocation','Top')
 
             %Suppress title with FWHM estimate if no mics per pixel was provided
@@ -457,7 +457,7 @@ classdef measurePSF < handle
 
             fitZY = obj.fit_Intensity(maxPSF_ZY, obj.micsPerPixelZ);
             x = (1:length(maxPSF_ZY))*obj.micsPerPixelZ;
-            [OUT.ZY.FWHM, OUT.ZY.fitPlot_H] = obj.plotCrossSectionAndFit(x,maxPSF_ZY,fitZY,obj.micsPerPixelZ/4,1);
+            [OUT.ZY.FWHM, OUT.ZY.fitPlot_H] = obj.plotCrossSectionAndFit(x,maxPSF_ZY,fitZY,obj.micsPerPixelZ/4,1,'YZ');
             set(obj.hPSF_ZY_fitAx,'XAxisLocation','Top')
 
             %Suppress title with FWHM estimate if no mics per pixel was provided
