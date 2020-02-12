@@ -139,7 +139,7 @@ classdef measurePSF < handle
         hPSF_ZY_currentZplane % Plot handle for current z-plane line
         hPSF_ZY_fitAx
 
-        hUserSelectedPlaneAx % Handle to the axis showing the user-selected plane within the PSF
+        hUserSelectedPlaneAx % Handle to the axis showing the user-selected plane within the PSF (top right)
         hUserSelectedPlaneIM
         hUserSelectedPlaneTitle
 
@@ -346,12 +346,14 @@ classdef measurePSF < handle
                         'YTick',Ytick,'YTickLabel',round(Ytick*obj.micsPerPixelXY,2));
             else
                 set(obj.hPSF_XYmidpointImageAx,'XTick',[],'YTick',[], ...
-                    'XLim',[0,size(obj.PSFstack,1)], ...
-                    'YLim',[0,size(obj.PSFstack,2)])
+                    'XLim',[0.5,size(obj.PSFstack,1)], ...
+                    'YLim',[0.5,size(obj.PSFstack,2)])
             end
 
             % Place image into the top/right plot and update the slider
             obj.hUserSelectedPlaneIM.CData = obj.maxZplane;
+            obj.hUserSelectedPlaneAx.XLim = [0.5,size(obj.PSFstack,1)];
+            obj.hUserSelectedPlaneAx.YLim = [0.5,size(obj.PSFstack,2)];
             set(obj.hSlider, 'Max',size(obj.PSFstack,3), 'Value',obj.psfCenterInZ)
 
 
