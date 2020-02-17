@@ -37,10 +37,11 @@ hSI.objectiveResolution = hSI.objectiveResolution / (imFOV/imSizeInMicrons);
 imFOV = hSI.hRoiManager.imagingFovUm;
 imFOV = round(range(imFOV(:,1)),3);
 
-if imFOV ~= imSizeInMicrons
-    fprintf('Failed to set FOV in ScanImage. Desired FOV is %0.2f but actual is %0.2f\n', ...
+if abs(imFOV-imSizeInMicrons)>0.1
+    fprintf('WARNING: Desired FOV is %0.2f but actual is %0.2f\n', ...
         imSizeInMicrons, imFOV)
 else
     fprintf('Set ScanImage FOV to %0.2f microns using an objective resolution of %0.5f\n', ...
         imSizeInMicrons, hSI.objectiveResolution)    
 end
+
