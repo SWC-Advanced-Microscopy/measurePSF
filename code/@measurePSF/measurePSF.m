@@ -154,6 +154,8 @@ classdef measurePSF < handle
         useMaxIntensityForZpsf_checkBox
         zFitOrder_editBox
         medFiltSize_editBox
+        textMedian
+        textZfit
 
 
         showHelpTextIfTooFewArgsProvided=false
@@ -598,11 +600,32 @@ classdef measurePSF < handle
 
 
         function saveImage(obj,~,~)
+            obj.toggleUIelments('off')
             fname = fullfile(mpsf_tools.logpath,[datestr(now,'yyyy-mm-dd_HH-MM-SS'),'_PSF.pdf']);
             print('-dpdf','-bestfit',fname)
             fprintf('Saved image to: %s\n',fname)
+            obj.toggleUIelments('on')
         end % Close saveImage
 
     end % close methods
+
+
+    methods (Hidden)
+
+        function toggleUIelments(obj,toggleState)
+            % Toggle UI elemnents to allow for prettier saved images
+            % toggleState should be the string 'on' or 'off'
+            obj.drawBox_PushButton.Visible = toggleState;
+            obj.reset_PushButton.Visible = toggleState;
+            obj.fitToBaseWorkSpace_PushButton.Visible = toggleState;
+            obj.saveImage_PushButton.Visible = toggleState;
+            obj.useMaxIntensityForZpsf_checkBox.Visible=toggleState;
+            obj.zFitOrder_editBox.Visible=toggleState;
+            obj.medFiltSize_editBox.Visible=toggleState;
+            obj.textZfit.Visible=toggleState;
+            obj.textMedian.Visible=toggleState;
+        end %toggleUIelments
+
+    end %Hidden methods
 
 end % close class
