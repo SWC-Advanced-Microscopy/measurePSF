@@ -74,6 +74,7 @@ This code has been written in collaboration with [Fred Marbach](https://www.sain
 
 
 # Change-Log
+* 2020/02/18 -- bug fixes, check coarse z acquisition works, add PDF saving to grid tool. v 4.5
 * 2020/02/17 -- bugfixes v3.25
 * 2020/02/12 -- bugfixes v2.75
 * 2020/01/30 -- Add "mpsf_tools.meanFrame" for displaying a rolling frame average.
