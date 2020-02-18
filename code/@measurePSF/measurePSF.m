@@ -139,7 +139,7 @@ classdef measurePSF < handle
         hPSF_ZY_currentZplane % Plot handle for current z-plane line
         hPSF_ZY_fitAx
 
-        hUserSelectedPlaneAx % Handle to the axis showing the user-selected plane within the PSF
+        hUserSelectedPlaneAx % Handle to the axis showing the user-selected plane within the PSF (top right)
         hUserSelectedPlaneIM
         hUserSelectedPlaneTitle
 
@@ -228,7 +228,7 @@ classdef measurePSF < handle
                     if ~exist('micsPerPixelZ','var') || isempty(micsPerPixelZ) %So user-supplied values take priority
                         micsPerPixelZ = header.stackZStepSize;
                     end
-                    if ~exist('micsPerPixelXY','var') || isempty(micsPerPixelZ)
+                    if ~exist('micsPerPixelXY','var') || isempty(micsPerPixelXY)
                         fov=diff(header.imagingFovUm(1:2));
                         micsPerPixelXY=fov/header.linesPerFrame;
                     end
@@ -346,12 +346,14 @@ classdef measurePSF < handle
                         'YTick',Ytick,'YTickLabel',round(Ytick*obj.micsPerPixelXY,2));
             else
                 set(obj.hPSF_XYmidpointImageAx,'XTick',[],'YTick',[], ...
-                    'XLim',[0,size(obj.PSFstack,1)], ...
-                    'YLim',[0,size(obj.PSFstack,2)])
+                    'XLim',[0.5,size(obj.PSFstack,1)], ...
+                    'YLim',[0.5,size(obj.PSFstack,2)])
             end
 
             % Place image into the top/right plot and update the slider
             obj.hUserSelectedPlaneIM.CData = obj.maxZplane;
+            obj.hUserSelectedPlaneAx.XLim = [0.5,size(obj.PSFstack,1)];
+            obj.hUserSelectedPlaneAx.YLim = [0.5,size(obj.PSFstack,2)];
             set(obj.hSlider, 'Max',size(obj.PSFstack,3), 'Value',obj.psfCenterInZ)
 
 
@@ -417,7 +419,7 @@ classdef measurePSF < handle
 
             fitZX = obj.fit_Intensity(maxPSF_ZX, obj.micsPerPixelZ);
             x = (1:length(maxPSF_ZX))*obj.micsPerPixelZ;
-            [OUT.ZX.FWHM,OUT.ZX.fitPlot_H] = obj.plotCrossSectionAndFit(x,maxPSF_ZX,fitZX,obj.micsPerPixelZ/4);
+            [OUT.ZX.FWHM,OUT.ZX.fitPlot_H] = obj.plotCrossSectionAndFit(x,maxPSF_ZX,fitZX,obj.micsPerPixelZ/4,0,'XZ');
             set(obj.hPSF_ZX_fitAx,'XAxisLocation','Top')
 
             %Suppress title with FWHM estimate if no mics per pixel was provided
@@ -457,7 +459,7 @@ classdef measurePSF < handle
 
             fitZY = obj.fit_Intensity(maxPSF_ZY, obj.micsPerPixelZ);
             x = (1:length(maxPSF_ZY))*obj.micsPerPixelZ;
-            [OUT.ZY.FWHM, OUT.ZY.fitPlot_H] = obj.plotCrossSectionAndFit(x,maxPSF_ZY,fitZY,obj.micsPerPixelZ/4,1);
+            [OUT.ZY.FWHM, OUT.ZY.fitPlot_H] = obj.plotCrossSectionAndFit(x,maxPSF_ZY,fitZY,obj.micsPerPixelZ/4,1,'YZ');
             set(obj.hPSF_ZY_fitAx,'XAxisLocation','Top')
 
             %Suppress title with FWHM estimate if no mics per pixel was provided
@@ -598,7 +600,7 @@ classdef measurePSF < handle
 
 
         function saveImage(obj,~,~)
-            fname = fullfile(mpsf_tools.logpath,[datestr(now,'yymmdd_HHMM'),'_PSF.pdf']);
+            fname = fullfile(mpsf_tools.logpath,[datestr(now,'yyyy-mm-dd_HH-MM-SS'),'_PSF.pdf']);
             print('-dpdf','-bestfit',fname)
             fprintf('Saved image to: %s\n',fname)
         end % Close saveImage

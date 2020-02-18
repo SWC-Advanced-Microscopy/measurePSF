@@ -17,8 +17,11 @@ classdef Grid2MicsPerPixel < handle
         hFig
         figName = 'Grid2MicsPerPixel'
         hRotatedAx % Axes in which the grid image has been rotated
+        hButtonReturnData
+        hButtonSavePDF
         hButtonNewIm
         hButtonApplyFOV
+
 
         % Any listeners should be attached to this cell array
         listeners = {}
@@ -113,7 +116,13 @@ classdef Grid2MicsPerPixel < handle
             % Attempt to get data from ScanImage
             if nargin<1 || isempty(inputIM)
                 inputIM = obj.getCurrentImageFromScanImageAsArray;
-                obj.scanImageConnected=true;
+                if isempty(inputIM)
+                    fprintf('Unable to get current image from ScanImage.\nPlease supply an image as an input argument.\n')
+                    delete(obj)
+                    return
+                else
+                    obj.scanImageConnected=true;
+                end
             else
                 obj.scanImageConnected=false;
             end
@@ -164,7 +173,7 @@ classdef Grid2MicsPerPixel < handle
 
             obj.createAndFocusFigWindow
             obj.buildFigure
-        end %newGridFromSI
+        end % newGridFromSI
 
 
         function applyCurrentPixelSizeToSI(obj,~,~)
@@ -183,7 +192,16 @@ classdef Grid2MicsPerPixel < handle
             obj.printPixelSizeToScreen
             fprintf('Placing data in base workspace as "GRID_DATA"\n')
             assignin('base','GRID_DATA',obj.micsPix)
-        end
+        end % returnData
+
+
+        function savePDF(obj,~,~)
+            fname = fullfile(mpsf_tools.logpath,[datestr(now,'yyyy-mm-dd_HH-MM-SS'),'_grid.pdf']);
+            obj.toggleButtonVisibility('off')
+            print('-dpdf','-bestfit',fname)
+            fprintf('Saved image to: %s\n',fname)
+            obj.toggleButtonVisibility('on')
+        end %savePDF
 
 
         function printPixelSizeToScreen(obj)
@@ -326,8 +344,10 @@ classdef Grid2MicsPerPixel < handle
         function siImage = getCurrentImageFromScanImageAsArray(obj)
             % Check if ScanImage is connected and extract from it the current
             % image as an array. Return this as an output argument.
+
             T=sibridge.getCurrentImage;
             if isempty(T)
+                siImage=T;
                 return 
             end
 
@@ -338,6 +358,18 @@ classdef Grid2MicsPerPixel < handle
                 siImage=T{1};
             end
         end % getCurrentImageFromScanImageAsArray
+
+
+        function toggleButtonVisibility(obj,onOff)
+            % Set all on-screen buttons to be visible or not visible
+            %
+            % 'onOff' should be the string 'on' or the string 'off'
+
+            obj.hButtonReturnData.Visible = onOff;
+            obj.hButtonSavePDF.Visible = onOff;
+            obj.hButtonNewIm.Visible = onOff;
+            obj.hButtonApplyFOV.Visible = onOff;
+        end %toggleButtonVisibility
 
     end
 end % classdef

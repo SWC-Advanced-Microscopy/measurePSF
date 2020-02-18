@@ -70,16 +70,26 @@ function buildFigure(obj)
     obj.printPixelSizeToScreen %Report to screen the pixel size and FOV
 
 
-    % If ScanImage is connected we bring up buttons the user can use to refresh the display
-    if obj.scanImageConnected
-        obj.hButtonApplyFOV = uicontrol('Style','PushButton','String','Return Data', ...
-            'Position', [5,5,80,30], 'Callback', @obj.returnData);
-        obj.hButtonNewIm =    uicontrol('Style','PushButton','String','New Image', ....
-            'Position', [85,5,80,30], 'Callback', @obj.newGridFromSI);
-        obj.hButtonApplyFOV = uicontrol('Style','PushButton','String','Apply FOV', ...
-            'Position', [165,5,80,30], 'Callback', @obj.applyCurrentPixelSizeToSI);
+    % UI buttons for returning data and saving data to PDF
+    obj.hButtonReturnData = uicontrol('Style','PushButton','String','Return Data', ...
+        'Position', [5,5,80,30], 'Callback', @obj.returnData);
+    obj.hButtonSavePDF = uicontrol('Style','PushButton','String','Save PDF', ...
+        'Position', [85,5,80,30], 'Callback', @obj.savePDF);
 
+    % Buttons for ScanImage interaction
+    obj.hButtonNewIm =    uicontrol('Style','PushButton','String','New Image', ....
+        'Position', [165,5,80,30], 'Callback', @obj.newGridFromSI);
+    obj.hButtonApplyFOV = uicontrol('Style','PushButton','String','Apply FOV', ...
+        'Position', [245,5,80,30], 'Callback', @obj.applyCurrentPixelSizeToSI);
+
+    % If ScanImage is not connected we make this buttons unavailable
+    if ~obj.scanImageConnected
+        obj.hButtonApplyFOV.Enable='Off';
+        obj.hButtonNewIm.Enable='Off';
     end
+
+
+
 end
 
   

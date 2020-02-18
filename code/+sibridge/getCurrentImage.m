@@ -23,6 +23,7 @@ im=[];
 
 hSI = sibridge.getSIobject;
 if isempty(hSI)
+	imData = [];
     return
 end
 

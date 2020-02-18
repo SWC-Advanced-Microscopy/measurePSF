@@ -7,7 +7,7 @@ function OUT=updateXYfits(obj)
     yvals = obj.maxZplane(:,obj.psfCenterInX);
     x=(1:length(yvals))*obj.micsPerPixelXY;
     fitX = obj.fit_Intensity(yvals,obj.micsPerPixelXY);
-    OUT.XYrows.FWHM = obj.plotCrossSectionAndFit(x,yvals,fitX,obj.micsPerPixelXY/2,1); %TODO -- Would be best to change plot object props and not CLA each time
+    OUT.XYrows.FWHM = obj.plotCrossSectionAndFit(x,yvals,fitX,obj.micsPerPixelXY/2,1,'YX'); %TODO -- Would be best to change plot object props and not CLA each time
     X.xVals=x;
     X.yVals=yvals;
     set(obj.hxSectionRowsAx,'XTickLabel',[])
@@ -25,7 +25,7 @@ function OUT=updateXYfits(obj)
     yvals = obj.maxZplane(obj.psfCenterInY,:);
     x=(1:length(yvals))*obj.micsPerPixelXY;
     fitY = obj.fit_Intensity(yvals,obj.micsPerPixelXY);
-    OUT.XYcols.FWHM = obj.plotCrossSectionAndFit(x,yvals,fitY,obj.micsPerPixelXY/2);
+    OUT.XYcols.FWHM = obj.plotCrossSectionAndFit(x,yvals,fitY,obj.micsPerPixelXY/2,0,'XY');
     Y.xVals=x;
     Y.yVals=yvals;
     set(obj.hxSectionColsAx,'XTickLabel',[])
