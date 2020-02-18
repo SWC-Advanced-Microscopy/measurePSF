@@ -18,8 +18,10 @@ classdef Grid2MicsPerPixel < handle
         figName = 'Grid2MicsPerPixel'
         hRotatedAx % Axes in which the grid image has been rotated
         hButtonReturnData
+        hButtonSavePDF
         hButtonNewIm
         hButtonApplyFOV
+
 
         % Any listeners should be attached to this cell array
         listeners = {}
@@ -171,7 +173,7 @@ classdef Grid2MicsPerPixel < handle
 
             obj.createAndFocusFigWindow
             obj.buildFigure
-        end %newGridFromSI
+        end % newGridFromSI
 
 
         function applyCurrentPixelSizeToSI(obj,~,~)
@@ -190,7 +192,16 @@ classdef Grid2MicsPerPixel < handle
             obj.printPixelSizeToScreen
             fprintf('Placing data in base workspace as "GRID_DATA"\n')
             assignin('base','GRID_DATA',obj.micsPix)
-        end
+        end % returnData
+
+
+        function savePDF(obj,~,~)
+            fname = fullfile(mpsf_tools.logpath,[datestr(now,'yyyy-mm-dd_HH-MM-SS'),'_grid.pdf']);
+            obj.toggleButtonVisibility('off')
+            print('-dpdf','-bestfit',fname)
+            fprintf('Saved image to: %s\n',fname)
+            obj.toggleButtonVisibility('on')
+        end %savePDF
 
 
         function printPixelSizeToScreen(obj)
@@ -347,6 +358,18 @@ classdef Grid2MicsPerPixel < handle
                 siImage=T{1};
             end
         end % getCurrentImageFromScanImageAsArray
+
+
+        function toggleButtonVisibility(obj,onOff)
+            % Set all on-screen buttons to be visible or not visible
+            %
+            % 'onOff' should be the string 'on' or the string 'off'
+
+            obj.hButtonReturnData.Visible = onOff;
+            obj.hButtonSavePDF.Visible = onOff;
+            obj.hButtonNewIm.Visible = onOff;
+            obj.hButtonApplyFOV.Visible = onOff;
+        end %toggleButtonVisibility
 
     end
 end % classdef
