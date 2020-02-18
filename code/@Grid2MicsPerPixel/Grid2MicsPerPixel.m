@@ -17,6 +17,7 @@ classdef Grid2MicsPerPixel < handle
         hFig
         figName = 'Grid2MicsPerPixel'
         hRotatedAx % Axes in which the grid image has been rotated
+        hButtonReturnData
         hButtonNewIm
         hButtonApplyFOV
 
@@ -113,7 +114,13 @@ classdef Grid2MicsPerPixel < handle
             % Attempt to get data from ScanImage
             if nargin<1 || isempty(inputIM)
                 inputIM = obj.getCurrentImageFromScanImageAsArray;
-                obj.scanImageConnected=true;
+                if isempty(inputIM)
+                    fprintf('Unable to get current image from ScanImage.\nPlease supply an image as an input argument.\n')
+                    delete(obj)
+                    return
+                else
+                    obj.scanImageConnected=true;
+                end
             else
                 obj.scanImageConnected=false;
             end
@@ -326,8 +333,10 @@ classdef Grid2MicsPerPixel < handle
         function siImage = getCurrentImageFromScanImageAsArray(obj)
             % Check if ScanImage is connected and extract from it the current
             % image as an array. Return this as an output argument.
+
             T=sibridge.getCurrentImage;
             if isempty(T)
+                siImage=T;
                 return 
             end
 

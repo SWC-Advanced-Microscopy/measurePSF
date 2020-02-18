@@ -71,14 +71,16 @@ function buildFigure(obj)
 
 
     % If ScanImage is connected we bring up buttons the user can use to refresh the display
-    if obj.scanImageConnected
-        obj.hButtonApplyFOV = uicontrol('Style','PushButton','String','Return Data', ...
-            'Position', [5,5,80,30], 'Callback', @obj.returnData);
-        obj.hButtonNewIm =    uicontrol('Style','PushButton','String','New Image', ....
-            'Position', [85,5,80,30], 'Callback', @obj.newGridFromSI);
-        obj.hButtonApplyFOV = uicontrol('Style','PushButton','String','Apply FOV', ...
-            'Position', [165,5,80,30], 'Callback', @obj.applyCurrentPixelSizeToSI);
-
+    obj.hButtonReturnData = uicontrol('Style','PushButton','String','Return Data', ...
+        'Position', [5,5,80,30], 'Callback', @obj.returnData);
+    obj.hButtonNewIm =    uicontrol('Style','PushButton','String','New Image', ....
+        'Position', [85,5,80,30], 'Callback', @obj.newGridFromSI);
+    obj.hButtonApplyFOV = uicontrol('Style','PushButton','String','Apply FOV', ...
+        'Position', [165,5,80,30], 'Callback', @obj.applyCurrentPixelSizeToSI);
+    if ~obj.scanImageConnected
+        obj.hButtonReturnData.Enable='Off';
+        obj.hButtonApplyFOV.Enable='Off';
+        obj.hButtonNewIm.Enable='Off';
     end
 end
 
