@@ -215,6 +215,11 @@ classdef measurePSF < handle
             micsPerPixelXY = params.Results.micsPixXY;
 
 
+            if demoMode
+                micsPerPixelZ=0.5;
+                micsPerPixelXY=0.1;
+            end
+
             % Load PSF stack if it was provided as a file
             if ischar(inputPSFstack)
                 fname=inputPSFstack;
