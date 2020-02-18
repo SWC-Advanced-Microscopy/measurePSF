@@ -6,8 +6,8 @@ function setUpFigureWindow(obj)
     % Create a figure window 
     obj.hFig = figure;
     obj.hFig.CloseRequestFcn = @obj.windowCloseFcn;
-    obj.hFig.Position(3) = 800;
-    obj.hFig.Position(4) = 800;
+
+    obj.hFig.Position = [15,50,900,900];
 
     %Add plot axes and empty plot elements
 

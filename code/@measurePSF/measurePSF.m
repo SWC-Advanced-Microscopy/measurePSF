@@ -323,8 +323,6 @@ classdef measurePSF < handle
             %This is run when the PSFstack property is changed
             s=size(obj.PSFstack);
             obj.hFig.Name = sprintf('Image size: %d x %d',s(1:2));
-            obj.hFig.Position(1) = 15;
-            obj.hFig.Position(2) = 50;
             %Clean the stack and find the mid-point and produce a filtered image plane at this point
             obj.denoiseImStackAndFindPSFcenterInZ;
 
