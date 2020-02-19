@@ -166,6 +166,8 @@ classdef measurePSF < handle
         reportFWHMz=false
 
         verbose = false % If true we report to screen debugging information of various sorts
+
+        fname % the name of the tiff stack loaded by the user
     end
 
 
@@ -222,12 +224,12 @@ classdef measurePSF < handle
 
             % Load PSF stack if it was provided as a file
             if ischar(inputPSFstack)
-                fname=inputPSFstack;
+                obj.fname=inputPSFstack;
                 if ~exist(fname,'file')
-                    fprintf('%s does not exist. Not loading.\n',fname)
+                    fprintf('%s does not exist. Not loading.\n',obj.fname)
                     return
                 end
-                inputPSFstack = mpsf_tools.load3Dtiff(fname);
+                inputPSFstack = mpsf_tools.load3Dtiff(obj.fname);
 
                 %If this is a ScanImage stack we can pull out the voxel size
                 header=sibridge.readTifHeader(fname);
@@ -279,6 +281,7 @@ classdef measurePSF < handle
             % If no PSF stack was provided, we loads the default
             if demoMode
                 P = load('PSF');
+                obj.fname = 'DEMO_SIMULATED_PSF';
                 obj.addNewStack(P.PSF)
             else
                 obj.addNewStack(inputPSFstack)
@@ -607,9 +610,13 @@ classdef measurePSF < handle
         function saveImage(obj,~,~)
             obj.toggleUIelments('off')
             fname = fullfile(mpsf_tools.logpath,[datestr(now,'yyyy-mm-dd_HH-MM-SS'),'_PSF.pdf']);
+            % show the file name of the tiff stack (if available) on screen.
+            tmp = obj.hUserSelectedPlaneTitle.String;
+            obj.hUserSelectedPlaneTitle.String = strrep(obj.fname,'_','\_');
             print('-dpdf','-bestfit',fname)
             fprintf('Saved image to: %s\n',fname)
             obj.toggleUIelments('on')
+            obj.hUserSelectedPlaneTitle.String = tmp;
         end % Close saveImage
 
     end % close methods
