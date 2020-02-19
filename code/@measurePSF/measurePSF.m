@@ -610,9 +610,13 @@ classdef measurePSF < handle
         function saveImage(obj,~,~)
             obj.toggleUIelments('off')
             fname = fullfile(mpsf_tools.logpath,[datestr(now,'yyyy-mm-dd_HH-MM-SS'),'_PSF.pdf']);
+    
             % show the file name of the tiff stack (if available) on screen.
             tmp = obj.hUserSelectedPlaneTitle.String;
-            obj.hUserSelectedPlaneTitle.String = strrep(obj.fname,'_','\_');
+            if ~isempty(obj.fname)
+                obj.hUserSelectedPlaneTitle.String = strrep(obj.fname,'_','\_');
+            end
+
             print('-dpdf','-bestfit',fname)
             fprintf('Saved image to: %s\n',fname)
             obj.toggleUIelments('on')
