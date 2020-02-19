@@ -6,8 +6,8 @@ function setUpFigureWindow(obj)
     % Create a figure window 
     obj.hFig = figure;
     obj.hFig.CloseRequestFcn = @obj.windowCloseFcn;
-    obj.hFig.Position(3) = 800;
-    obj.hFig.Position(4) = 800;
+
+    obj.hFig.Position = [15,50,900,900];
 
     %Add plot axes and empty plot elements
 
@@ -86,7 +86,7 @@ function setUpFigureWindow(obj)
                 'Callback', @obj.maxIntCallback);
 
     % Median filter text and edit box pair
-    uicontrol('Style', 'Text', 'Units', 'Normalized', ...
+    obj.textMedian = uicontrol('Style', 'Text', 'Units', 'Normalized', ...
                 'String', 'Median filter width', ...
                 'Position', [0.67, 0.03, 0.1, 0.02])
     obj.medFiltSize_editBox = uicontrol('Style', 'Edit', 'Units', 'Normalized', ...
@@ -96,7 +96,7 @@ function setUpFigureWindow(obj)
                 'Callback', @obj.medFiltSizeCallback);
 
     % Z fit order
-    uicontrol('Style', 'Text', 'Units', 'Normalized', ...
+    obj.textZfit = uicontrol('Style', 'Text', 'Units', 'Normalized', ...
                 'String', 'Z fit order', ...
                 'Position', [0.55, 0.03, 0.08, 0.02]);
     obj.zFitOrder_editBox = uicontrol('Style', 'Edit', 'Units', 'Normalized', ...
