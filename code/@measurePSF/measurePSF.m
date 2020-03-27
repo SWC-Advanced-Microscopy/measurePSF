@@ -51,7 +51,7 @@ classdef measurePSF < handle
     %             FWHMz: 3.4500 % This is the average of the ZX and ZY fits
     %
     % Where the first four fields have detailed fit statistics for each of axes where
-    % a FWHM was esitimated. e.g. PSFstats.fitStats.X contains:
+    % a FWHM was estimated. e.g. PSFstats.fitStats.X contains:
     %
     %     fit: [1x1 cfit]
     %    data: [1x1 struct]
@@ -225,7 +225,7 @@ classdef measurePSF < handle
             % Load PSF stack if it was provided as a file
             if ischar(inputPSFstack)
                 obj.fname=inputPSFstack;
-                if ~exist(fname,'file')
+                if ~exist(obj.fname,'file')
                     fprintf('%s does not exist. Not loading.\n',obj.fname)
                     return
                 end
