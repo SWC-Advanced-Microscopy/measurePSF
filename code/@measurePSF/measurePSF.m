@@ -232,7 +232,7 @@ classdef measurePSF < handle
                 inputPSFstack = mpsf_tools.load3Dtiff(obj.fname);
 
                 %If this is a ScanImage stack we can pull out the voxel size
-                header=sibridge.readTifHeader(fname);
+                header=sibridge.readTifHeader(obj.fname);
                 if ~isempty(header)
                     if ~exist('micsPerPixelZ','var') || isempty(micsPerPixelZ) %So user-supplied values take priority
                         micsPerPixelZ = header.stackZStepSize;
