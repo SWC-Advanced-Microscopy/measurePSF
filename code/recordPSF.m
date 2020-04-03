@@ -96,7 +96,7 @@ function varargout=recordPSF(micronsToImage, stepSizeInMicrons)
     % We will set up ScanImage to acquire the z-stack
     framesToAverage = API.hDisplay.displayRollingAverageFactor;
     numSlices = round(micronsToImage/stepSizeInMicrons);
-    fileStem = sprintf('PSF_%s', datestr(now,'YYYY-MM-DD_HH-mm-ss'));
+    fileStem = sprintf('PSF_%s', datestr(now,'yyyy-mm-dd_HH-MM-SS'));
 
     try
         API.hFastZ.enable=false;
