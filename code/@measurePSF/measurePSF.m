@@ -97,7 +97,7 @@ classdef measurePSF < handle
         % (along with the "reportFWHM" properties being true) then
         % the associated FWHM value is not reported.
         micsPerPixelXY=1 % Number of microns per pixel in X/Y
-        micsPerPixelZ=1  % Number of microns per pixel in Z
+        micsPerPixelZ=5  % Number of microns per pixel in Z
     end
 
 
@@ -241,6 +241,8 @@ classdef measurePSF < handle
                         fov=diff(header.imagingFovUm(1:2));
                         micsPerPixelXY=fov/header.linesPerFrame;
                     end
+                else
+                    fprintf('\n\n *** TIFF header is missing ScanImage meta-data. Is this a ScanImage TIFF? *** \n\n')
                 end
             end % ischar(inputPSFstack)
 
@@ -248,15 +250,16 @@ classdef measurePSF < handle
             if exist('micsPerPixelZ','var') && isnumeric(micsPerPixelZ) && isscalar(micsPerPixelZ)
                 obj.micsPerPixelZ = micsPerPixelZ;
                 obj.reportFWHMz=true;
+            else
+                fprintf('No valid value found for FWHM in Z. Not reporting it.\n')
             end
 
             if exist('micsPerPixelXY','var') && isnumeric(micsPerPixelXY) && isscalar(micsPerPixelXY)
                 obj.micsPerPixelXY = micsPerPixelXY;
                 obj.reportFWHMxy=true;
+            else
+                fprintf('No valid value found for FWHM in XY. Not reporting it.\n')
             end
-
-
-
 
             % Make empty data and generate empty plots using these
             obj.PSFstack = zeros(2^8);
@@ -267,8 +270,7 @@ classdef measurePSF < handle
             obj.psfCenterInZ=1;
 
 
-            obj.setUpFigureWindow % Make the axes and so forth
-
+            obj.setUpFigureWindow; % Make the axes and so forth
 
             % Set up listeners that will update the plots when the PSF stack is modified or 
             % other relevant properties are changed. 
@@ -284,7 +286,7 @@ classdef measurePSF < handle
                 obj.fname = 'DEMO_SIMULATED_PSF';
                 obj.addNewStack(P.PSF)
             else
-                obj.addNewStack(inputPSFstack)
+                obj.addNewStack(inputPSFstack);
             end
 
         end %Close constructor
@@ -296,7 +298,7 @@ classdef measurePSF < handle
             obj.zoomedArea = [1,1,size(newStack,1)-1,size(newStack,2)-1];
             obj.PSFstack_Orig = newStack;
             obj.PSFstack = newStack;
-            obj.updateUserSelected %Ensure the white lines showing the current user z-plane are correct
+            obj.updateUserSelected; %Ensure the white lines showing the current user z-plane are correct
         end
 
 
@@ -407,6 +409,7 @@ classdef measurePSF < handle
 
             imagesc(obj.hPSF_ZXax, PSF_ZX)
 
+
             obj.hPSF_ZXax.NextPlot='Add';
             obj.hPSF_ZX_currentZplane = plot(obj.hPSF_ZXax,[userZdepth, userZdepth], obj.hPSF_ZXax.YLim, ':w');
             obj.hPSF_ZXax.NextPlot='Replace';
@@ -427,12 +430,12 @@ classdef measurePSF < handle
 
             fitZX = obj.fit_Intensity(maxPSF_ZX, obj.micsPerPixelZ);
             x = (1:length(maxPSF_ZX))*obj.micsPerPixelZ;
-            [OUT.ZX.FWHM,OUT.ZX.fitPlot_H] = obj.plotCrossSectionAndFit(x,maxPSF_ZX,fitZX,obj.micsPerPixelZ/4,0,'XZ');
+            [OUT.ZX.FWHM,OUT.ZX.fitPlot_H] = obj.plotCrossSectionAndFit(x, maxPSF_ZX, fitZX, obj.micsPerPixelZ/4, 0, 'XZ');
             set(obj.hPSF_ZX_fitAx,'XAxisLocation','Top')
 
             %Suppress title with FWHM estimate if no mics per pixel was provided
             if ~obj.reportFWHMz
-                title('')
+                title('XZ: pizel size not provided')
             end
             obj.PSFstats.ZX.im = maxPSF_ZX;
             obj.PSFstats.ZX.fit = fitZX;
@@ -472,7 +475,7 @@ classdef measurePSF < handle
 
             %Suppress title with FWHM estimate if no mics per pixel was provided
             if ~obj.reportFWHMz
-                title('')
+                title('YZ: pizel size not provided')
             end
             obj.PSFstats.ZY.im = maxPSF_ZY;
             obj.PSFstats.ZY.fit = fitZY;
