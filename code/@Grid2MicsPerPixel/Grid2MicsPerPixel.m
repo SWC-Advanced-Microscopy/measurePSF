@@ -165,7 +165,7 @@ classdef Grid2MicsPerPixel < handle
         function newGridFromSI(obj,~,~)
             % Get a new image from ScanImage, process, and display results
             % Run on button press
-            inputIM = rot90(obj.getCurrentImageFromScanImageAsArray);
+            inputIM = obj.getCurrentImageFromScanImageAsArray;
             if isempty(inputIM)
                 return
             end
@@ -357,6 +357,8 @@ classdef Grid2MicsPerPixel < handle
             elseif length(T)==1
                 siImage=T{1};
             end
+            
+            siImage = rot90(siImage);
         end % getCurrentImageFromScanImageAsArray
 
 
