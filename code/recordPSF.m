@@ -40,17 +40,8 @@ function varargout=recordPSF(micronsToImage, stepSizeInMicrons)
 
 
 
-    %Get ScanImage API handle
-    scanimageObjectName='hSI';
-    W = evalin('base','whos');
-    SIexists = ismember(scanimageObjectName,{W.name});
-    if ~SIexists
-        fprintf('ScanImage not started or no ScanImage object in base workspace\n')
-        return
-    end
-
-    API = evalin('base',scanimageObjectName); % get hSI from the base workspace
-
+    % Connect to ScanImage using the linker class
+    API = sibridge.silinker;
 
     % Create 'PSF' directory in the user's desktop
     [~, userdir] = system('echo %USERPROFILE%');
@@ -75,50 +66,76 @@ function varargout=recordPSF(micronsToImage, stepSizeInMicrons)
 
     %Record the state of all ScanImage settings we will change so we can change them back
 
-    fastZEnable = API.hFastZ.enable;         
-    fastZNumVolumes = API.hFastZ.numVolumes; 
-    fastZwaveform = API.hFastZ.waveformType;
 
-    stackManCentr = API.hStackManager.stackStartCentered;
-    stackManNumSlices = API.hStackManager.numSlices; 
-    stackManStepSize = API.hStackManager.stackZStepSize;
-    stackManShutterClose = API.hStackManager.shutterCloseMinZStepSize;
-    stackManSlowFastZ = API.hStackManager.slowStackWithFastZ;
 
-    loggingEnabled = API.hChannels.loggingEnable; 
-    logAveFact = API.hScan2D.logAverageFactor;
-    framesPerSlice = API.hStackManager.framesPerSlice;
+    if API.versionGreaterThan('2020') 
+        stackManShutterClose = API.hSI.hStackManager.closeShutterBetweenSlices;
+        numVolumes = API.hSI.hStackManager.numVolumes;
+        stackActuator = API.hSI.hStackManager.stackActuator;
+        stackManCentr = API.hSI.hStackManager.centeredStack;
+        stackManEnable = API.hSI.hStackManager.enable;
+    else
+        fastZEnable = API.hSI.hFastZ.enable;
+        fastZNumVolumes = API.hSI.hFastZ.numVolumes; 
+        stackManCentr = API.hSI.hStackManager.stackStartCentered;
+        stackManShutterClose = API.hSI.hStackManager.shutterCloseMinZStepSize;
+        stackManSlowFastZ = API.hSI.hStackManager.slowStackWithFastZ;  %This will be enabled
+    end 
 
-    logFileStem = API.hScan2D.logFileStem;
-    logFilePath = API.hScan2D.logFilePath;
-    logFileCounter = API.hScan2D.logFileCounter;
+    fastZwaveform = API.hSI.hFastZ.waveformType;
+
+    
+    stackManNumSlices = API.hSI.hStackManager.numSlices; 
+    stackManStepSize = API.hSI.hStackManager.stackZStepSize;
+
+
+    loggingEnabled = API.hSI.hChannels.loggingEnable; 
+    logAveFact = API.hSI.hScan2D.logAverageFactor;
+    framesPerSlice = API.hSI.hStackManager.framesPerSlice;
+
+    logFileStem = API.hSI.hScan2D.logFileStem;
+    logFilePath = API.hSI.hScan2D.logFilePath;
+    logFileCounter = API.hSI.hScan2D.logFileCounter;
 
     % We will set up ScanImage to acquire the z-stack
-    framesToAverage = API.hDisplay.displayRollingAverageFactor;
+    framesToAverage = API.hSI.hDisplay.displayRollingAverageFactor;
     numSlices = round(micronsToImage/stepSizeInMicrons);
     fileStem = sprintf('PSF_%s', datestr(now,'yyyy-mm-dd_HH-MM-SS'));
 
     try
-        API.hFastZ.enable=false;
-        API.hFastZ.numVolumes=1;
-        API.hFastZ.waveformType='step';
 
-        API.hStackManager.stackStartCentered=false; %TODO: SI doesn't work correctly when true
-        API.hStackManager.numSlices=numSlices;
-        API.hStackManager.stackZStepSize=stepSizeInMicrons;
-        API.hStackManager.shutterCloseMinZStepSize=stepSizeInMicrons+1;
-        API.hStackManager.slowStackWithFastZ=true;
+        if API.versionGreaterThan('2020') 
+            API.hSI.hStackManager.closeShutterBetweenSlices = false;
+            API.hSI.hStackManager.numVolumes = 1;
+            API.hSI.hStackManager.stackActuator = 'fastZ';
+            API.hSI.hStackManager.centeredStack = 0;
+            API.hSI.hStackManager.enable = true;
+        else
+            API.hSI.hFastZ.enable=false;
+            API.hSI.hFastZ.numVolumes=1;
+            API.hSI.hStackManager.stackStartCentered=false; %TODO: SI doesn't work correctly when true
+            API.hSI.hStackManager.shutterCloseMinZStepSize=stepSizeInMicrons+1;
+            API.hSI.hStackManager.slowStackWithFastZ=true;
+        end 
+        %%
+        API.hSI.hFastZ.waveformType='step';
 
-        API.hChannels.loggingEnable=true;
 
-        API.hScan2D.logFileStem=fileStem;
-        API.hScan2D.logFilePath=PSFdir;
-        API.hScan2D.logFileCounter=1;
+        API.hSI.hStackManager.numSlices=numSlices;
+        API.hSI.hStackManager.stackZStepSize=stepSizeInMicrons;
 
-        API.hStackManager.framesPerSlice = framesToAverage;
-        API.hScan2D.logAverageFactor = framesToAverage;
 
-        API.hDisplay.volumeDisplayStyle='Current'; % We won't bother about retaining this
+
+        API.hSI.hChannels.loggingEnable=true;
+
+        API.hSI.hScan2D.logFileStem=fileStem;
+        API.hSI.hScan2D.logFilePath=PSFdir;
+        API.hSI.hScan2D.logFileCounter=1;
+
+        API.hSI.hStackManager.framesPerSlice = framesToAverage;
+        API.hSI.hScan2D.logAverageFactor = framesToAverage;
+
+        API.hSI.hDisplay.volumeDisplayStyle='Current'; % We won't bother about retaining this
     catch ME
         %If something went wrong we revert the scan settings
         fprintf('Failed to set scan settings\n')
@@ -129,9 +146,9 @@ function varargout=recordPSF(micronsToImage, stepSizeInMicrons)
 
 
     % Start the acquisition and wait for it to finish
-    API.startGrab
+    API.hSI.startGrab
     while 1
-        if strcmp(API.acqState,'idle') %Break when finished
+        if strcmp(API.hSI.acqState,'idle') %Break when finished
             break
         end
         pause(0.25)
@@ -156,24 +173,34 @@ function varargout=recordPSF(micronsToImage, stepSizeInMicrons)
         % Return settings to original values
         fprintf('Finished\n')
 
-        API.hFastZ.enable = fastZEnable;         %We will set this to false
 
-        API.hFastZ.numVolumes = fastZNumVolumes; % Will set to 1
-        API.hFastZ.waveformType = fastZwaveform; %set to 'step'
 
-        API.hStackManager.stackStartCentered = stackManCentr;
-        API.hStackManager.numSlices = stackManNumSlices; 
-        API.hStackManager.stackZStepSize = stackManStepSize;
-        API.hStackManager.shutterCloseMinZStepSize = stackManShutterClose; %twice the step size we use
-        API.hStackManager.slowStackWithFastZ = stackManSlowFastZ; %This will be enabled
+        if API.versionGreaterThan('2020') 
+            API.hSI.hStackManager.closeShutterBetweenSlices = stackManShutterClose;
+            API.hSI.hStackManager.numVolumes = numVolumes;
+            API.hSI.hStackManager.stackActuator = stackActuator;
+            API.hSI.hStackManager.enable = stackManEnable;
+            API.hSI.hStackManager.centeredStack = stackManCentr;
+        else
+            API.hSI.hFastZ.enable = fastZEnable;         %We will set this to false
+            API.hSI.hFastZ.numVolumes = fastZNumVolumes;
+            API.hSI.hStackManager.stackStartCentered = stackManCentr;
+            API.hSI.hStackManager.shutterCloseMinZStepSize = stackManShutterClose; %twice the step size we use
+            API.hSI.hStackManager.slowStackWithFastZ = stackManSlowFastZ;
+        end
 
-        API.hChannels.loggingEnable = loggingEnabled; 
-        API.hScan2D.logAverageFactor = logAveFact; %Set to framestoAverage
-        API.hStackManager.framesPerSlice = framesPerSlice; %This will be framestoAverage
+        API.hSI.hFastZ.waveformType = fastZwaveform; %set to 'step'
 
-        API.hScan2D.logFileStem = logFileStem;
-        API.hScan2D.logFilePath = logFilePath;
-        API.hScan2D.logFileCounter = logFileCounter;
+        API.hSI.hStackManager.numSlices = stackManNumSlices; 
+        API.hSI.hStackManager.stackZStepSize = stackManStepSize;
+
+        API.hSI.hChannels.loggingEnable = loggingEnabled; 
+        API.hSI.hScan2D.logAverageFactor = logAveFact; %Set to framestoAverage
+        API.hSI.hStackManager.framesPerSlice = framesPerSlice; %This will be framestoAverage
+
+        API.hSI.hScan2D.logFileStem = logFileStem;
+        API.hSI.hScan2D.logFilePath = logFilePath;
+        API.hSI.hScan2D.logFileCounter = logFileCounter;
     end %cleanUpFunction
 
 end % recordPSF
