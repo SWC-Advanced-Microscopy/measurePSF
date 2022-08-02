@@ -7,7 +7,6 @@ function uniform_slide_laser_stability(fname)
 
 
     [inputPSFstack,metadata] = mpsf_tools.scanImage_stackLoad(fname);
-    micsPerPixelZ = metadata.stackZStepSize;
     micsPerPixelXY = metadata.micsPerPixelXY;
 
 

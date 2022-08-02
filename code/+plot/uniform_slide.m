@@ -11,7 +11,6 @@ function uniform_slide(fname,overlayZoom)
 
 
     [inputPSFstack,metadata] = mpsf_tools.scanImage_stackLoad(fname);
-    micsPerPixelZ = metadata.stackZStepSize;
     micsPerPixelXY = metadata.micsPerPixelXY;
 
 
