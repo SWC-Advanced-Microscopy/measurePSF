@@ -1,7 +1,7 @@
 function uniform_slide(laser_power_in_mW,laser_wavelength)
     % Image uniform slide at a range of settings
     %
-    % function uniform_slide(laser_power_in_mW,laser_wavelength)
+    % function record.uniform_slide(laser_power_in_mW,laser_wavelength)
     %
     % User must supply power and wavelengths as integers.
     % This is for logging purposes.

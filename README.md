@@ -2,7 +2,7 @@
 
 This repository contains the following MATLAB tools that are designed to work with ScanImage.
 
-* `recordPSF` to acquire PSF stacks
+* `record.PSF` to acquire PSF stacks
 * `measurePSF` to estimate PSF size. For a demo, run `measurePSF('demo')`. 
 * `Grid2MicsPerPixel`  measures the number of microns per pixel along x and y by analyzing an image of an EM grid. 
 * `mpsf_tools.meanFrame` plots the mean frame intensity as a function of time whilst you are scanning.
@@ -22,16 +22,16 @@ Add the measurePSF `code` directory to your MATLAB path.
 To get a good image of sub-micron bead I generally zoom to about 20x or 25x and use an image size of 256x256 or 512x512 pixels.
 I take z-plane every 0.25 microns and average about 25 to 40 images per per plane. 
 It's not worth doing more because we'll be fitting a curve to z-intensity profile.
-To measure the PSF you can either use the included `recordPSF` function or manually set up ScanImage (see `documentation` folder if you need to do that). 
+To measure the PSF you can either use the included `record.PSF` function or manually set up ScanImage (see `documentation` folder if you need to do that).
 
-## Using `recordPSF` to obtain a PSF
+## Using `record.PSF` to obtain a PSF
 * Find a bead, zoom in. 
 * Select only one channel to save in the CHANNELS window.
 * Set the averaging to the quantity you wish to use.
 * Move the focus *down* to the lowest point you wish to image and press press "Zero Z" in MOTOR CONTROLS
 * Now focus back up to where you want to start the stack and press "Read Pos" in MOTOR CONTROLS. 
 This is the number of microns you will acquire (ignore the negative sign if present). 
-* Run `recordPSF` with number of microns obtained above as the first input argument. This will obtain the stack with a 0.25 micron resolution using the averaging you have set. e.g. `recordPSF(12)` for a 12 micron stack. The save loction is reported to screen. You can define a different z resolution using the second input argument. 
+* Run `record.PSF` with number of microns obtained above as the first input argument. This will obtain the stack with a 0.25 micron resolution using the averaging you have set. e.g. `record.PSF(12)` for a 12 micron stack. The save loction is reported to screen. You can define a different z resolution using the second input argument.
 
 
 ## Measuring the PSF
@@ -88,7 +88,7 @@ This code has been written in collaboration with [Fred Marbach](https://www.sain
 * 2020/01/14 -- If no input args to measurePSF, bring up the load GUI.
 * 2020/01/13 -- Convert Grid2MicsPerPixel to a class and add buttons to interact with SI.
 * 2020/01/08 -- Grid2MicsPerPixel optionally can extract the grid image directly from ScanImage.
-* 2018/11/09 -- Add `recordPSF`.
+* 2018/11/09 -- Add `record.PSF`.
 * 2017/11/28 -- Simple GUI for interactive cropping of a desired bead.
 * 2017/11/28 -- Improve output data and don't display FWHM for directions in which the user defined no microns per pixel.
 * 2017/11/27 -- Convert `measurePSF` to a class so adding new features is easier.

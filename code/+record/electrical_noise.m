@@ -1,7 +1,7 @@
 function electrical_noise()
     % Record electrical noise on all four channels
     %
-    % function electrical_noise()
+    % function record.electrical_noise()
     %
     %
     % Rob Campbell, SWC 2022

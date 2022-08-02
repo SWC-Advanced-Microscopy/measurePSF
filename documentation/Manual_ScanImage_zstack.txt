@@ -1,6 +1,6 @@
 ## Manually setting up ScanImage to record a PSF with averaging
 These instructions explain how to set up ScanImage to obtain an averaged fast z stack. 
-These instructions are pretty much what `recordPSF` does, so if that's not working for you just follow the steps below.
+These instructions are pretty much what `record.PSF` does, so if that's not working for you just follow the steps below.
 
 * Using the slow-z device and reading its position, determine the depth at which you wish to start imaging and note how far below it you wish to go. 
 * Place objective at the top of the stack you wish to acquire with the slow-z motor.

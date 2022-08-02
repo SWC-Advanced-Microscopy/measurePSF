@@ -1,6 +1,6 @@
-function varargout=recordPSF(micronsToImage, stepSizeInMicrons,laser_power_in_mW,laser_wavelength)
+function varargout=PSF(micronsToImage, stepSizeInMicrons,laser_power_in_mW,laser_wavelength)
 
-% function recordPSF(micronsToImage, stepSizeInMicrons)
+% function record.PSF(micronsToImage, stepSizeInMicrons)
 %
 % Purpose
 % Records a z-stack of a bead. Images a depth of "micronsToImage" 
@@ -24,10 +24,10 @@ function varargout=recordPSF(micronsToImage, stepSizeInMicrons,laser_power_in_mW
 %
 % Examples
 % 1) Record a 12 micron stack every 0.25 microns
-% >> recordPSF(12) 
+% >> record.PSF(12)
 %
 % 2) Record a 20 micron stack every 0.5 microns and return path to tiff 
-% >> F=recordPSF(20,0.5);
+% >> F=record.PSF(20,0.5);
 %
 %
 % Rob Campbell - SWC Nov 2018
@@ -136,4 +136,4 @@ function varargout=recordPSF(micronsToImage, stepSizeInMicrons,laser_power_in_mW
         varargout{1} = pathToTiff;
     end
 
-end % recordPSF
+end % record.PSF

@@ -1,7 +1,7 @@
 function lens_paper(laser_power_in_mW,laser_wavelength)
     % Image lens paper to analyse SNR.
     %
-    % function lens_paper(laser_power_in_mW,laser_wavelength)
+    % function record.lens_paper(laser_power_in_mW,laser_wavelength)
     %
     % User must supply power and wavelengths as integers.
     % This is for logging purposes.
