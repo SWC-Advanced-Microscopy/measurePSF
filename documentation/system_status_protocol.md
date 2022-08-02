@@ -31,7 +31,8 @@ Output saved in a `diagnostics` directory on the Desktop.
 The ThorLabs is 1650 microns whereas the bead slide from Molecular Probes is 1010 microns. Swap out the slide and move the objective down by 650 micron (or whatever you measure your difference as being with calipers). 
 Find a bead and measure PSF with measurePSF. It's not a bad idea to measure beads at two or three points on the slide. 
 Use 920 nm 10 mW. You might want to use 15 mW or so for finding the beads then switch to 10 mW for imaging. Image with a FOV of about 80 microns at 512 by 512 pixels. That is a zoom of around 20 (+/- 5). Use 0.25 or 0.5 microns step size in Z. Usually 15 to 20 microns of imaged thickness is enough. 
-Average 8 or 16 frames per optical plane (just set Frame Rolling Average in ScanImage to the desired value).
+Average at least 8 or 16 frames per optical plane with an 8 kHz reso scanner (just set Frame Rolling Average in ScanImage to the desired value).
+Going up to about 40 frames per slice will yield nicer images if you care more about shape in x/y. For Z you are probably OK at the lower averaging values.
 Data are saved to Desktop. 
 Make sure you know the bead diamater. If in doubt, do not use the mixed size well.
 
