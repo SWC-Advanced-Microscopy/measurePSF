@@ -5,7 +5,7 @@ function [imStack,metadata] = scanImage_stackLoad(fileName)
 % function imStack = mpsf_tools.scanImage_stackLoad(fileName)
 %
 % Purpose
-% Return z stack and metadata
+% Return z stack and metadata. Subtracts any offset.
 %
 % Inputs
 % fileName - string defining the file name to load
@@ -39,6 +39,17 @@ function [imStack,metadata] = scanImage_stackLoad(fileName)
         fprintf('\n\n *** TIFF header is missing ScanImage meta-data. Is this a ScanImage TIFF? *** \n\n')
     	return
     end
+
+
+    % subtract the offset
+    chans = metadata.channelSave; % The acquired channels
+    offset = metadata.channelOffset(chans); % Use acquired channels to index offsets
+	%expand offsets so they are the same length as the image data
+    offset = repmat(offset,1,size(imStack,3)/length(offset));
+    for ii=1:size(imStack,3)
+    	imStack(:,:,ii) = imStack(:,:,ii)-offset(ii);
+    end
+
 
     % Calculate the FOV
     fov=diff(metadata.imagingFovUm(1:2));
