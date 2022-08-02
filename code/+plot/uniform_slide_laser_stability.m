@@ -1,5 +1,8 @@
 function uniform_slide_laser_stability(fname)
-    % Make nice plots of the uniform slide data
+    % Plots that explore how stable are the the fluoro slide images with time
+    %
+    % function plot.uniform_slide_laser_stability(fname)
+
 
 
 
@@ -9,7 +12,7 @@ function uniform_slide_laser_stability(fname)
 
 
     % Make a new figure or return a plot handle as appropriate
-    fig = mpsf_tools.returnFigureHandleForFile([fname,'stability']);
+    fig = mpsf_tools.returnFigureHandleForFile([fname,mfilename]);
 
 
     subplot(1,2,1)

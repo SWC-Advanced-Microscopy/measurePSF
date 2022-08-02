@@ -1,5 +1,8 @@
 function uniform_slide(fname,overlayZoom)
-    % Make nice plots of the uniform slide data
+    % Make nice plots of the uniform slide data to explore illumination
+    %
+    % plot.uniform_slide(fname,overlayZoom)
+
 
 
     if nargin<2
@@ -13,7 +16,7 @@ function uniform_slide(fname,overlayZoom)
 
 
     % Make a new figure or return a plot handle as appropriate
-    fig = mpsf_tools.returnFigureHandleForFile(fname);
+    fig = mpsf_tools.returnFigureHandleForFile([fname,mfilename]);
 
     subplot(1,2,1)
     plotData = mean(inputPSFstack,3);
