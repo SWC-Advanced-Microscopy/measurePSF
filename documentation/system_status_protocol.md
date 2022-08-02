@@ -61,3 +61,9 @@ record.lens_paper(20,800)
 ```
 It's a good idea to do about three FOVs. 
 Results are saved to desktop. 
+
+### Electrical noise
+Run:
+```
+record.electrical_noise
+```
