@@ -138,7 +138,13 @@ function si_metadata = parse_field(tiff_header, si_field)
         for i_tok = 1:numel(tokens)
             fieldname = tokens{i_tok}{1};
             string_value = tokens{i_tok}{2};
-            si_metadata(i_img).(fieldname) = eval(string_value);
+
+            if startsWith(string_value,'scanimage')
+                % Avoids certain errors
+                si_metadata(i_img).(fieldname) = string_value;
+            else
+                si_metadata(i_img).(fieldname) = eval(string_value);
+            end
         end
     end
 

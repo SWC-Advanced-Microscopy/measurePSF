@@ -1,37 +1,45 @@
-function imStack=scanImage_stackLoad(filePattern)
-% load slow z-stack from ScanImage for PSF analysis
+function [imStack,metadata] = scanImage_stackLoad(fileName)
+% load a z-stack from ScanImage for analysis return also in a structure useful metadata
 %
 %
-% function imStack=scanImage_stackLoad(filePattern)
+% function imStack = mpsf_tools.scanImage_stackLoad(fileName)
 %
-% If ScanImage stored z-stacks as separate files for each layer
-% then use this function to load these and convert to one stack. 
-% **Assumes one channel was collected**
-% It's generally easier to set up the z-stack properly by 
-% checking the enable button on the z-stack GUI. Then you get
-% the whole stack in one file. 
+% Purpose
+% Return z stack and metadata
 %
 % Inputs
-% filePattern - string defining the file pattern to search for
+% fileName - string defining the file name to load
 %
+% Outputs
+% imStack - 3D stack
+% metadata - useful metadata from scanimage header
 % 
 % Example
-% imS = scanImageStackLoad('Bead_*.tif')
+% [imS,metadata] = mpsf_tools.scanImageStackLoad('Bead_*.tif')
 %
 % 
-% Hint:
-% Tell ScanImage to start numbering the files from 10 to avoid
-% ordering issues with slices 1 through 9
 %
-%
-% Rob Campbell - Basel 2016
+% Rob Campbell - SWC 2022
 
-d=dir(filePattern);
 
-imStack = mean(load3Dtiff(d(1).name),3);
-imStack = repmat(imStack,[1,1,length(d)]);
+	imStack = [];
+	metadata = [];
 
-for ii=2:length(d)
-	imStack(:,:,ii) = mean(load3Dtiff(d(ii).name),3);
-end
+    if ~exist(fileName,'file')
+        fprintf('%s does not exist. Not loading.\n',obj.fname)
+        return
+    end
 
+	imStack = mpsf_tools.load3Dtiff(fileName);
+
+
+    % Pull out the voxel size and other useful information
+	metadata=sibridge.readTifHeader(fileName);
+    if isempty(metadata)
+        fprintf('\n\n *** TIFF header is missing ScanImage meta-data. Is this a ScanImage TIFF? *** \n\n')
+    	return
+    end
+
+    % Calculate the FOV
+    fov=diff(metadata.imagingFovUm(1:2));
+	metadata.micsPerPixelXY = fov/metadata.linesPerFrame;

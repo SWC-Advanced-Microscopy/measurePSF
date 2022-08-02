@@ -224,26 +224,20 @@ classdef measurePSF < handle
 
             % Load PSF stack if it was provided as a file
             if ischar(inputPSFstack)
-                obj.fname=inputPSFstack;
-                if ~exist(obj.fname,'file')
-                    fprintf('%s does not exist. Not loading.\n',obj.fname)
-                    return
-                end
-                inputPSFstack = mpsf_tools.load3Dtiff(obj.fname);
 
-                %If this is a ScanImage stack we can pull out the voxel size
-                header=sibridge.readTifHeader(obj.fname);
-                if ~isempty(header)
-                    if ~exist('micsPerPixelZ','var') || isempty(micsPerPixelZ) %So user-supplied values take priority
-                        micsPerPixelZ = header.stackZStepSize;
-                    end
-                    if ~exist('micsPerPixelXY','var') || isempty(micsPerPixelXY)
-                        fov=diff(header.imagingFovUm(1:2));
-                        micsPerPixelXY=fov/header.linesPerFrame;
-                    end
-                else
-                    fprintf('\n\n *** TIFF header is missing ScanImage meta-data. Is this a ScanImage TIFF? *** \n\n')
+                obj.fname=inputPSFstack;
+
+                [inputPSFstack,metadata] = mpsf_tools.scanImage_stackLoad(obj.fname);
+
+
+                % Allow for user-specified values to over-ride what the header returns
+                if ~exist('micsPerPixelZ','var') || isempty(micsPerPixelZ)
+                    micsPerPixelZ = metadata.stackZStepSize;
                 end
+                if ~exist('micsPerPixelXY','var') || isempty(micsPerPixelXY)
+                    micsPerPixelXY = metadata.micsPerPixelXY;
+                end
+
             end % ischar(inputPSFstack)
 
 
