@@ -51,7 +51,7 @@ function uniform_slide(laser_power_in_mW,laser_wavelength)
     end
 
     API.hSI.hStackManager.framesPerSlice=20; % We will record multiple frames
-    API.hSI.hRoiManager.pixelsPerLine=128;
+    API.hSI.hRoiManager.pixelsPerLine=256;
 
     API.hSI.hScan2D.logAverageFactor = 1;
     API.hSI.hDisplay.volumeDisplayStyle='Current';
