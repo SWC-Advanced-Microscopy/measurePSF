@@ -1,6 +1,8 @@
 function tPath=logpath
 	% Return path to which log information will be saved
 	% e.g. on a Windows machine this will be the current user's Desktop
+	%
+	% function desktop_dir = mpsf_tools.logpath
 
 
  	
