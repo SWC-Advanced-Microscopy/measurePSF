@@ -19,7 +19,7 @@ Add the measurePSF `code` directory to your MATLAB path.
 
 
 ## Obtaining a PSF in ScanImage with averaging and fastZ
-To get a good image of sub-micron bead I generally zoom to about 20x or 25x and use an image size of 256 by 256 pixels. 
+To get a good image of sub-micron bead I generally zoom to about 20x or 25x and use an image size of 256x256 or 512x512 pixels.
 I take z-plane every 0.25 microns and average about 25 to 40 images per per plane. 
 It's not worth doing more because we'll be fitting a curve to z-intensity profile.
 To measure the PSF you can either use the included `recordPSF` function or manually set up ScanImage (see `documentation` folder if you need to do that). 
@@ -67,13 +67,15 @@ See `help mpsf_tools.meanFrame` for advanced usage.
 The function has been well well-tested under R2016b and later. 
 It should also work on R2016a. It's known to fail on 2015b and earlier.
 Requires the Curve-Fitting Toolbox, the Image Processing Toolbox, and the Stats Toolbox.
-
+It is known to work with ScanImage 2020 to 2022 and likely earlier versions are also OK.
 
 ### Acknowledgments
 This code has been written in collaboration with [Fred Marbach](https://www.sainsburywellcome.org/web/people/fred-marbach) ([SWC](https://www.sainsburywellcome.org)), and Bruno Pichler and Mark Walling of [INSS](https://www.inss.org.uk/). 
 
 
 # Change-Log
+* 2022/08/02 -- Add function for imaging electrical noise and document protocol.
+* 2022/08/01 -- Add functions for recording lens paper and uniform slides.
 * 2020/02/19 -- Add tiff stack name to title of top right plot. v 5.0
 * 2020/02/18 -- tidy measurePSF pdf and add dummy values to demo mode. v 4.75
 * 2020/02/18 -- bug fixes, check coarse z acquisition works, add PDF saving to grid tool. v 4.5

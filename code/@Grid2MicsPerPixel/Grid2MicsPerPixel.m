@@ -357,6 +357,8 @@ classdef Grid2MicsPerPixel < handle
             elseif length(T)==1
                 siImage=T{1};
             end
+            
+            siImage = rot90(siImage);
         end % getCurrentImageFromScanImageAsArray
 
 

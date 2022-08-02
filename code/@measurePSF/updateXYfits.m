@@ -32,7 +32,7 @@ function OUT=updateXYfits(obj)
 
     %Suppress title with FWHM estimate if no mics per pixel was provided
     if ~obj.reportFWHMxy
-        title('')
+        title('XY: mics/pixel missing')
     end
     obj.PSFstats.Y.fit = fitY;
     obj.PSFstats.Y.data = Y;
