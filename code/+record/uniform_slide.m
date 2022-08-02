@@ -1,5 +1,5 @@
 function uniform_slide(laser_power_in_mW,laser_wavelength)
-    % Image uniform slide at a range of settings
+    % Image uniform slide
     %
     % function record.uniform_slide(laser_power_in_mW,laser_wavelength)
     %
@@ -56,30 +56,21 @@ function uniform_slide(laser_power_in_mW,laser_wavelength)
     API.hSI.hScan2D.logAverageFactor = 1;
     API.hSI.hDisplay.volumeDisplayStyle='Current';
 
-    % Loop through these zoom factors. TODO but later do only zoom 1 and 
-    % infer the others from it when making the drop off curves
-    zoomFacts = [1,1.5,2];
+
+    API.hSI.hRoiManager.scanZoomFactor = 1; % Set zoom
 
     API.hSI.hChannels.loggingEnable=true;
 
-    for ii=1:length(zoomFacts)
-        % Set zoom
-        API.hSI.hRoiManager.scanZoomFactor = zoomFacts(ii);
+    fileStem = sprintf('uniform_slice_zoom__%s_%dnm_%dmW__%s', ...
+            strrep(num2str(API.hSI.hRoiManager.scanZoomFactor),'.','-'), ...
+            laser_wavelength, ...
+            laser_power_in_mW, ...
+            datestr(now,'yyyy-mm-dd_HH-MM-SS'));
+    API.hSI.hScan2D.logFileStem=fileStem;
+    API.hSI.hScan2D.logFilePath=saveDir;
+    API.hSI.hScan2D.logFileCounter=1;
 
-        % Set file name and save dir
-        fileStem = sprintf('uniform_slice_zoom_%s_%dnm_%dmW__%s', ...
-                strrep(num2str(API.hSI.hRoiManager.scanZoomFactor),'.','-'), ...
-                laser_wavelength, ...
-                laser_power_in_mW, ...
-                datestr(now,'yyyy-mm-dd_HH-MM-SS'));
-        API.hSI.hScan2D.logFileStem=fileStem;
-        API.hSI.hScan2D.logFilePath=saveDir;
-        API.hSI.hScan2D.logFileCounter=1;
-
-        API.acquireAndWait;
-    end
-
-
+    API.acquireAndWait;
 
 
     mpsf_tools.reapplyScanImageSettings(API,settings);
