@@ -605,19 +605,42 @@ classdef measurePSF < handle
 
 
         function saveImage(obj,~,~)
-            obj.toggleUIelments('off')
-            fname = fullfile(mpsf_tools.logpath,[datestr(now,'yyyy-mm-dd_HH-MM-SS'),'_PSF.pdf']);
-    
-            % show the file name of the tiff stack (if available) on screen.
-            tmp = obj.hUserSelectedPlaneTitle.String;
-            if ~isempty(obj.fname)
-                obj.hUserSelectedPlaneTitle.String = strrep(obj.fname,'_','\_');
+            obj.toggleUIelements('off')
+
+            try
+                % Get the first part of the name
+                [a,b]=regexp(obj.fname,'PSF_.*20\d{2}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}');
+                pdf_name = obj.fname(a:b);
+
+                % Get the centre of the ROI in order to create a unique file name
+                ROI_centre = round(obj.zoomedArea(1:2) + obj.zoomedArea(3:4)/2);
+                pdf_name = sprintf('Bead_%s__ROI_%d_%d__Zfwhm_%d-%d.pdf', ...
+                                pdf_name, ...
+                                ROI_centre, ...
+                                floor(obj.PSFstats.FWHMz), ...
+                                round(rem(obj.PSFstats.FWHMz, floor(obj.PSFstats.FWHMz)),1)*10 );
+
+                fname = fullfile(mpsf_tools.logpath,pdf_name);
+
+                % Show the file name of the tiff stack (if available) on screen.
+                origString = obj.hUserSelectedPlaneTitle.String;
+                origFontSize = obj.hUserSelectedPlaneTitle.FontSize;
+                if ~isempty(obj.fname)
+                    obj.hUserSelectedPlaneTitle.String = strrep(obj.fname,'_','\_');
+                    obj.hUserSelectedPlaneTitle.FontSize = 9;
+                end
+            catch ME
+                obj.toggleUIelements('on')
+                obj.hUserSelectedPlaneTitle.String = origString;
+                obj.hUserSelectedPlaneTitle.FontSize = origFontSize;
+                rethrow(ME)
             end
 
             print('-dpdf','-bestfit',fname)
             fprintf('Saved image to: %s\n',fname)
-            obj.toggleUIelments('on')
-            obj.hUserSelectedPlaneTitle.String = tmp;
+            obj.toggleUIelements('on')
+            obj.hUserSelectedPlaneTitle.String = origString;
+            obj.hUserSelectedPlaneTitle.FontSize = origFontSize;
         end % Close saveImage
 
     end % close methods
@@ -625,7 +648,7 @@ classdef measurePSF < handle
 
     methods (Hidden)
 
-        function toggleUIelments(obj,toggleState)
+        function toggleUIelements(obj,toggleState)
             % Toggle UI elemnents to allow for prettier saved images
             % toggleState should be the string 'on' or 'off'
             obj.drawBox_PushButton.Visible = toggleState;
@@ -637,7 +660,7 @@ classdef measurePSF < handle
             obj.medFiltSize_editBox.Visible=toggleState;
             obj.textZfit.Visible=toggleState;
             obj.textMedian.Visible=toggleState;
-        end %toggleUIelments
+        end %toggleUIelements
 
     end %Hidden methods
 
