@@ -69,7 +69,7 @@ function lens_paper(fname)
 
     subplot(2,2,4)
     plot(im_mu(:),im_var(:),'.k')
-    H=mpsf_tools.addFitLine()
+    H=mpsf_tools.addFitLine;
     title(sprintf('Gain %d',round(H.b(2))))
 
     xlabel('Mean')
