@@ -95,3 +95,7 @@ function uniform_slide(fname,overlayZoom)
     end
 
     set(gca,'Color',[1,1,1]*0.5)
+
+
+    % Nicely scale the plot window so the two figure are sized well with respect to each other
+    fig.Position(3) = fig.Position(4)*2.3;

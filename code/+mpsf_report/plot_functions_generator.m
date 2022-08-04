@@ -37,17 +37,22 @@ for ii=1:length(d)
 
     if startsWith(tmp.name,'electrical')
         out(n) = generic_generator_template(tmp);
+        out(n).type = 'electrical_noise';
         out(n).plotting_func = @plot.electrical_noise;
         n=n+1;
-    elseif startsWith(tmp.name,'uniform_slice_zoom_1')
+    elseif startsWith(tmp.name,'uniform_slice_')
         out(n) = generic_generator_template(tmp);
+        out(n).type = 'uniform_slide';
         out(n).plotting_func = @plot.uniform_slide;
         n=n+1;
+
         out(n) = generic_generator_template(tmp);
+        out(n).type = 'laser_stability';
         out(n).plotting_func = @plot.uniform_slide_laser_stability;
         n=n+1;
     elseif startsWith(tmp.name,'lens_paper_')
         out(n) = generic_generator_template(tmp);
+        out(n).type = 'lens_paper';
         out(n).plotting_func = @plot.lens_paper;
         n=n+1;
     end
@@ -63,6 +68,7 @@ end
 % Internal functions follow
 function out = generic_generator_template(t_dir)
     out.full_path_to_data = fullfile(t_dir.folder,t_dir.name);
+    out.type = [];
     out.plotting_func = [];
     out.laser_wavelength = mpsf_report.laser_wavelength_from_fname(t_dir.name);
     out.laser_power = mpsf_report.laser_power_from_fname(t_dir.name);

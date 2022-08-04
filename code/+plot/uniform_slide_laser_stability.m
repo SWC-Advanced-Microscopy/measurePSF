@@ -36,3 +36,7 @@ function uniform_slide_laser_stability(fname)
     mpsf_tools.add_scale_axis_tick_labels(gca,micsPerPixelXY)
 
     title('Variance')
+
+
+    % Nicely scale the plot window so the two figure are sized well with respect to each other
+    fig.Position(3) = fig.Position(4)*2.3;

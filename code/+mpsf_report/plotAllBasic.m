@@ -1,16 +1,14 @@
-function plotAllBasic(genPlotStructure)
+function plotAllBasic(data_dir)
     % Makes all plots defined by the gen plot structure
     %
-    % function plotAllBasic(genPlotStructure)
+    % function plotAllBasic(data_dir)
     %
     % Purpose
-    % Simply runs through all the elements of the structure produced by
-    % mpsf_report.plot_functions_generator and creates all the plots.
-    % It then leaves the plot windows open. If no input is provided,
-    % it looks in the current directory for data.
+    % Makes all available plots from a data directory and tiles them over the screen.
+    % If no input is provided, it looks in the current directory for data.
     %
     % Inputs
-    % genPlotStructure - [optional] output of mpsf_report.plot_functions_generator
+    % data_dir - [optional] location of data directory.
     %
     % Outputs
     % none
@@ -18,9 +16,13 @@ function plotAllBasic(genPlotStructure)
     % Rob Campbell - SWC 2022
 
 
+
     if nargin<1
-        genPlotStructure = mpsf_report.plot_functions_generator;
+        data_dir = pwd;
     end
+
+    genPlotStructure = mpsf_report.plot_functions_generator(data_dir);
+
 
     fig=[];
     for ii=1:length(genPlotStructure)
