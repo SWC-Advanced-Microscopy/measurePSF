@@ -610,17 +610,17 @@ classdef measurePSF < handle
             try
                 % Get the first part of the name
                 [a,b]=regexp(obj.fname,'PSF_.*20\d{2}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}');
-                pdf_name = obj.fname(a:b);
+                im_name = obj.fname(a:b);
 
                 % Get the centre of the ROI in order to create a unique file name
                 ROI_centre = round(obj.zoomedArea(1:2) + obj.zoomedArea(3:4)/2);
-                pdf_name = sprintf('Bead_%s__ROI_%d_%d__Zfwhm_%d-%d.pdf', ...
-                                pdf_name, ...
+                im_name = sprintf('Bead_%s__ROI_%d_%d__Zfwhm_%d-%d', ...
+                                im_name, ...
                                 ROI_centre, ...
                                 floor(obj.PSFstats.FWHMz), ...
                                 round(rem(obj.PSFstats.FWHMz, floor(obj.PSFstats.FWHMz)),1)*10 );
 
-                fname = fullfile(mpsf_tools.logpath,pdf_name);
+                fname = fullfile(mpsf_tools.logpath,im_name);
 
                 % Show the file name of the tiff stack (if available) on screen.
                 origString = obj.hUserSelectedPlaneTitle.String;
@@ -636,7 +636,12 @@ classdef measurePSF < handle
                 rethrow(ME)
             end
 
-            print('-dpdf','-bestfit',fname)
+            print('-dpdf','-bestfit',[fname,'.pdf']) % PDF
+
+            obj.hFig.UserData = obj.PSFstats;
+            saveas(obj.hFig, [fname,'.fig']) % Figure file to incorporate into a report
+            obj.hFig.UserData = [];
+
             fprintf('Saved image to: %s\n',fname)
             obj.toggleUIelements('on')
             obj.hUserSelectedPlaneTitle.String = origString;

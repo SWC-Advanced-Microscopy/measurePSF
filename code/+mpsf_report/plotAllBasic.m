@@ -28,9 +28,15 @@ function plotAllBasic(data_dir)
     for ii=1:length(genPlotStructure)
         t_dat = genPlotStructure(ii);
 
+        [~,fname,ext]=fileparts(t_dat.full_path_to_data);
+
+        fprintf('%d/%d. Processing %s%s\n', ii, length(genPlotStructure), fname, ext)
+
         t_dat.plotting_func(t_dat.full_path_to_data)
         fig(end+1) = gcf;
     end
+
+    fprintf('Made %d figures\n', length(fig))
 
     mpsf_tools.TileFigures(fig);
 

@@ -1,4 +1,4 @@
-function generatePDF(data_dir)
+function rpt=generatePDF(data_dir)
     % Makes all plots defined by the gen plot structure
     %
     % function generatePDF(data_dir)
@@ -42,7 +42,7 @@ function generatePDF(data_dir)
 
 
     % Preferences
-    rpt = Report('figureSnapshotSideBySideLandscape','pdf');
+    rpt = Report('Session_report','pdf');
     rpt.Layout.Landscape = true;
     imgStyle = {ScaleToFit(true)};
 
@@ -112,7 +112,26 @@ function generatePDF(data_dir)
     add(rpt, chapter);
 
 
+    %% PSFs
+    chapter = Chapter('Title', 'Laser stability');
 
-    close(rpt);
+    f=find(strcmp({GEN.type},'bead_psf'));
+
+    for ii=1:length(f)
+        GEN(f(ii)).plotting_func(GEN(f(ii)).full_path_to_data)
+
+        fig = Figure();
+
+        figImg = Image(getSnapshotImage(fig, rpt));
+        figImg.Style = imgStyle;
+        delete(gcf);
+
+        add(chapter, figImg);
+    end
+
+    add(rpt, chapter);
+
+
+    %close(rpt);
     rptview(rpt);
 

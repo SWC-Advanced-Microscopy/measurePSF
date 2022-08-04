@@ -58,6 +58,26 @@ for ii=1:length(d)
     end
 end
 
+% If the user has acquired PSFs but not selected beads and saved the results, we warn them.
+PSF_files = dir('PSF_*');
+bead_files = dir('Bead_PSF_*.fig');
+
+if ~isempty(PSF_files)>0 && isempty(bead_files)
+    fprintf('\nYou have acquired PSF data but not selected and beads and saved the images\n')
+    fprintf('You should do this if you want to incorporate bead PSF in the summary graphics\n\n')
+end
+
+% Otherwise if we have found bead PSF figure files, we can add them to the list
+if ~isempty(bead_files)
+    for ii = 1:length(bead_files)
+        tmp = bead_files(ii);
+        out(n) = generic_generator_template(tmp);
+        out(n).type = 'bead_psf';
+        out(n).plotting_func = @mpsf_report.loadBeadPSF;
+        n=n+1;
+    end
+end
+
 
 if ~exist('out','var')
     fprintf('No data found in directory %s\n', data_dir)
@@ -72,3 +92,4 @@ function out = generic_generator_template(t_dir)
     out.plotting_func = [];
     out.laser_wavelength = mpsf_report.laser_wavelength_from_fname(t_dir.name);
     out.laser_power = mpsf_report.laser_power_from_fname(t_dir.name);
+
