@@ -49,9 +49,20 @@ else
 end
 
 
+if contains(header.scannerType,'RG')
+    scannerType = sprintf('Microscope is resonant scanning at %0.0f kHz.\n', ...
+                header.scannerFrequency/1E3);
+elseif strcmp(header.scannerType,'GG')
+    scannerType = sprintf('Microscope is galvo scanning.\n');
+else
+    scannerType = '';
+end
+
 
 %%
 % Make summary text
 out = [...
     sprintf('Microscope summary data were acquired %s ', acqDate), ...
-    sprintf('using ScanImage version %s.\n', scanimageVersion)];
+    sprintf('using ScanImage version %s.\n', scanimageVersion), ...
+    scannerType];
+

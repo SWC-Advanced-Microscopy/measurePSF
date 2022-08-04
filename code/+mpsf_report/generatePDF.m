@@ -1,4 +1,4 @@
-function rpt=generatePDF(data_dir)
+function varargout=generatePDF(data_dir)
     % Makes all plots defined by the gen plot structure
     %
     % function generatePDF(data_dir)
@@ -41,11 +41,11 @@ function rpt=generatePDF(data_dir)
     import mlreportgen.report.*;
 
 
-    % Preferences
+    % Preferences and useful instances of classes
     rpt = Report('Session_report','pdf');
     rpt.Layout.Landscape = true;
     imgStyle = {ScaleToFit(true)};
-
+    br = PageBreak();
 
 
     %% Intro to the report by summarising whatever information we can automatically generate
@@ -64,16 +64,19 @@ function rpt=generatePDF(data_dir)
 
 
     f=find(strcmp({GEN.type},'electrical_noise'));
-    GEN(f).plotting_func(GEN(f).full_path_to_data)
+    for ii=1:length(f)
+        GEN(f(ii)).plotting_func(GEN(f(ii)).full_path_to_data)
 
-    fig = Figure();
+        fig = Figure();
 
-    figImg = Image(getSnapshotImage(fig, rpt));
-    figImg.Style = imgStyle;
+        figImg = Image(getSnapshotImage(fig, rpt));
+        figImg.Style = imgStyle;
+        delete(gcf);
 
-    add(chapter, fig)
+        add(chapter, figImg);
+    end
+
     add(rpt,chapter)
-    delete(gcf);
 
 
 
@@ -83,15 +86,19 @@ function rpt=generatePDF(data_dir)
     chapter = Chapter('Title', 'Image uniformity');
 
     f=find(strcmp({GEN.type},'uniform_slide'));
-    GEN(f).plotting_func(GEN(f).full_path_to_data)
 
-    fig = Figure();
+    for ii=1:length(f)
+        GEN(f(ii)).plotting_func(GEN(f(ii)).full_path_to_data)
 
-    figImg = Image(getSnapshotImage(fig, rpt));
-    figImg.Style = imgStyle;
-    delete(gcf);
+        fig = Figure();
 
-    add(chapter, figImg);
+        figImg = Image(getSnapshotImage(fig, rpt));
+        figImg.Style = imgStyle;
+        delete(gcf);
+
+        add(chapter, figImg);
+    end
+
     add(rpt, chapter);
 
 
@@ -100,20 +107,24 @@ function rpt=generatePDF(data_dir)
     chapter = Chapter('Title', 'Laser stability');
 
     f=find(strcmp({GEN.type},'laser_stability'));
-    GEN(f).plotting_func(GEN(f).full_path_to_data)
 
-    fig = Figure();
+    for ii=1:length(f)
+        GEN(f(ii)).plotting_func(GEN(f(ii)).full_path_to_data)
 
-    figImg = Image(getSnapshotImage(fig, rpt));
-    figImg.Style = imgStyle;
-    delete(gcf);
+        fig = Figure();
 
-    add(chapter, figImg);
+        figImg = Image(getSnapshotImage(fig, rpt));
+        figImg.Style = imgStyle;
+        delete(gcf);
+
+        add(chapter, figImg);
+    end
+
     add(rpt, chapter);
 
 
     %% PSFs
-    chapter = Chapter('Title', 'Laser stability');
+    chapter = Chapter('Title', 'Bead PSF');
 
     f=find(strcmp({GEN.type},'bead_psf'));
 
@@ -132,6 +143,51 @@ function rpt=generatePDF(data_dir)
     add(rpt, chapter);
 
 
-    %close(rpt);
+
+    %% Lens paper
+    chapter = Chapter('Title', 'Gain from lens paper');
+
+    f=find(strcmp({GEN.type},'lens_paper'));
+
+    for ii=1:length(f)
+        p = GEN(f(ii)).plotting_func(GEN(f(ii)).full_path_to_data,4);
+
+        fig = Figure();
+
+        figImg = Image(getSnapshotImage(fig, rpt));
+        figImg.Style = imgStyle;
+        delete(gcf);
+
+        [~,fname] = fileparts(GEN(f(ii)).full_path_to_data);
+
+        p1 = sprintf(['%s: %s\nLens paper imaged at %d mW at %d nm. ', ...
+            'Using %s at %dV. Input range %d/%d V.'...
+            ], ...
+            fname, ...
+            p.laser_power_in_mw, ...
+            p.laser_wavelength_in_nm, ...
+            p.PMT_name, ...
+            p.PMT_gain_in_V, ...
+            p.input_range);
+
+        add(chapter,p1)
+        add(chapter, figImg);
+        add(chapter,br)
+    end
+
+    add(rpt, chapter);
+
+
+
+    close(rpt);
     rptview(rpt);
+
+
+    if nargout>0
+        varargout{1} = rpt;
+    end
+
+    if nargout>1
+        varargout{2} = GEN;
+    end
 
