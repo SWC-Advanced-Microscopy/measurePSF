@@ -88,8 +88,7 @@ function varargout=generatePDF(data_dir)
     f=find(strcmp({GEN.type},'uniform_slide'));
 
     for ii=1:length(f)
-        GEN(f(ii)).plotting_func(GEN(f(ii)).full_path_to_data)
-
+        GEN(f(ii)).plotting_func(GEN(f(ii)).full_path_to_data);
         fig = Figure();
 
         figImg = Image(getSnapshotImage(fig, rpt));
@@ -109,15 +108,20 @@ function varargout=generatePDF(data_dir)
     f=find(strcmp({GEN.type},'laser_stability'));
 
     for ii=1:length(f)
-        GEN(f(ii)).plotting_func(GEN(f(ii)).full_path_to_data)
+        txt = GEN(f(ii)).plotting_func(GEN(f(ii)).full_path_to_data);
 
+        p1 = Paragraph(txt);
+        p1.Style = {FontSize('10pt')};
         fig = Figure();
-
         figImg = Image(getSnapshotImage(fig, rpt));
-        figImg.Style = imgStyle;
+        figImg.Style = {Width('6.5in')};%imgStyle;
+
         delete(gcf);
 
-        add(chapter, figImg);
+        % Organise into a table
+        tbl = Table({p1,figImg});
+        tbl.Style={Border('none')};
+        add(chapter,tbl)
     end
 
     add(rpt, chapter);
@@ -160,6 +164,7 @@ function varargout=generatePDF(data_dir)
 
         [~,fname] = fileparts(GEN(f(ii)).full_path_to_data);
 
+        % TODO -- produce this text in the plotting function like we did for laser stability.
         p1 = sprintf(['%s: %s\nLens paper imaged at %d mW at %d nm. ', ...
             'Using %s at %dV. Input range %d/%d V.'...
             ], ...
