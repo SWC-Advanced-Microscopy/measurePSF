@@ -5,7 +5,7 @@ function [imStack,metadata] = scanImage_stackLoad(fileName)
 % function imStack = mpsf.tools.scanImage_stackLoad(fileName)
 %
 % Purpose
-% Return z stack and metadata. Subtracts any offset.
+% Return z stack and metadata. Subtracts any offset if needed.
 %
 % Inputs
 % fileName - string defining the file name to load
@@ -33,6 +33,7 @@ function [imStack,metadata] = scanImage_stackLoad(fileName)
 	imStack = mpsf.tools.load3Dtiff(fileName);
 
 
+
     % Pull out the voxel size and other useful information
 	metadata=sibridge.readTifHeader(fileName);
     if isempty(metadata)
@@ -41,13 +42,19 @@ function [imStack,metadata] = scanImage_stackLoad(fileName)
     end
 
 
-    % subtract the offset
+    % subtract the offset if needed
     chans = metadata.channelSave; % The acquired channels
     offset = metadata.channelOffset(chans); % Use acquired channels to index offsets
+    offsetSubtracted = metadata.channelSubtractOffset;
+
 	%expand offsets so they are the same length as the image data
     offset = repmat(offset,1,size(imStack,3)/length(offset));
+    offsetSubtracted = repmat(offsetSubtracted,1,size(imStack,3)/length(offsetSubtracted));
+
     for ii=1:size(imStack,3)
-    	imStack(:,:,ii) = imStack(:,:,ii)-offset(ii);
+        if offsetSubtracted(ii) == 0
+        	imStack(:,:,ii) = imStack(:,:,ii)-offset(ii);
+        end
     end
 
 
