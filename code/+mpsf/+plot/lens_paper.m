@@ -41,7 +41,7 @@ function varargout = lens_paper(fname,n)
     im_var = var(inputPSFstack,[],3);
 
 
-    subplot(2,2,1)
+    subplot(4,4,[1,2,5,6])
 
     imagesc(im_mu)
     axis equal tight
@@ -54,21 +54,7 @@ function varargout = lens_paper(fname,n)
     title('Mean lens paper image')
 
 
-    subplot(2,2,2)
-    log_im = im_mu;
-    log_im(log_im<1)=1;
-    imagesc(log(log_im))
-    axis equal tight
-    colormap gray
-
-    colorbar
-
-    mpsf.tools.add_scale_axis_tick_labels(gca,micsPerPixelXY)
-    title('Log mean lens paper image')
-
-
-
-    subplot(2,2,3)
+    subplot(4,4,[3,4,7,8])
     imagesc(inputPSFstack(:,:,1))
     axis equal tight
     colormap gray
@@ -80,7 +66,7 @@ function varargout = lens_paper(fname,n)
     title('Single frame')
 
 
-    subplot(2,2,4)
+    subplot(4,4,[9,10,13,14])
     x = im_mu(1:n:end);
     y = im_var(1:n:end);
     if n>1
@@ -91,17 +77,41 @@ function varargout = lens_paper(fname,n)
     plot(x,y,'.k')
 
     H=mpsf.tools.addFitLine;
+    system_gain = H.b(2);
 
     if n==1
-        title(sprintf('Gain %d',round(H.b(2))))
+        title(sprintf('Gain %d',round(system_gain)))
     else
         title(sprintf('Gain %d (kept 1 in %d points)', ...
-            round(H.b(2)), n))
+            round(system_gain), n))
     end
 
     xlabel('Mean')
     ylabel('Variance')
 
+    % Do not allow negative numbers in axes as these shouldn't really exist and sometimes the scale
+    % is really negative for no good reason.
+    ax = gca;
+    ax.YLim(1)=0;
+    ax.XLim(1)=0;
+
+
+    subplot(4,4,[11,12])
+    hist(im_mu(:),1000)
+    ax = gca;
+    set(ax.XAxis,'Scale','Log')
+    xlabel('Log mean pixel intensity')
+    ylabel('#')
+    ylim
+
+
+    subplot(4,4,[15,16])
+    hist(im_mu(:)/system_gain,1000)
+    ax = gca;
+    set(ax.XAxis,'Scale','Log')
+    xlabel('Log mean pixel intensity/gain')
+    ylabel('#')
+    ylim
 
 
     % Optionally return key parameters as a structure
