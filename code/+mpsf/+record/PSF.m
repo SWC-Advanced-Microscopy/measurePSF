@@ -1,0 +1,139 @@
+function varargout=PSF(micronsToImage, stepSizeInMicrons,laser_power_in_mW,laser_wavelength)
+
+% function record.PSF(micronsToImage, stepSizeInMicrons)
+%
+% Purpose
+% Records a z-stack of a bead. Images a depth of "micronsToImage" 
+% from the current Z position down using steps defined by 
+% "stepSizeInMicrons" (0.25 microns by default). Averages using
+% the number of frames entered in the ScanImage IMAGE CONTROLS window.
+% Data will be saved to a TIFF on the desktop in a directory called
+% "PSF". This will be made if needed. 
+%
+% Inputs
+% micronsToImage - total depth to image in microns
+% stepSizeInMicrons - number of microns between each z step
+%
+% Inputs [optional]
+% laser_power_in_mW - manual entry of laser power in mW so it's in the file name.
+% laser_wavelength - manual entry of laser wavelength in nm so it's in the file name.
+%
+% Outputs
+% Optionally returns path to the TIFF.
+%
+%
+% Examples
+% 1) Record a 12 micron stack every 0.25 microns
+% >> record.PSF(12)
+%
+% 2) Record a 20 micron stack every 0.5 microns and return path to tiff 
+% >> F=record.PSF(20,0.5);
+%
+%
+% Rob Campbell - SWC Nov 2018
+
+
+    micronsToImage = abs(micronsToImage);
+    if nargin<2 || isempty(stepSizeInMicrons)
+        stepSizeInMicrons=0.25;
+    end
+
+    if nargin<3
+        laser_power_in_mW = '';
+    else
+        laser_power_in_mW = sprintf('_%dmW',round(laser_power_in_mW));
+    end
+
+    if nargin<4
+        laser_wavelength = '';
+    else
+        laser_wavelength = sprintf('_%dnm', round(laser_wavelength));
+    end
+
+
+    % Connect to ScanImage using the linker class
+    API = sibridge.silinker;
+
+    if length(API.hSI.hChannels.channelSave) > 1
+        fprintf('Select just one channel to save\n')
+        return
+    end
+
+    % Create 'PSF' directory in the user's desktop
+    PSFdir = mpsf.tools.makeDesktopDirectory('PSF');
+    if isempty(PSFdir)
+        return
+    end
+
+
+    %Record the state of all ScanImage settings we will change so we can change them back
+    settings = mpsf.tools.recordScanImageSettings(API);
+
+
+
+    % We will set up ScanImage to acquire the z-stack
+    framesToAverage = API.hSI.hDisplay.displayRollingAverageFactor;
+    numSlices = round(micronsToImage/stepSizeInMicrons);
+    fileStem = sprintf('PSF%s%s_%s', ....
+            laser_wavelength, ...
+            laser_power_in_mW, ...
+            datestr(now,'yyyy-mm-dd_HH-MM-SS'));
+
+    try
+
+        if API.versionGreaterThan('2020') 
+            API.hSI.hStackManager.closeShutterBetweenSlices = false;
+            API.hSI.hStackManager.numVolumes = 1;
+            API.hSI.hStackManager.stackActuator = 'fastZ';
+            API.hSI.hStackManager.centeredStack = 0;
+            API.hSI.hStackManager.enable = true;
+        else
+            API.hSI.hFastZ.enable=false;
+            API.hSI.hFastZ.numVolumes=1;
+            API.hSI.hStackManager.stackStartCentered=false; %TODO: SI doesn't work correctly when true
+            API.hSI.hStackManager.shutterCloseMinZStepSize=stepSizeInMicrons+1;
+            API.hSI.hStackManager.slowStackWithFastZ=true;
+        end 
+        %%
+        API.hSI.hFastZ.waveformType='step';
+
+
+        API.hSI.hStackManager.numSlices=numSlices;
+        API.hSI.hStackManager.stackZStepSize=stepSizeInMicrons;
+
+
+
+        API.hSI.hChannels.loggingEnable=true;
+
+        API.hSI.hScan2D.logFileStem=fileStem;
+        API.hSI.hScan2D.logFilePath=PSFdir;
+        API.hSI.hScan2D.logFileCounter=1;
+
+        API.hSI.hStackManager.framesPerSlice = framesToAverage;
+        API.hSI.hScan2D.logAverageFactor = framesToAverage;
+
+        API.hSI.hDisplay.volumeDisplayStyle='Current';
+    catch ME
+        %If something went wrong we revert the scan settings
+        fprintf('Failed to set scan settings\n')
+        fprintf(ME.message)
+        mpsf.tools.reapplyScanImageSettings(API,settings);
+        return
+    end
+
+
+    % Start the acquisition and wait for it to finish
+    API.acquireAndWait;
+
+    mpsf.tools.reapplyScanImageSettings(API,settings);
+
+    % Report where the file was saved
+    mpsf.tools.reportFileSaveLocation(PSFdir,fileStem)
+
+
+
+    if nargout>0
+        varargout{1} = pathToTiff;
+    end
+
+end % record.PSF
