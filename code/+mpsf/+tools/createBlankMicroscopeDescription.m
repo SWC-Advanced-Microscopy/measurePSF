@@ -13,8 +13,8 @@ function varargout = createBlankMicroscopeDescription(overwrite)
     % Run this function then edit the file and move it to a better location
     % if appropriate. Fields that are not altered will not be read so you can
     % leave unused PMT and amplifier channels with the default text. Avoid using
-    % funny characters (', ", _ , ^, (, ), ,, :) in the text you enter as this is
-    % may cause problems downstream. Remember not to remove existing commas and colons.
+    % funny characters ['",_^():] in the text you enter as this is may cause
+    % problems downstream. Remember not to remove existing commas and colons.
     %
     %
     % Inputs

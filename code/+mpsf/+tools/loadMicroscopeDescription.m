@@ -1,7 +1,10 @@
 function microscope = loadMicroscopeDescription
     % load microscope description file and return as a structure
     %
+    %  function microscope = loadMicroscopeDescription
     %
+    % Purpose
+    % Return microscope description YAML
 
 
 
