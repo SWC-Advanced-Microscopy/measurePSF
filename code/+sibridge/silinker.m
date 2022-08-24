@@ -104,12 +104,15 @@ classdef silinker < handle
             % Since SI 5.6, scanner type "resonant" is returned as "rg"
             % This method returns either "resonant" or "linear"
             scannerType = lower(obj.hSI.hScan2D.scannerType);
-            if strcmpi('RG',scannerType) || strcmpi('resonant',scannerType) 
+            if contains(scannerType,'rg',) || strcmp('resonant',scannerType)
                 scannerType = 'resonant';
-            elseif strcmpi('GG',scannerType)
+            elseif strcmp('gg',scannerType)
                 scannerType='linear';
+            else
+                fprintf('Unknown scanner type %s\n', scannerType)
             end 
         end % scannerType
+
 
         function acquireAndWait(obj,block)
             % Start a Grab acquisition and block until SI completes it. 
