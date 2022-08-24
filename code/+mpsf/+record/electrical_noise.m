@@ -23,6 +23,7 @@ function electrical_noise()
     %Record the state of all ScanImage settings we will change so we can change them back
     settings = mpsf.tools.recordScanImageSettings(API);
 
+    % TODO -- bug. If there are not four PMTs this will return an error
     API.hSI.hPmts.powersOn=[0,0,0,0]; % Turn off PMTs
     pause(0.5)
 
