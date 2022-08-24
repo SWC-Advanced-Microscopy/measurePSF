@@ -23,7 +23,7 @@ function uniform_slide(fname,overlayZoom)
     imagesc(plotData)
     axis equal tight
     colormap gray
-
+    colorbar
 
     mpsf.tools.add_scale_axis_tick_labels(gca,micsPerPixelXY)
     grid on
@@ -82,6 +82,8 @@ function uniform_slide(fname,overlayZoom)
     set(gca,'Xtick',xticks,'XTickLabel',round([0,xticks(2:end)]*micsPerPixelXY))
     grid on
 
+    xlabel('microns')
+    ylabel('normalized intensity')
 
     % Overlay lines corresponding with the zooms
     if ~isempty(overlayZoom)
