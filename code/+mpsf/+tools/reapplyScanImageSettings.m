@@ -31,6 +31,7 @@ function settings = reapplyScanImageSettings(API,settings)
     end
 
     API.hSI.hRoiManager.scanZoomFactor = settings.zoomFactor;
+    API.hSI.hRoiManager.pixelsPerLine = settings.pixelsPerLine;
 
     API.hSI.hFastZ.waveformType = settings.fastZwaveform;
     API.hSI.hStackManager.numSlices = settings.stackManNumSlices; 

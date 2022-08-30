@@ -29,6 +29,7 @@ function settings = recordScanImageSettings(API)
     end 
 
     settings.zoomFactor = API.hSI.hRoiManager.scanZoomFactor;
+    settings.pixelsPerLine = API.hSI.hRoiManager.pixelsPerLine;
 
     settings.fastZwaveform = API.hSI.hFastZ.waveformType;
     settings.stackManNumSlices = API.hSI.hStackManager.numSlices; 
