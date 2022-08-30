@@ -23,8 +23,7 @@ function lens_paper(varargin)
     %
     %
     % Rob Campbell, SWC 2022
-
-    [laser_power_in_mW,laser_wavelength] = mpsf.record.parsePowerAndWavelength(varargin);
+    [laser_power_in_mW,laser_wavelength] = mpsf.record.parsePowerAndWavelength(varargin{:});
 
 
     % Connect to ScanImage using the linker class
