@@ -47,14 +47,23 @@ function lens_paper(varargin)
     %Apply common setting
     if API.versionGreaterThan('2020')
         API.hSI.hStackManager.numSlices=1;
-        API.hSI.hStackManager.numVolumes = 1;
     else
         API.hSI.hStackManager.numSlices=1;
         API.hSI.hFastZ.numVolumes=1;
     end
 
-    API.hSI.hStackManager.framesPerSlice=40; % We will record multiple frames
     API.hSI.hRoiManager.pixelsPerLine=256;
+
+    % We will acquire 5 seconds of data or 40 frames, whichever is larger. 
+    minFrames = 40;
+    fiveSecondsOfFrames = ceil(5 / API.hSI.hRoiManager.scanFramePeriod);
+    if fiveSecondsOfFrames < 40
+        numFramesToAcquire = minFrames;
+    else
+        numFramesToAcquire = fiveSecondsOfFrames;
+    end 
+
+    API.hSI.hStackManager.framesPerSlice=numFramesToAcquire;
 
     API.hSI.hScan2D.logAverageFactor = 1;
     API.hSI.hDisplay.volumeDisplayStyle='Current';
