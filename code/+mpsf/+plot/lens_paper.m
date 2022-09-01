@@ -64,7 +64,7 @@ function varargout = lens_paper(fname,n,aveBy)
     im_var = var(inputPSFstack,[],3);
 
     %remove data points with really large residuals
-    std_thresh=8;
+    std_thresh = 10;
     [~,robust_stats]=robustfit(im_mu(:),im_var(:));
     f = find(robust_stats.resid > std(robust_stats.resid*std_thresh));
     im_var(f) = median(im_var(:));
@@ -108,13 +108,9 @@ function varargout = lens_paper(fname,n,aveBy)
 
     H=mpsf.tools.addFitLine;
     system_gain = H.b(2);
+    system_gain_at_1us = system_gain / (1E-6/metadata.scanPixelTimeMean);
+    title(sprintf('Gain %d (estimated gain at 1 %ss: %d)',round(system_gain), char(181), round(system_gain_at_1us) ))
 
-    if n==1
-        title(sprintf('Gain %d',round(system_gain)))
-    else
-        title(sprintf('Gain %d (kept 1 in %d points)', ...
-            round(system_gain), n))
-    end
 
     xlabel('Mean')
     ylabel('Variance')
@@ -192,6 +188,12 @@ function varargout = lens_paper(fname,n,aveBy)
         out.im_mu = im_mu;
         out.im_var = im_var;
         out.inputPSFstack = inputPSFstack;
+        out.aveBy = aveBy;
+        out.system_gain = system_gain;
+        out.effective_frame_rate = metadata.scanFrameRate/aveBy;
+        out.effective_frame_period = 1/out.effective_frame_rate;
+        out.effective_scan_pixel_time_us = 1E6 * metadata.scanPixelTimeMean * aveBy;
+        out.system_gain_at_1us = system_gain_at_1us;
         varargout{3} = out;
     end
 
