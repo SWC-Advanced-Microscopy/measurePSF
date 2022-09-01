@@ -40,6 +40,13 @@ function varargout = lens_paper(fname,n)
     im_mu = mean(inputPSFstack,3);
     im_var = var(inputPSFstack,[],3);
 
+    %remove data points with really large residuals
+    std_thresh=8;
+    [~,robust_stats]=robustfit(im_mu(:),im_var(:));
+    f = find(robust_stats.resid > std(robust_stats.resid*std_thresh));
+    im_var(f) = median(im_var(:));
+    im_mu(f) = median(im_mu(:));
+    fprintf('Removed %d data points with residuals greater than %d SDs\n', length(f), std_thresh)
 
     subplot(4,4,[1,2,5,6])
 
@@ -102,7 +109,6 @@ function varargout = lens_paper(fname,n)
     set(ax.XAxis,'Scale','Log')
     xlabel('Log mean pixel intensity')
     ylabel('#')
-    ylim
 
 
     subplot(4,4,[15,16])
@@ -111,7 +117,6 @@ function varargout = lens_paper(fname,n)
     set(ax.XAxis,'Scale','Log')
     xlabel('Log mean pixel intensity/gain')
     ylabel('#')
-    ylim
 
 
     % Optionally return key parameters as a structure
