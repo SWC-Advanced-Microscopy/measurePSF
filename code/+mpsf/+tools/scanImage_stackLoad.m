@@ -43,13 +43,15 @@ function [imStack,metadata] = scanImage_stackLoad(fileName)
 
 
     % subtract the offset if needed
-    chans = metadata.channelSave; % The acquired channels
-    offset = metadata.channelOffset(chans); % Use acquired channels to index offsets
+    savedChans = metadata.channelSave; % The acquired channels
+    offset = metadata.channelOffset(savedChans); % Use acquired channels to index offsets
     offsetSubtracted = metadata.channelSubtractOffset;
+
 
 	%expand offsets so they are the same length as the image data
     offset = repmat(offset,1,size(imStack,3)/length(offset));
-    offsetSubtracted = repmat(offsetSubtracted,1,size(imStack,3)/length(offsetSubtracted));
+
+    offsetSubtracted = repmat(offsetSubtracted,1,size(imStack,3)/length(savedChans));
 
     for ii=1:size(imStack,3)
         if offsetSubtracted(ii) == 0
