@@ -30,9 +30,9 @@ classdef Grid2MicsPerPixel < handle
         % Data derived from image and used to measure the number of microns per pixel
         muCols %The mean of the rotated grid image along the columns (first axis)
         muRows %The mean of the rotated grid image along the rows (second axis)
-        micsPix %Structure storing the number of microns per pixel
-
-        rotImage = 0 % If zero the image is not rotated. If 1 by 90 degrees. if 2 by 180 degrees.
+        micsPix %Structure storing the number of microns per pixel        
+        rotImage = 0; %If zero the image is not rotated after loading from SI. If 
+                 %this is 1 we do 90 deg. If 2 180. 
     end % properties
 
 
@@ -363,8 +363,8 @@ classdef Grid2MicsPerPixel < handle
             elseif length(T)==1
                 siImage=T{1};
             end
-
-            if obj.rotImage
+            
+            if obj.rotImage>0
                 siImage = rot90(siImage,obj.rotImage);
             end
         end % getCurrentImageFromScanImageAsArray
