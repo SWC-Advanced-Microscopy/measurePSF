@@ -44,7 +44,6 @@ params.addParamValue('outputType', 'single', @(x) ischar(x) );
 params.parse(varargin{:});
 
 frames=params.Results.frames;
-supressParallelLoading=params.Results.supressParallelLoading;
 padMissingFrames=params.Results.padMissingFrames;
 outputType=params.Results.outputType;
 
