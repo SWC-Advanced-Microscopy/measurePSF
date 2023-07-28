@@ -10,7 +10,11 @@ function uniform_slide(fname,overlayZoom)
     end
 
 
-    [inputPSFstack,metadata] = mpsf.tools.scanImage_stackLoad(fname);
+    [imstack,metadata] = mpsf.tools.scanImage_stackLoad(fname);
+    if isempty(imstack)
+        return 
+    end
+
     micsPerPixelXY = metadata.micsPerPixelXY;
 
 
@@ -18,7 +22,7 @@ function uniform_slide(fname,overlayZoom)
     fig = mpsf.tools.returnFigureHandleForFile([fname,mfilename]);
 
     subplot(1,2,1)
-    plotData = mean(inputPSFstack,3);
+    plotData = mean(imstack,3);
 
     imagesc(plotData)
     axis equal tight
@@ -43,7 +47,7 @@ function uniform_slide(fname,overlayZoom)
         zoom_cols = parula(length(overlayZoom));
 
         for ii=1:length(overlayZoom)
-            L=length(inputPSFstack);
+            L=length(imstack);
             newSize = L/overlayZoom(ii);
             offset = (L-newSize)/2;
             r(ii) = rectangle('Position', [offset,offset,newSize,newSize], ...

@@ -22,23 +22,23 @@ function [imStack,metadata] = scanImage_stackLoad(fileName)
 % Rob Campbell - SWC 2022
 
 
-	imStack = [];
-	metadata = [];
+    imStack = [];
+    metadata = [];
 
     if ~exist(fileName,'file')
-        fprintf('%s does not exist. Not loading.\n',obj.fname)
+        fprintf('%s does not exist. Not loading.\n',fileName)
         return
     end
 
-	imStack = mpsf.tools.load3Dtiff(fileName);
+    imStack = mpsf.tools.load3Dtiff(fileName);
 
 
 
     % Pull out the voxel size and other useful information
-	metadata=sibridge.readTifHeader(fileName);
+    metadata=sibridge.readTifHeader(fileName);
     if isempty(metadata)
         fprintf('\n\n *** TIFF header is missing ScanImage meta-data. Is this a ScanImage TIFF? *** \n\n')
-    	return
+        return
     end
 
 
@@ -48,18 +48,18 @@ function [imStack,metadata] = scanImage_stackLoad(fileName)
     offsetSubtracted = metadata.channelSubtractOffset;
 
 
-	%expand offsets so they are the same length as the image data
+    %expand offsets so they are the same length as the image data
     offset = repmat(offset,1,size(imStack,3)/length(offset));
 
     offsetSubtracted = repmat(offsetSubtracted,1,size(imStack,3)/length(savedChans));
 
     for ii=1:size(imStack,3)
         if offsetSubtracted(ii) == 0
-        	imStack(:,:,ii) = imStack(:,:,ii)-offset(ii);
+            imStack(:,:,ii) = imStack(:,:,ii)-offset(ii);
         end
     end
 
 
     % Calculate the FOV
     fov=diff(metadata.imagingFovUm(1:2));
-	metadata.micsPerPixelXY = fov/metadata.linesPerFrame;
+    metadata.micsPerPixelXY = fov/metadata.linesPerFrame;

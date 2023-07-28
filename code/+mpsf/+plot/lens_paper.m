@@ -38,21 +38,25 @@ function varargout = lens_paper(fname,n,aveBy)
     end
 
 
-    [inputPSFstack,metadata] = mpsf.tools.scanImage_stackLoad(fname);
+    [imstack,metadata] = mpsf.tools.scanImage_stackLoad(fname);
+    if isempty(imstack)
+        return 
+    end
+
     micsPerPixelXY = metadata.micsPerPixelXY;
 
 
     %try averaging to simulate a slower scanner
     if aveBy>1
-        n=floor(size(inputPSFstack,3)/aveBy);
-        t=ones(size(inputPSFstack,1),size(inputPSFstack,2),n);
+        n=floor(size(imstack,3)/aveBy);
+        t=ones(size(imstack,1),size(imstack,2),n);
         ind=1;
-        for ii=1:aveBy:size(inputPSFstack,3)-aveBy+1
-            t(:,:,ind) = mean(inputPSFstack(:,:,ii:ii+aveBy-1),3);
+        for ii=1:aveBy:size(imstack,3)-aveBy+1
+            t(:,:,ind) = mean(imstack(:,:,ii:ii+aveBy-1),3);
             ind=ind+1;
         end
 
-        inputPSFstack=t;
+        imstack=t;
     end
 
 
@@ -60,8 +64,8 @@ function varargout = lens_paper(fname,n,aveBy)
     % Make a new figure or return a plot handle as appropriate
     fig = mpsf.tools.returnFigureHandleForFile([fname,mfilename]);
 
-    im_mu = mean(inputPSFstack,3);
-    im_var = var(inputPSFstack,[],3);
+    im_mu = mean(imstack,3);
+    im_var = var(imstack,[],3);
 
     %remove data points with really large residuals
     std_thresh = 10;
@@ -85,7 +89,7 @@ function varargout = lens_paper(fname,n,aveBy)
 
 
     subplot(4,4,[3,4,7,8])
-    imagesc(inputPSFstack(:,:,1))
+    imagesc(imstack(:,:,1))
     axis equal tight
     colormap gray
     cMax = getColorScaleLim(im_mu,0.001);
@@ -187,7 +191,7 @@ function varargout = lens_paper(fname,n,aveBy)
         clear out
         out.im_mu = im_mu;
         out.im_var = im_var;
-        out.inputPSFstack = inputPSFstack;
+        out.imstack = imstack;
         out.aveBy = aveBy;
         out.system_gain = system_gain;
         out.effective_frame_rate = metadata.scanFrameRate/aveBy;

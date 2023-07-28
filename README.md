@@ -13,6 +13,7 @@ This repository contains the following MATLAB tools that are designed to work wi
 
 ## Installation
 Add the measurePSF `code` directory to your MATLAB path. 
+You do not need to "Add With Subfolders".
 
 
 
