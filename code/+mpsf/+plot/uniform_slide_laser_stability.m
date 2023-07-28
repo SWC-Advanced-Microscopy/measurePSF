@@ -1,7 +1,7 @@
 function varargout = uniform_slide_laser_stability(fname)
     % Plots that explore how stable are the the fluoro slide images with time
     %
-    % function legend_text = plot.uniform_slide_laser_stability(fname)
+    % function legend_text = mpsf.plot.uniform_slide_laser_stability(fname)
     %
     % Optionally returns text that describes the plots
 

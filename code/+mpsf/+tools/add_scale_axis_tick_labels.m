@@ -16,12 +16,17 @@ function add_scale_axis_tick_labels(ax,micsPixXY)
 
     nTicks = 5;
 
-    xTick = linspace(0, floor(ax.XLim(2))-1, nTicks);
-    yTick = linspace(0, floor(ax.YLim(2))-1, nTicks);
+    xTick = linspace(1, floor(ax.XLim(2))-1, nTicks);
+    yTick = linspace(1, floor(ax.YLim(2))-1, nTicks);
 
 
-    xTickLabel = round(xTick * micsPixXY);
-    yTickLabel = round(yTick * micsPixXY);
+
+    xTickLabel = (xTick * micsPixXY);
+    yTickLabel = (yTick * micsPixXY);
+
+    % Centre around zero
+    xTickLabel = round(xTickLabel - mean(xTickLabel));
+    yTickLabel = round(yTickLabel - mean(yTickLabel));
 
 
     ax.XTick = xTick;

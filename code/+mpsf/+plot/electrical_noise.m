@@ -1,7 +1,7 @@
 function electrical_noise(fname)
     % Electrical noise plots
     %
-    % plot.electrical_noise(fname)
+    % mpsf.plot.electrical_noise(fname)
     %
     % Purpose
     % Plots of electrical noise for each channel with PMTs off
