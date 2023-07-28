@@ -40,7 +40,7 @@ for ii=1:length(d)
         out(n).type = 'electrical_noise';
         out(n).plotting_func = @mpsf.plot.electrical_noise;
         n=n+1;
-    elseif startsWith(tmp.name,'uniform_slice_')
+    elseif startsWith(tmp.name,'uniform_slide_')
         out(n) = generic_generator_template(tmp);
         out(n).type = 'uniform_slide';
         out(n).plotting_func = @mpsf.plot.uniform_slide;
