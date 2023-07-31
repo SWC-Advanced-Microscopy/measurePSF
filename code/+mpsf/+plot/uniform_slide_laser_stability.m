@@ -6,11 +6,11 @@ function varargout = uniform_slide_laser_stability(fname)
     % Optionally returns text that describes the plots
 
 
-
+    disp('LASER STABILITY PLOT')
 
     [imstack,metadata] = mpsf.tools.scanImage_stackLoad(fname);
     if isempty(imstack)
-        return 
+        return
     end
 
     micsPerPixelXY = metadata.micsPerPixelXY;

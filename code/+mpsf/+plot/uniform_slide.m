@@ -101,7 +101,7 @@ function uniform_slide(fname,varargin)
     end
 
     hold off
-
+    set(gca,'FontSize',12)
 
 
     % Plot intensity cross-sections along the red/cyan lines
@@ -169,6 +169,9 @@ function uniform_slide(fname,varargin)
     end
 
     % Tweak plot properties
-    set(gca,'Color',[1,1,1]*0.7)
+    set(gca,'Color',[1,1,1]*0.7, ...
+        'FontSize',12)
+
+    set(gcf,'InvertHardcopy','off', 'Color','w')
     % Nicely scale the plot window so the two figure are sized well with respect to each other
     fig.Position(3) = fig.Position(4)*2.3;

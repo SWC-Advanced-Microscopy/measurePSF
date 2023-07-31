@@ -27,7 +27,7 @@ function tPath=logpath
 		return
 	end
 
- 	
+
  	if ispc
  		% On Windows return the path to the User's Desktop
 	 	[~,userPath] = system('echo %USERPROFILE%');
@@ -40,4 +40,3 @@ function tPath=logpath
 	 	% Because we've already done Macs this is Linux
 	 	tPath = '~'; % In case there is no desktop folder in this distro
 	 end
-

@@ -2,7 +2,7 @@ function out = plot_functions_generator(data_dir)
 % Look in a directory containing maintenance data and generate a structure
 % that can be used to produce the plots.
 %
-% function out = plot_functions_generator(data_dir)
+% function out = mpsf.report.plot_functions_generator(data_dir)
 %
 % Purpose
 % This function generates a structure that contains information about which

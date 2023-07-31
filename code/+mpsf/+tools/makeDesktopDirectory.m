@@ -2,9 +2,19 @@ function mkdirname = makeDesktopDirectory(dirname)
 	% Make a directory in the user's Desktop called dirname
 	%
 	% function mkdirname = makeDesktopDirectory(dirname)
+    %
+    % Purpose
+    % Creates a directory of a given name in the user's Desktop folder.
+    %
+    % Inputs
+    % dirname - String defining a directory name to make.
 	%
+    % Outputs
+    % mkdirname - Full path of the created directory name.
+    %
+    % Rob Campbell - SWC 2023
 
-    % TODO == we need to copy microscope settings file to this directory
+    % TODO: need to copy microscope settings file to this directory
 
 	success = false;
 	mkdirname = [];

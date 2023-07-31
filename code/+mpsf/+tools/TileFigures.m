@@ -9,7 +9,7 @@ function varargout = TileFigures(figs, Nrows, Ncols, monitor_id, spacer ,box)
 % INPUT  :
 %       figs : Handles (or indices) array of figures to arrange (default: all)
 %      Nrows : Number of rows (vertical grid) of figures
-%      Ncols : Number of columns (horizontal grid) of figures 
+%      Ncols : Number of columns (horizontal grid) of figures
 % monitor_id : Monitor index to place images (default: same as matlab window)
 %     spacer : Gap space between figures, specified as a ratio (0 <= spacer < 0.5),
 %              either scalar or a 4-element vector:[left, down, right, up].
@@ -17,8 +17,8 @@ function varargout = TileFigures(figs, Nrows, Ncols, monitor_id, spacer ,box)
 %        box : Define a subsection of the screen by [Woffset, Hoffset, Wportion, Hportion]
 %              in which the figures will be confined.
 %              All elements of 'box' are normalized i.e. in the range: (0 - 1)
-%     
-%   
+%
+%
 %              - any or all of the above inputs can be manualy specified, or left
 %                empty ([]) for default values.
 %
@@ -47,9 +47,9 @@ function varargout = TileFigures(figs, Nrows, Ncols, monitor_id, spacer ,box)
 cascade = 20;      % cascade figures by this number of pixels (when too many figures), set to zero for total overlap.
 maxGrid = [3, 6];  % maximum auto grid (doesn't apply to explicit values)
 undock  = true;    % controls whether docked figures will be undocked or left docked.
-task_bar_offset = [0, 50]; % [0, 50] : assumes bottom task bar. 
-%            use: [0, -50] for top task bar 
-%                 [50,  0] for left task bar 
+task_bar_offset = [0, 50]; % [0, 50] : assumes bottom task bar.
+%            use: [0, -50] for top task bar
+%                 [50,  0] for left task bar
 %                 [-50, 0] for Right task bar
 %                 [0 ,  0] for no task bar
 extendOnGrid = true; % controls whether figures will be automatically extended to empty grid slots.
@@ -60,14 +60,14 @@ if nargin < 6 || isempty(box)
 end
 
 if nargin < 5 || isempty(spacer)
-    spacer  = [1, 1, 1, 1]/400; 
+    spacer  = [1, 1, 1, 1]/400;
 else
     if numel(spacer) == 1
         spacer = ones(1,4) *spacer;
     end
-    maxSpacer = 50;%percent    
-    assert(max(spacer(1:2) + spacer(3:4))<1,'The spacer specified leaves no space for figures.');    
-    assert(max(spacer(1:2) + spacer(3:4))<=maxSpacer/100,'Spacer must not exceed %d%.',maxSpacer);    
+    maxSpacer = 50;%percent
+    assert(max(spacer(1:2) + spacer(3:4))<1,'The spacer specified leaves no space for figures.');
+    assert(max(spacer(1:2) + spacer(3:4))<=maxSpacer/100,'Spacer must not exceed %d%.',maxSpacer);
 end
 
 if nargin < 4 || isempty(monitor_id)
@@ -92,7 +92,7 @@ if nargin < 1 || isempty(figs)
     figs = 1:length(figHandle);
 elseif isnumeric(figs) && ~isempty(figs)   %figure indices
     if numel(figs) > length(figs) %matrix form
-        if Ncols*Nrows == numel(figs) % provided correct size -> 
+        if Ncols*Nrows == numel(figs) % provided correct size ->
             %convert to vector while preserving configuration:
             figs = figs';
             figs = figs(:)';
@@ -153,8 +153,8 @@ if N_Grid == 0
     elseif Ncols == 0
         Ncols = ceil(n_fig / Nrows);
     end
-    
-    
+
+
     if scn_w < scn_h
         tmp = Nrows;
         Nrows = min(Ncols,maxGrid(2));
@@ -230,7 +230,7 @@ if nargout > 0
 end
 
 %% Tile figures:
-function TileFiguresStruct(TFstruct) 
+function TileFiguresStruct(TFstruct)
     for ii = 1:length(TFstruct.figs)
         if isnan(TFstruct.figs(ii)) || TFstruct.figs(ii)<1 || TFstruct.figs(ii)>length(TFstruct.figHandle) ||...
                 ~isgraphics(TFstruct.figHandle(TFstruct.figs(ii)),'figure')

@@ -10,7 +10,7 @@ function add_scale_axis_tick_labels(ax,micsPixXY)
     % Inputs
     % ax - axes to target
     % micsPixXY - microns per pixel in x/y
-    % 
+    %
     % Rob Campbell - SWC 2022
 
 

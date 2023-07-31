@@ -1,11 +1,13 @@
-function varargout=generatePDF(data_dir)
+function varargout=generateMPSFreport(data_dir)
     % Makes all plots defined by the gen plot structure
     %
-    % function generatePDF(data_dir)
+    % function generatePDFreport(data_dir)
     %
     % Purpose
     % Makes all available plots from a data directory and tiles them over the screen.
     % If no input is provided, it looks in the current directory for data.
+    % If you do not wish to generate a PDF report but wish to see all the figures, run
+    % mpsf.report.plotAllBasic
     %
     % Inputs
     % data_dir - [optional] location of data directory.
@@ -180,7 +182,6 @@ function varargout=generatePDF(data_dir)
 
     close(rpt);
     rptview(rpt);
-
 
     if nargout>0
         varargout{1} = rpt;

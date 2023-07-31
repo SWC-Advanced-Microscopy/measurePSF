@@ -1,14 +1,14 @@
-function varargout=PSF(micronsToImage, stepSizeInMicrons,laser_power_in_mW,laser_wavelength)
+function varargout = PSF(micronsToImage, stepSizeInMicrons,laser_power_in_mW,laser_wavelength)
 
 % function record.PSF(micronsToImage, stepSizeInMicrons)
 %
 % Purpose
-% Records a z-stack of a bead. Images a depth of "micronsToImage" 
-% from the current Z position down using steps defined by 
+% Records a z-stack of a bead. Images a depth of "micronsToImage"
+% from the current Z position down using steps defined by
 % "stepSizeInMicrons" (0.25 microns by default). Averages using
 % the number of frames entered in the ScanImage IMAGE CONTROLS window.
 % Data will be saved to a TIFF on the desktop in a directory called
-% "PSF". This will be made if needed. 
+% "PSF". This will be made if needed.
 %
 % Inputs
 % micronsToImage - total depth to image in microns
@@ -26,7 +26,7 @@ function varargout=PSF(micronsToImage, stepSizeInMicrons,laser_power_in_mW,laser
 % 1) Record a 12 micron stack every 0.25 microns
 % >> record.PSF(12)
 %
-% 2) Record a 20 micron stack every 0.5 microns and return path to tiff 
+% 2) Record a 20 micron stack every 0.5 microns and return path to tiff
 % >> F=record.PSF(20,0.5);
 %
 %
@@ -81,7 +81,7 @@ function varargout=PSF(micronsToImage, stepSizeInMicrons,laser_power_in_mW,laser
 
     try
 
-        if API.versionGreaterThan('2020') 
+        if API.versionGreaterThan('2020')
             API.hSI.hStackManager.closeShutterBetweenSlices = false;
             API.hSI.hStackManager.numVolumes = 1;
             API.hSI.hStackManager.stackActuator = 'fastZ';
@@ -93,7 +93,7 @@ function varargout=PSF(micronsToImage, stepSizeInMicrons,laser_power_in_mW,laser
             API.hSI.hStackManager.stackStartCentered=false; %TODO: SI doesn't work correctly when true
             API.hSI.hStackManager.shutterCloseMinZStepSize=stepSizeInMicrons+1;
             API.hSI.hStackManager.slowStackWithFastZ=true;
-        end 
+        end
         %%
         API.hSI.hFastZ.waveformType='step';
 

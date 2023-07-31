@@ -1,8 +1,13 @@
 # measurePSF
 
-This repository contains the following MATLAB tools that are designed to work with ScanImage.
+This repository contains tools for measuring microscope performance with ScanImage. 
+In particular, there are functions for recording and measuring Point Spread Functions (PSFs), 
+and for measuring field of view size using an EM grid. 
 
-* `record.PSF` to acquire PSF stacks
+
+## Main functions
+
+* `mpsf.record.PSF` to easily acquire PSF stacks with ScanImage.
 * `measurePSF` to estimate PSF size. For a demo, run `measurePSF('demo')`. 
 * `Grid2MicsPerPixel`  measures the number of microns per pixel along x and y by analyzing an image of an EM grid. 
 * `mpsf_tools.meanFrame` plots the mean frame intensity as a function of time whilst you are scanning.
@@ -17,22 +22,22 @@ You do not need to "Add With Subfolders".
 
 
 
-
-
 ## Obtaining a PSF in ScanImage with averaging and fastZ
-To get a good image of sub-micron bead I generally zoom to about 20x or 25x and use an image size of 256x256 or 512x512 pixels.
-I take z-plane every 0.25 microns and average about 25 to 40 images per per plane. 
-It's not worth doing more because we'll be fitting a curve to z-intensity profile.
-To measure the PSF you can either use the included `record.PSF` function or manually set up ScanImage (see `documentation` folder if you need to do that).
+To get a good image of a sub-micron bead:
+* Use image sizes of about 256x256 to 512x512 pixels.
+* Once a bead is found, zoom to about 20x or 25x.
+* Take a z-plane every 0.25 microns and average about 25 to 40 images per per plane. It's not worth doing more because we'll be fitting a curve to z-intensity profile.
 
-## Using `record.PSF` to obtain a PSF
+To measure the PSF you can either use the included `mpsf.record.PSF` function or manually set up ScanImage (see `documentation` folder if you need to do that).
+
+## Using `mpsf.record.PSF` to obtain a PSF
 * Find a bead, zoom in. 
-* Select only one channel to save in the CHANNELS window.
-* Set the averaging to the quantity you wish to use.
+* Select only one channel to save in the [CHANNELS window](https://docs.scanimage.org/Windows%2BReference%2BGuide/Channels.html).
+* Set the averaging to the quantity you wish to use in the [Image Controls](https://docs.scanimage.org/Windows%2BReference%2BGuide/Image%2BControls.html) window.
 * Move the focus *down* to the lowest point you wish to image and press press "Zero Z" in MOTOR CONTROLS
 * Now focus back up to where you want to start the stack and press "Read Pos" in MOTOR CONTROLS. 
 This is the number of microns you will acquire (ignore the negative sign if present). 
-* Run `record.PSF` with number of microns obtained above as the first input argument. This will obtain the stack with a 0.25 micron resolution using the averaging you have set. e.g. `record.PSF(12)` for a 12 micron stack. The save loction is reported to screen. You can define a different z resolution using the second input argument.
+* Run `mpsf.record.PSF` with number of microns obtained above as the first input argument. This will obtain the stack with a 0.25 micron resolution using the averaging you have set. e.g. `record.PSF(12)` for a 12 micron stack. The save location is reported to screen. You can define a different z resolution using the second input argument.
 
 
 ## Measuring the PSF
@@ -64,10 +69,29 @@ This function is used for things like tweaking a pre-chirper.
 See `help mpsf_tools.meanFrame` for advanced usage. 
 
 
+## Measuring field homogeneity
+To record data:
+```matlab
+mpsf.record.uniform_slide
+```
+The results are saved to a folder on the desktop. You can view the results as follows:
+```matlab
+% cd to directory containing data
+mpsf.plot.uniform_slide('uniform_slice_zoom_1_920nm_5mW__2022-08-02_10-09-33_00001.tif')
+```
+
+
+## PDF report
+You can generate a PDF report of all conducted analyses using 
+```matlab
+>> generateMPSFreport
+```
+
 ### Requirements
 The function has been well well-tested under R2016b and later. 
 It should also work on R2016a. It's known to fail on 2015b and earlier.
 Requires the Curve-Fitting Toolbox, the Image Processing Toolbox, and the Stats Toolbox.
+The MATLAB Report Generator is needed if you want to make PDF reports.
 It is known to work with ScanImage 2020 to 2022 and likely earlier versions are also OK.
 
 ### Acknowledgments
@@ -75,6 +99,7 @@ This code has been written in collaboration with [Fred Marbach](https://www.sain
 
 
 # Change-Log
+* 2023/07/31 -- Integrate functionality of making PDF reports, uniform slide analyses, and plots of lens paper. 
 * 2022/08/02 -- Add function for imaging electrical noise and document protocol.
 * 2022/08/01 -- Add functions for recording lens paper and uniform slides.
 * 2020/02/19 -- Add tiff stack name to title of top right plot. v 5.0
