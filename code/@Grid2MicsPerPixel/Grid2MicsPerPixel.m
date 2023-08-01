@@ -21,7 +21,8 @@ classdef Grid2MicsPerPixel < handle
         hButtonSavePDF
         hButtonNewIm
         hButtonApplyFOV
-
+        hOverlaidFoundRows
+        hOverlaidFoundCols
 
         % Any listeners should be attached to this cell array
         listeners = {}
@@ -47,19 +48,19 @@ classdef Grid2MicsPerPixel < handle
             % function obj=Grid2MicsPerPixel(inputIM, 'param', 'val')
             %
             % Purpose
-            % Calculates the number of microns per pixel along rows and columns from 
+            % Calculates the number of microns per pixel along rows and columns from
             % an imaged grid of known pitch. NOTE: It's important that most of the grid lines
             % are found since the number of microns per pixel is based upon the median spacing
             % between adjacent identified grid lines. e.g. if the algorithm finds every other
-            % line the number of microns per pixel will be half the size it should be. Alternatively, 
+            % line the number of microns per pixel will be half the size it should be. Alternatively,
             % missing, say, the two outer grid lines one one side will have no effect. Try tweaking
-            % cropProp, medFiltSize, and polynomDetrendOrder to capture more grid lines if needed. 
+            % cropProp, medFiltSize, and polynomDetrendOrder to capture more grid lines if needed.
             %
-            % 
+            %
             % Inputs
             % inputIM - 2D image of the grid. If empty, the function attempts to extract the grid
             %           image from ScanImage. The function also attempts this if no input arguments
-            %           are provided. 
+            %           are provided.
             %
             % Inputs (optional param/val pairs)
             % gridPitch   - pitch of the grid in microns (default is 25)
@@ -72,10 +73,10 @@ classdef Grid2MicsPerPixel < handle
             % Outputs
             % Returns number of microns per pixel along the rows and columns
             % NOTE: these values are currently based upon the rotated grid image. So if your image is scaled
-            % very differently across the rows and columns and the grid wasn't imaged in an orientation close 
-            % that of the scan axes then you will get inaccurate values. Of course it is straightforward to 
-            % calculate the true microns per pixel along the scan axes, but so far we haven't needed to so the 
-            % function does not do this. 
+            % very differently across the rows and columns and the grid wasn't imaged in an orientation close
+            % that of the scan axes then you will get inaccurate values. Of course it is straightforward to
+            % calculate the true microns per pixel along the scan axes, but so far we haven't needed to so the
+            % function does not do this.
             %
             %
             %
@@ -87,13 +88,13 @@ classdef Grid2MicsPerPixel < handle
             % - a bar width of 6 microns
             %
             %
-            % 
-            % We remove one grid and place it on microscope slide. Seal it with a coverslip. 
-            % For measurement with a 2-photon microscope we will see fluorescence from the naked copper 
-            % grid at 920 nm. Use very low power. e.g. 3 mW. The grid should be oriented so that it's aligned 
-            % relatively closely with the scan axes. This function will attempt to rotate the grid so that it's 
-            % perpendicular with the scan axes, but we suggest you get it correctly aligned to within about 10 
-            % degrees (see note above). Make sure the grid is in focus and take and image. Feed this image to 
+            %
+            % We remove one grid and place it on microscope slide. Seal it with a coverslip.
+            % For measurement with a 2-photon microscope we will see fluorescence from the naked copper
+            % grid at 920 nm. Use very low power. e.g. 3 mW. The grid should be oriented so that it's aligned
+            % relatively closely with the scan axes. This function will attempt to rotate the grid so that it's
+            % perpendicular with the scan axes, but we suggest you get it correctly aligned to within about 10
+            % degrees (see note above). Make sure the grid is in focus and take and image. Feed this image to
             % this function.
             %
             %
@@ -118,7 +119,9 @@ classdef Grid2MicsPerPixel < handle
             if nargin<1 || isempty(inputIM)
                 inputIM = obj.getCurrentImageFromScanImageAsArray;
                 if isempty(inputIM)
-                    fprintf('Unable to get current image from ScanImage.\nPlease supply an image as an input argument.\n')
+                    fprintf(['\nUnable to get current image from ScanImage.\n', ...
+                        'Please supply an image as an input argument.\n', ...
+                        'See "help Grid2MicsPerPixel" for more information.\n'])
                     delete(obj)
                     return
                 else
@@ -162,7 +165,7 @@ classdef Grid2MicsPerPixel < handle
         end % destructor
 
 
-        % The following are methods the user might want to call 
+        % The following are methods the user might want to call
         function newGridFromSI(obj,~,~)
             % Get a new image from ScanImage, process, and display results
             % Run on button press
@@ -197,6 +200,7 @@ classdef Grid2MicsPerPixel < handle
 
 
         function savePDF(obj,~,~)
+            % Save the current figure as a PDF
             fname = fullfile(mpsf_tools.logpath,[datestr(now,'yyyy-mm-dd_HH-MM-SS'),'_grid.pdf']);
             obj.toggleButtonVisibility('off')
             print('-dpdf','-bestfit',fname)
@@ -225,7 +229,7 @@ classdef Grid2MicsPerPixel < handle
 
     methods (Hidden)
         function createAndFocusFigWindow(obj)
-            % Only create a plot window if one does not already exist 
+            % Only create a plot window if one does not already exist
             % (want to avoid writing into existing windows that are doing other stuff)
             fig = findobj(0,'Tag',obj.figName);
             if isempty(fig)
@@ -244,11 +248,11 @@ classdef Grid2MicsPerPixel < handle
 
             %Crop the image
             obj.origImage = double(inputIM);
-    
+
             %Subtract offset
             tmp = imresize(obj.origImage,0.2);
             obj.origImage = obj.origImage - min(tmp(:)); % we want to store it with offset subtracted
-            
+
             if obj.cropProp>0
                 obj.cropPix=floor(size(obj.origImage)*obj.cropProp);
                 obj.gridIm = obj.origImage(obj.cropPix:end-obj.cropPix, obj.cropPix:end-obj.cropPix);
@@ -270,7 +274,7 @@ classdef Grid2MicsPerPixel < handle
         function h=peakFinder(obj,mu)
             % Find locations of peaks along vector, mu. Plots the results
             % Peaks are supposed to correspond to where the grating is
-            % 
+            %
             % Returns structure h with fields:
             % locs - locations of peaks
             % line - handles to line plot elements
@@ -294,7 +298,7 @@ classdef Grid2MicsPerPixel < handle
             h.locs=locs;
 
             h.line=plot(mu);
-            hold on 
+            hold on
             h.peaks=plot(locs,pks,'o');
 
 
@@ -317,16 +321,17 @@ classdef Grid2MicsPerPixel < handle
         end
 
 
-        function addLinesToImage(obj,h,axisToAdd,lineColor)
-            %Overlay the calculated location of the grid lines onto the rotated image
-            %This is to allow the user visually verify that all lines in the image have been identified
+        function p = addLinesToImage(obj,h,axisToAdd,lineColor)
+            % Overlay the calculated location of the grid lines onto the rotated image
+            % This is to allow the user visually verify that all lines in the image have been identified
+            % This method called by buildFigure
             hold(obj.hRotatedAx,'on')
             for ii=1:length(h.locs)
                 thisL = h.locs(ii);
                 if axisToAdd == 1
-                    p(ii)=plot(obj.hRotatedAx,xlim(obj.hRotatedAx),[thisL,thisL]);
+                    p(ii)=plot(obj.hRotatedAx, xlim(obj.hRotatedAx), [thisL,thisL]);
                 elseif axisToAdd == 2
-                    p(ii)=plot(obj.hRotatedAx,[thisL,thisL],ylim(obj.hRotatedAx));
+                    p(ii)=plot(obj.hRotatedAx, [thisL,thisL], ylim(obj.hRotatedAx));
                 end
             end
 
@@ -338,7 +343,7 @@ classdef Grid2MicsPerPixel < handle
                 lWidth=2;
             end
 
-            set(p,'linewidth',lWidth,'color',lineColor,'LineStyle','--');
+            set(p,'linewidth',lWidth,'color',lineColor,'LineStyle','-');
         end %close addLinesToImage
 
 
@@ -349,7 +354,7 @@ classdef Grid2MicsPerPixel < handle
             T=sibridge.getCurrentImage;
             if isempty(T)
                 siImage=T;
-                return 
+                return
             end
 
             if length(T)>1
