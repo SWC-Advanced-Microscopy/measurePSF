@@ -94,6 +94,10 @@ Requires the Curve-Fitting Toolbox, the Image Processing Toolbox, and the Stats 
 The MATLAB Report Generator is needed if you want to make PDF reports.
 It is known to work with ScanImage 2020 to 2022 and likely earlier versions are also OK.
 
+## Known Obvious Issues
+Please see the [list of known obvious issues](https://github.com/raacampbell/measurePSF/issues?q=is%3Aissue+is%3Aopen+label%3A%22known+obvious+issues%22) before using the software. 
+
+
 ### Acknowledgments
 This code has been written in collaboration with [Fred Marbach](https://www.sainsburywellcome.org/web/people/fred-marbach) ([SWC](https://www.sainsburywellcome.org)), and Bruno Pichler and Mark Walling of [INSS](https://www.inss.org.uk/). 
 
