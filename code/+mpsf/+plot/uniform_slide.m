@@ -6,16 +6,16 @@ function uniform_slide(fname,varargin)
     % Purpose
     % Make a plot of field homogeneity based on a uniform fluorescent slide or solution.
     % Assumes data obtained from ScanImage (ideally at Zoom 1).
-    % 
+    %
     % Inputs [required]
     % fname - relative or absolute path to image stack
-    % 
+    %
     % Inputs [optional]
-    % overlayZoom - Vector indicating which zoom values to overlay as boxes. 
-    %               A reasonable selection chosen by default. 
+    % overlayZoom - Vector indicating which zoom values to overlay as boxes.
+    %               A reasonable selection chosen by default.
     % crossSections - Which directions the image cross-sections should run. 'diagonal' or 'scanner'.
     %              If 'scanner', the lines run through the centre parallel with the scan axes.
-    %              This is the default. If 'diagonal' they run from the image corners, which are the 
+    %              This is the default. If 'diagonal' they run from the image corners, which are the
     %              darkest parts of the field of view.
     %
     % Examples
@@ -35,7 +35,7 @@ function uniform_slide(fname,varargin)
 
     [imstack,metadata] = mpsf.tools.scanImage_stackLoad(fname);
     if isempty(imstack)
-        return 
+        return
     end
 
     micsPerPixelXY = metadata.micsPerPixelXY;
@@ -52,7 +52,7 @@ function uniform_slide(fname,varargin)
     % The imresize along rows removes artifacts caused by amplifier ringing
     plotData = imresize(plotData,[round(size(plotData,1)*0.75), size(plotData,2)]);
     plotData = imresize(plotData,size(imstack,[1,2]));
-    plotData = medfilt2(plotData,[3,3]);
+    plotData = medfilt2(plotData,[7,7]); %filter heavily
 
     imagesc(plotData)
     axis equal tight
@@ -61,12 +61,10 @@ function uniform_slide(fname,varargin)
     mpsf.tools.add_scale_axis_tick_labels(gca,micsPerPixelXY)
 
     hold on
+    nContours = 10;
+    contour(plotData,nContours,'Color',[0.95,0.95,1],'linewidth',1)
+    colormap(gray(nContours+1))
 
-    % The contours can look a bit ragged due to amplifier ringing on alternate lines. So we make a copy of 
-    % the data that gets rid of this issue. Then smooth it even more. 
-    contourData = plotData;
-    contourData(1:2:end,:) = contourData(2:2:end,:);
-    contour(medfilt2(contourData,[7,7]),8,'Color','w')
 
     % Add diagonal lines which we will use later to associate with the next plot
     switch crossSections
@@ -107,17 +105,13 @@ function uniform_slide(fname,varargin)
     % Plot intensity cross-sections along the red/cyan lines
     subplot(1,2,2)
 
-
+    normPlotData = plotData/max(plotData(:));
     switch crossSections
         case 'diagonal'
             micsPerDataPoint = sqrt(2*micsPerPixelXY^2);
-            diagIm = medfilt2(plotData,[7,7]); %Filter heavily
-            diagIm = diagIm/max(diagIm(:));
 
             f_diag = eye(length(plotData));
-
-
-            yData = diagIm(find(f_diag));
+            yData = normPlotData(find(f_diag));
             xData = (1:length(yData)) * micsPerDataPoint;
             xData = xData - mean(xData);
 
@@ -125,16 +119,15 @@ function uniform_slide(fname,varargin)
 
             hold on
 
-            yData = diagIm(find(rot90(f_diag)));
+            yData = normPlotData(find(rot90(f_diag)));
 
             hXsection2 = plot(xData,yData,'-c','linewidth',2);
 
         case 'scanner'
             micsPerDataPoint = micsPerPixelXY;
-            xSectionIm = medfilt2(plotData,[7,7]); %Filter heavily
-            xSectionIm = xSectionIm/max(xSectionIm(:));
-            xSectionX = xSectionIm(:, round(size(xSectionIm,2)/2));
-            xSectionY = xSectionIm(round(size(xSectionIm,2)/2),:);
+
+            xSectionX = normPlotData(:, round(size(normPlotData,2)/2));
+            xSectionY = normPlotData(round(size(normPlotData,2)/2),:);
 
             xData = (1:length(xSectionY)) * micsPerDataPoint;
             xData = xData - mean(xData);
