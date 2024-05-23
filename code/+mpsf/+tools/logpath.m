@@ -4,11 +4,11 @@ function tPath=logpath
 	% function desktop_dir = mpsf.tools.logpath
 	%
 	% Purpose
-	% This function is used by measurePSF and Grid2MicsPerPixel to choose
-	% the location to save PDF files, etc. By default we will save to the Windows
-	% Desktop, Mac Desktop, or Linux home folder. However, if the user is currently
-	% in a directory that contains the PSF recording files then we will save in
-	% the current directory instead.
+	% This function is used by the recording functions to choose the location to save
+	% output files (e.g. PDFs). By default we will save to the Windows Desktop,
+	% Mac Desktop, or Linux home folder. However, if the user is currently in a directory
+	% that contains the PSF recording files then we will save in the current directory
+	% instead.
 	%
 	% Inputs
 	% none
@@ -40,3 +40,7 @@ function tPath=logpath
 	 	% Because we've already done Macs this is Linux
 	 	tPath = '~'; % In case there is no desktop folder in this distro
 	 end
+
+	 % Append microscope name and date
+	 OUT = mpsf.settings.readSettings;
+	 tPath = fullfile(tPath,[OUT.microscope.name,datestr(now,'__yyyy_mm_dd')]);

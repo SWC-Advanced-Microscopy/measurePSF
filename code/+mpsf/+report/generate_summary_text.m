@@ -21,8 +21,6 @@ end
 
 
 
-
-
 % Load an image extract from it information about the microscope.
 d = mpsf.report.getScanImageTifNames(data_dir);
 
@@ -49,8 +47,8 @@ else
 end
 
 
-% If available, get microscope informtaion
-mic = mpsf.tools.loadMicroscopeDescription;
+% Get microscope information from the settings file
+mic = mpsf.settings.readSettings;
 
 
 if contains(header.scannerType,'RG')
@@ -69,7 +67,7 @@ out = '';
 
 if ~isempty(mic)
     if ~isempty(mic.microscope_name)
-        out = [out, sprintf('Report for microscope "%s" acquired %s ', mic.microscope_name, acqDate)];
+        out = [out, sprintf('Report for microscope "%s" acquired %s ', mic.microscope.name, acqDate)];
     else
         out = [out, sprintf('Microscope summary data were acquired %s ', acqDate)];
     end
@@ -81,13 +79,12 @@ out = [out, ...
 
 
 if ~isempty(mic)
-    if ~isempty(mic.laser)
-        out = [out, sprintf('Laser: %s. ', mic.laser)];
+    if ~isempty(mic.imagingLasers)
+        for ii=1:length(mic.imagingLasers)
+            out = [out, sprintf('Laser: %s. ', mic.imaginingLasers(ii).name)];
+        end
     end
     if ~isempty(mic.objective)
-        out = [out, sprintf('Objective: %s. ', mic.objective)];
-    end
-    if ~isempty(mic.modulator)
-        out = [out, sprintf('Modulator: %s. ', mic.modulator)];
+        out = [out, sprintf('Objective: %s. ', mic.objective.name)];
     end
 end
