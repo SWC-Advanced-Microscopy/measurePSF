@@ -20,6 +20,12 @@ and for measuring field of view size using an EM grid.
 Add the measurePSF `code` directory to your MATLAB path. 
 You do not need to "Add With Subfolders".
 
+### Fill in the settings file
+Output files contain meta-data associated with the microscope in order to make it easier to compare different microscopes and to track hardware changes. 
+Before using the tools for the first time, run `mpsf.settings.readSettings;` and fill in the YAML file. 
+Future changes to the software may add fields to this file. 
+If this happens, it will be reported to the CLI that a new field was added with default settings. 
+If you don't change the defaults, probably nothing bad will happen but the information provided by that field will not be logged. 
 
 
 ## Obtaining a PSF in ScanImage with averaging and fastZ
