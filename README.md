@@ -109,6 +109,7 @@ This code has been written in collaboration with [Fred Marbach](https://www.sain
 
 
 # Change-Log
+* 2024/05/23 -- Implement a more elaborate microscope settings (parameters) system.
 * 2023/07/31 -- Integrate functionality of making PDF reports, uniform slide analyses, and plots of lens paper. 
 * 2022/08/02 -- Add function for imaging electrical noise and document protocol.
 * 2022/08/01 -- Add functions for recording lens paper and uniform slides.

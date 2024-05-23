@@ -1,4 +1,4 @@
-function outputSettings = readSettings(fname)
+function reformattedSettings = readSettings(fname)
     % Read MPSF settings YAML file and return as a structure
     %
     % function settings = mpsf.settings.readSettings()
@@ -147,34 +147,36 @@ function outputSettings = readSettings(fname)
     end
 
 
+
     % Reformat the settings so we have a list of structures for the lasers and PMTs and we
     % remove empty entries.
-    outputSettings.PMTs = outputSettings.PMT_1;
-    outputSettings.imagingLasers = outputSettings.imagingLaser_1;
+    reformattedSettings = outputSettings;
+    reformattedSettings.PMTs = reformattedSettings.PMT_1;
+    reformattedSettings.imagingLasers = reformattedSettings.imagingLaser_1;
     nPMT=1; % counter for adding PMTs
     nLaser=1; % counter for adding lasers
     for ii=1:4
         tPMT = sprintf('PMT_%d',ii);
         tLaser = sprintf('imagingLaser_%d',ii);
 
-        if isfield(outputSettings,tPMT)
-            if ~isempty(outputSettings.(tPMT).model)
-                outputSettings.PMTs(nPMT) = outputSettings.(tPMT);
+        if isfield(reformattedSettings,tPMT)
+            if ~isempty(reformattedSettings.(tPMT).model)
+                reformattedSettings.PMTs(nPMT) = reformattedSettings.(tPMT);
                 nPMT = nPMT+1;
-                outputSettings = rmfield(outputSettings,tPMT);
+                reformattedSettings = rmfield(reformattedSettings,tPMT);
             else
-                outputSettings = rmfield(outputSettings,tPMT);
+                reformattedSettings = rmfield(reformattedSettings,tPMT);
             end
         end
 
 
-        if isfield(outputSettings,tLaser)
-            if ~isempty(outputSettings.(tLaser).model)
-                outputSettings.imagingLasers(nLaser) = outputSettings.(tLaser);
+        if isfield(reformattedSettings,tLaser)
+            if ~isempty(reformattedSettings.(tLaser).model)
+                reformattedSettings.imagingLasers(nLaser) = reformattedSettings.(tLaser);
                 nLaser = nLaser+1;
-                outputSettings = rmfield(outputSettings,tLaser);
+                reformattedSettings = rmfield(reformattedSettings,tLaser);
             else
-                outputSettings = rmfield(outputSettings,tLaser);
+                reformattedSettings = rmfield(reformattedSettings,tLaser);
             end
         end
 
@@ -185,7 +187,6 @@ function outputSettings = readSettings(fname)
     % Make sure the microscope name does not contain weird characters
     outputSettings.microscope.name = regexprep(outputSettings.microscope.name, ' ','-');
     outputSettings.microscope.name = regexprep(outputSettings.microscope.name, '[^0-9a-z_A-Z-]','');
-
 
     % If there are missing or invalid values we will replace these in the settings file as well as making
     % a backup copy of the original file.
@@ -207,10 +208,11 @@ function outputSettings = readSettings(fname)
 
     % Ensure we don't have too many backup files
     backupFiles = dir(fullfile(backupSettingsDir,'*.yml'));
-    if length(backupFiles) > 10 % keep max 10 backup files
+    maxBackUps = 10;  % keep max 10 backup files
+    if length(backupFiles) > maxBackUps
         [~,ind]=sort([backupFiles.datenum],'descend');
         backupFiles = backupFiles(ind); % make certain they are in date order
-        backupFiles = backupFiles(outputSettings.general.maxSettingsBackUpFiles+1:end);
+        backupFiles = backupFiles(maxBackUps+1:end);
         % Delete only these
         for ii = length(backupFiles):-1:1
             delete(fullfile(backupFiles(ii).folder,backupFiles(ii).name))
