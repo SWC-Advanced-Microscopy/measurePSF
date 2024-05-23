@@ -52,7 +52,6 @@ function outputSettings = readSettings(fname)
     if isequal(settingsFromYML,DEFAULT_SETTINGS)
         fprintf(['\n\n *** The settings file at %s has never been edited\n ', ...
             '*** Press RETURN then edit the file for your system.\n'], settingsFile)
-        fprintf(' *** For help editing the file see: https://github.com/BaselLaserMouse/mpsf\n\n')
 
         pause
 
@@ -101,31 +100,6 @@ function outputSettings = readSettings(fname)
 
     %%
     % Two
-    % Some fields have changed names over time. Should the user have an old value we want to
-    % rename it to the new field name. If we do this here, then the redundant field will just
-    % vanish in the next step. First column is new field name and second is old.
-    namesToReplace = {...
-                {'experiment','defaultLaserFrequencyHz'}, {'experiment','defaultLaserModulationFrequencyHz'}; ...
-    };
-
-    for ii=1:size(namesToReplace)
-        oldName = namesToReplace{ii,1};
-        newName = namesToReplace{ii,2};
-
-        % Skip if this field name does not exist in the user settings file
-        if ~isfield(settingsFromYML, oldName{1}) || ...
-            ~isfield(settingsFromYML.(oldName{1}),(oldName{2}))
-            continue
-        end
-
-        % If it's there we add the new value also (the old get's removed in the next step)
-        settingsFromYML.(newName{1}).(newName{2}) = settingsFromYML.(oldName{1}).(oldName{2});
-    end
-
-
-
-    %%
-    % Three
     % Go through the user's settings file and replace all fields in the default file with those.
     % This ensures that: 1) Any fields not in the user's file will appear and 2) any values only
     % in the user file will just vanish
@@ -157,7 +131,7 @@ function outputSettings = readSettings(fname)
 
 
     %%
-    % Four
+    % Three
     % Make sure all settings that are returned are valid
     % If they are not, we replace them with the original default value
     [outputSettings,allValidCheck] = mpsf.settings.checkSettingsAreValid(outputSettings); % see private directory
@@ -205,6 +179,13 @@ function outputSettings = readSettings(fname)
         end
 
     end
+
+
+
+    % Make sure the microscope name does not contain weird characters
+    outputSettings.microscope.name = regexprep(outputSettings.microscope.name, ' ','-');
+    outputSettings.microscope.name = regexprep(outputSettings.microscope.name, '[^0-9a-z_A-Z-]','');
+
 
     % If there are missing or invalid values we will replace these in the settings file as well as making
     % a backup copy of the original file.

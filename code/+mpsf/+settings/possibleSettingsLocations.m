@@ -45,27 +45,4 @@ function settingsDirs = possibleSettingsLocations
     end
 
 
-    return
-    %Make the settings directory if needed
-    if ~exist(settingsDir,'dir')
-        success=mkdir(settingsDir);
-        if ~success
-            fprintf('FAILED TO MAKE SETTINGS DIRECTORY: %s. Check the permissions and try again\n', settingsDir);
-            return
-        end
-    end
-
-
-    % Same for the backup settings dir
-    settingsDirBackup = fullfile(installDir,'SETTINGS_BACKUP');
-
-    %Make the settings directory if needed
-    if ~exist(settingsDirBackup,'dir')
-        success=mkdir(settingsDirBackup);
-        if ~success
-            fprintf('FAILED TO MAKE BACKUP SETTINGS DIRECTORY: %s. Check the permissions and try again\n', settingsDirBackup);
-            return
-        end
-    end
-
 end % possibleSettingsLocations
