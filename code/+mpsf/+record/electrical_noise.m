@@ -15,7 +15,7 @@ function electrical_noise()
 
 
     % Create 'diagnostic' directory in the user's desktop
-    saveDir = mpsf.tools.makeDesktopDirectory('diagnostic');
+    saveDir = mpsf.tools.makeTodaysDataDirectory;
     if isempty(saveDir)
         return
     end
@@ -24,17 +24,11 @@ function electrical_noise()
     settings = mpsf.tools.recordScanImageSettings(API);
 
     % TODO -- bug. If there are not four PMTs this will return an error
-    API.hSI.hPmts.powersOn=[0,0,0,0]; % Turn off PMTs
+    API.turnOffPMTs; % Turn off PMTs
     pause(0.5)
 
     %Apply common setting
-    if API.versionGreaterThan('2020') 
-        API.hSI.hStackManager.numSlices=1;
-        API.hSI.hStackManager.numVolumes = 1;
-    else
-        API.hSI.hStackManager.numSlices=1;
-        API.hSI.hFastZ.numVolumes=1;
-    end
+    API.setZSlices(1)
 
     API.hSI.hStackManager.framesPerSlice=1; % We will record multiple frames
     API.hSI.hRoiManager.pixelsPerLine=512;
@@ -46,15 +40,16 @@ function electrical_noise()
 
 
     % Set file name and save dir
-    fileStem = sprintf('electrical_noise_%s', ...
-            datestr(now,'yyyy-mm-dd_HH-MM-SS'));
+    SETTINGS=mpsf.settings.readSettings;
+    fileStem = sprintf('%s_electrical_noise__%s', ...
+        SETTINGS.microscope.name, ...
+        datestr(now,'yyyy-mm-dd_HH-MM-SS'));
     
     API.hSI.hScan2D.logFileStem=fileStem;
     API.hSI.hScan2D.logFilePath=saveDir;
     API.hSI.hScan2D.logFileCounter=1;
 
     API.acquireAndWait;
-
 
 
     mpsf.tools.reapplyScanImageSettings(API,settings);

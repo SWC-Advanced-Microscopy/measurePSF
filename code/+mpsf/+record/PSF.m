@@ -60,8 +60,8 @@ function varargout = PSF(micronsToImage, stepSizeInMicrons,laser_power_in_mW,las
     end
 
     % Create 'PSF' directory in the user's desktop
-    PSFdir = mpsf.tools.makeDesktopDirectory('PSF');
-    if isempty(PSFdir)
+    saveDir = mpsf.tools.makeTodaysDataDirectory;
+    if isempty(saveDir)
         return
     end
 
@@ -106,7 +106,7 @@ function varargout = PSF(micronsToImage, stepSizeInMicrons,laser_power_in_mW,las
         API.hSI.hChannels.loggingEnable=true;
 
         API.hSI.hScan2D.logFileStem=fileStem;
-        API.hSI.hScan2D.logFilePath=PSFdir;
+        API.hSI.hScan2D.logFilePath=saveDir;
         API.hSI.hScan2D.logFileCounter=1;
 
         API.hSI.hStackManager.framesPerSlice = framesToAverage;
@@ -128,7 +128,7 @@ function varargout = PSF(micronsToImage, stepSizeInMicrons,laser_power_in_mW,las
     mpsf.tools.reapplyScanImageSettings(API,settings);
 
     % Report where the file was saved
-    mpsf.tools.reportFileSaveLocation(PSFdir,fileStem)
+    mpsf.tools.reportFileSaveLocation(saveDir,fileStem)
 
 
 

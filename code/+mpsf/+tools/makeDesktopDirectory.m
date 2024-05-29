@@ -14,8 +14,6 @@ function mkdirname = makeDesktopDirectory(dirname)
     %
     % Rob Campbell - SWC 2023
 
-    % TODO: need to copy microscope settings file to this directory
-
 	success = false;
 	mkdirname = [];
 

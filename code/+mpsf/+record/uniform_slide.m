@@ -26,13 +26,15 @@ function uniform_slide(varargin)
         return
     end
 
-    if length(API.hSI.hChannels.channelSave) > 1
-        fprintf('Select just one channel to save\n')
+    saveChanName = API.getSaveChannelName;
+    if isempty(saveChanName)
+        % message produced by API.getSaveChannelName;
         return
     end
 
+
     % Create 'diagnostic' directory in the user's desktop
-    saveDir = mpsf.tools.makeDesktopDirectory('diagnostic');
+    saveDir = mpsf.tools.makeTodaysDataDirectory;
     if isempty(saveDir)
         return
     end
@@ -42,13 +44,7 @@ function uniform_slide(varargin)
 
 
     %Apply common setting
-    if API.versionGreaterThan('2020') 
-        API.hSI.hStackManager.numSlices=1;
-        API.hSI.hStackManager.numVolumes = 1;
-    else
-        API.hSI.hStackManager.numSlices=1;
-        API.hSI.hFastZ.numVolumes=1;
-    end
+    API.setZSlices(1)
 
     API.hSI.hStackManager.framesPerSlice=20; % We will record multiple frames
     API.hSI.hRoiManager.pixelsPerLine=256;
@@ -61,11 +57,16 @@ function uniform_slide(varargin)
 
     API.hSI.hChannels.loggingEnable=true;
 
-    fileStem = sprintf('uniform_slide_zoom__%s_%dnm_%dmW__%s', ...
-            strrep(num2str(API.hSI.hRoiManager.scanZoomFactor),'.','-'), ...
-            laser_wavelength, ...
-            laser_power_in_mW, ...
-            datestr(now,'yyyy-mm-dd_HH-MM-SS'));
+    % Set file name and save dir
+    SETTINGS=mpsf.settings.readSettings;
+    fileStem = sprintf('%s_uniform_slide_zoom__%s_%dnm_%dmW_%s__%s', ...
+        SETTINGS.microscope.name, ...
+        strrep(num2str(API.hSI.hRoiManager.scanZoomFactor),'.','-'), ...
+        laser_wavelength, ...
+        laser_power_in_mW, ...
+        saveChanName, ...
+        datestr(now,'yyyy-mm-dd_HH-MM-SS'));
+
     API.hSI.hScan2D.logFileStem=fileStem;
     API.hSI.hScan2D.logFilePath=saveDir;
     API.hSI.hScan2D.logFileCounter=1;

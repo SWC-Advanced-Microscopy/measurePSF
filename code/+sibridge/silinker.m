@@ -1,7 +1,7 @@
 classdef silinker < handle
     % Linking to the ScanImage API
     %
-    % 
+    % Performs some useful operations as well as exposing the ScanImage API
     %
     % 
     % sitools.silinker
@@ -133,6 +133,49 @@ classdef silinker < handle
                 pause(0.5)
             end % while
         end % acquireAndWait
+
+
+        function setZSlices(obj,nSlices)
+            % Set the number of slices to acquire in a z-stack
+            % Handles differences across versions of SI. 
+            if obj.versionGreaterThan('2020')
+                obj.hSI.hStackManager.numSlices=nSlices;
+                obj.hSI.hStackManager.numVolumes = 1;
+            else
+                obj.hSI.hStackManager.numSlices=nSlices;
+                obj.hSI.hFastZ.numVolumes=nSlices;
+            end
+        end % setZSlices
+
+
+        function chanName = getSaveChannelName(obj)
+            % Return the name of the channel being saved as a string
+            %
+            % Purpose
+            % We want to log to the file name the channel name being saved. 
+            % If more than one channel has been selected for saving we will
+            % return empty and prompt the user to select only one channel 
+            % to save. 
+            %
+            % Outputs
+            % chanName - string defining the name of the channel to save. 
+            %       If more than one channel is being saved it returns empty. 
+
+            if length(obj.hSI.hChannels.channelSave) > 1
+                fprintf('Select just one channel to save\n')
+                chanName = [];
+                return
+            end
+            chanName = obj.hSI.hChannels.channelName{obj.hSI.hChannels.channelSave};
+            chanName = strrep(chanName,' ', '_');
+        end % getSaveChannelName
+
+
+        function turnOffPMTs(obj)
+            % Turn off all PMTs
+            obj.hSI.hPmts.powersOn = obj.hSI.hPmts.powersOn*0;
+        end% turnOffPMTs
+
 
     end % Close methods
     
