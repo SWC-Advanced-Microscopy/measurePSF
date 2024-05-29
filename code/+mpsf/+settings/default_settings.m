@@ -92,7 +92,7 @@ function [settings,setTests] = default_settings
     settings.imagingLaser_1.model = 'Spectra Physics FILL IN';
     setTests.imagingLaser_1.model = {@check_ischar};
     settings.imagingLaser_1.serialNumber = '12345 FILL IN';
-    setTests.imagingLaser_1.serialNumber = {@check_ischar};
+    setTests.imagingLaser_1.serialNumber = {@check_isscalar};
 
     settings.imagingLaser_2.model = '';
     setTests.imagingLaser_2.model = {@check_ischar};

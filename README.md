@@ -22,8 +22,9 @@ You do not need to "Add With Subfolders".
 
 ### Fill in the settings file
 Output files contain meta-data associated with the microscope in order to make it easier to compare different microscopes and to track hardware changes. 
-Before using the tools for the first time, run `mpsf.settings.readSettings;` and fill in the YAML file. 
-Future changes to the software may add fields to this file. 
+Before using the tools for the first time **you must** run `mpsf.settings.readSettings;` and then **you must** fill in the YAML file for your PC. 
+The commands which record information assume this file has been created and filled in with your microscope details. 
+Future changes to the software may add fields to this file automatically. 
 If this happens, it will be reported to the CLI that a new field was added with default settings. 
 If you don't change the defaults, probably nothing bad will happen but the information provided by that field will not be logged. 
 

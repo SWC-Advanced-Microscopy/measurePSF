@@ -46,7 +46,7 @@ classdef (Abstract) settingsValuesTests
                 return
             end
             if ~ischar(actualStruct.(sectionName).(fieldName))
-                fprintf('-> %s.%s should be a scalar. Setting it to %s.\n', ...
+                fprintf('-> %s.%s should be a character. Setting it to %s.\n', ...
                     sectionName,fieldName,defaultStruct.(sectionName).(fieldName))
                 actualStruct.(sectionName).(fieldName) = defaultStruct.(sectionName).(fieldName);
                 isValid = false;

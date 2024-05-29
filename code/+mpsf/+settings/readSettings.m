@@ -195,7 +195,10 @@ function reformattedSettings = readSettings(fname)
     end
 
     if ~allValid || addedDefaultValue
-       % Copy file
+        % Copy file
+        if ~exist(backupSettingsDir,'dir')
+            mkdir(backupSettingsDir)
+        end
        backupFname = fullfile(backupSettingsDir, ...
             [datestr(now, 'yyyy_mm_dd__HH_MM_SS_'),mpsf.settings.returnMPSF_SettingsFileName]);
        fprintf('Making backup of settings file at %s\n', backupFname)
