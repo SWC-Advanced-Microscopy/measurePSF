@@ -43,3 +43,7 @@ function settings = recordScanImageSettings(API)
     settings.logFileStem = API.hSI.hScan2D.logFileStem;
     settings.logFilePath = API.hSI.hScan2D.logFilePath;
     settings.logFileCounter = API.hSI.hScan2D.logFileCounter;
+
+    settings.laserPower = API.hSI.hBeams.powers;
+
+    settings.pmtGains = API.hSI.hPmts.gains;

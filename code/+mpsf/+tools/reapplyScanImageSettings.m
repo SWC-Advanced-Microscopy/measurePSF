@@ -44,3 +44,7 @@ function settings = reapplyScanImageSettings(API,settings)
     API.hSI.hScan2D.logFileStem = settings.logFileStem;
     API.hSI.hScan2D.logFilePath = settings.logFilePath;
     API.hSI.hScan2D.logFileCounter = settings.logFileCounter;
+
+    API.hSI.hBeams.powers = settings.laserPower;
+
+    API.hSI.hPmts.gains = settings.pmtGains;

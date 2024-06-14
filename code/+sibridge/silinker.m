@@ -152,7 +152,7 @@ classdef silinker < handle
             % Return the name of the channel being saved as a string
             %
             % Purpose
-            % We want to log to the file name the channel name being saved.
+            % We want to log to the file name the channel name bei ng saved.
             % If more than one channel has been selected for saving we will
             % return empty and prompt the user to select only one channel
             % to save.
@@ -177,9 +177,9 @@ classdef silinker < handle
         end % turnOffPMTs
 
 
-        function turnOfPMTs(obj)
+        function turnOnPMTs(obj)
             % Turn on all PMTs
-            obj.hSI.hPmts.powersOn = obj.hSI.hPmts.powersOn*1;
+            obj.hSI.hPmts.powersOn = ones(1,length(obj.hSI.hPmts.powersOn));
         end % turnOffPMTs
 
 
@@ -188,7 +188,7 @@ classdef silinker < handle
             if isempty(gain) || gain<0
                 return
             end
-            obj.hSI.hPmts.gains = repmat(gain,1,4) ;
+            obj.hSI.hPmts.gains = repmat(gain,1,4);
         end % turnOffPMTs
 
 
