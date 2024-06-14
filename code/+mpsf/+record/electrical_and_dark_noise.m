@@ -3,7 +3,7 @@ function electrical_and_dark_noise()
     %
     % function record.electrical_and_dark_noise()
     %
-    % CAUTION: will turn on PMTs!
+    % CAUTION: will turn on PMTs! ENSURE THERE IS NO LIGHT SOURCE OR SAMPLE!
     %
     % e.g.
     % >> mpsf.record.electrical_and_dark_noise
@@ -12,6 +12,8 @@ function electrical_and_dark_noise()
     % Rob Campbell, SWC 2022
 
 
+    fprintf('Remove sample and ensure enclosure is dark then press return\n')
+    pause
 
     % Connect to ScanImage using the linker class
     API = sibridge.silinker;
@@ -31,7 +33,7 @@ function electrical_and_dark_noise()
 
     %Apply common setting
     API.setZSlices(1)
-
+    API.hSI.hBeams.powers=0; % set laser power to zero
     API.hSI.hStackManager.framesPerSlice=1;
     API.hSI.hRoiManager.pixelsPerLine=512;
 
@@ -58,7 +60,7 @@ function electrical_and_dark_noise()
 
     % Set file name and save dir then acquire dark noise
     API.turnOnPMTs;
-    volts=500;
+    volts=650;
     API.setPMTgains(volts);
     pause(0.5)
 

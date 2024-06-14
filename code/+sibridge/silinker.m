@@ -3,18 +3,18 @@ classdef silinker < handle
     %
     % Performs some useful operations as well as exposing the ScanImage API
     %
-    % 
+    %
     % sitools.silinker
-    
+
     properties (Hidden)
         scanimageObjectName = 'hSI' % If connecting to ScanImage look for this variable in the base workspace
         hSI % The ScanImage API attaches here
         listeners = {} % Reserved for listeners we might make
     end % Close hidden methods
-    
-    
+
+
     methods
-        
+
         function obj = silinker(connectToSI)
             % By default connect to ScanImage on startup
             if nargin<1
@@ -26,12 +26,12 @@ classdef silinker < handle
             end
 
         end % Constructor
-        
-        
+
+
         function delete(obj)
             obj.hSI=[];
         end % Destructor
-        
+
         function success = linkToScanImageAPI(obj)
             % Link to ScanImage API by importing from base workspace and
             % copying handling to obj.hSI
@@ -49,7 +49,7 @@ classdef silinker < handle
             success=true;
         end % linkToScanImageAPI
 
-                    
+
         function reportError(~,ME)
             % Reports error from error structure, ME
             fprintf('ERROR: %s\n',ME.message)
@@ -62,7 +62,7 @@ classdef silinker < handle
 
         function isGreater = versionGreaterThan(obj,verToTest)
             % Return true if the current ScanImage version is newer than that defined by string verToTest
-            % 
+            %
             % SIBT.versionGreaterThan(obj,verToTest)
             %
             % Inputs
@@ -70,9 +70,9 @@ classdef silinker < handle
             % '2020.0'
             %
             % Note: this method does not know what to do with the update
-            % mumber from SI Basic. So 2020.1 is OK but 2020.1.4 won't 
+            % mumber from SI Basic. So 2020.1 is OK but 2020.1.4 won't
             % produce correct results
- 
+
             isGreater = nan;
             if ~ischar(verToTest)
                 return
@@ -110,12 +110,12 @@ classdef silinker < handle
                 scannerType='linear';
             else
                 fprintf('Unknown scanner type %s\n', scannerType)
-            end 
+            end
         end % scannerType
 
 
         function acquireAndWait(obj,block)
-            % Start a Grab acquisition and block until SI completes it. 
+            % Start a Grab acquisition and block until SI completes it.
 
             if nargin<2
                 block=true;
@@ -137,7 +137,7 @@ classdef silinker < handle
 
         function setZSlices(obj,nSlices)
             % Set the number of slices to acquire in a z-stack
-            % Handles differences across versions of SI. 
+            % Handles differences across versions of SI.
             if obj.versionGreaterThan('2020')
                 obj.hSI.hStackManager.numSlices=nSlices;
                 obj.hSI.hStackManager.numVolumes = 1;
@@ -152,14 +152,14 @@ classdef silinker < handle
             % Return the name of the channel being saved as a string
             %
             % Purpose
-            % We want to log to the file name the channel name being saved. 
+            % We want to log to the file name the channel name being saved.
             % If more than one channel has been selected for saving we will
-            % return empty and prompt the user to select only one channel 
-            % to save. 
+            % return empty and prompt the user to select only one channel
+            % to save.
             %
             % Outputs
-            % chanName - string defining the name of the channel to save. 
-            %       If more than one channel is being saved it returns empty. 
+            % chanName - string defining the name of the channel to save.
+            %       If more than one channel is being saved it returns empty.
 
             if length(obj.hSI.hChannels.channelSave) > 1
                 fprintf('Select just one channel to save\n')
@@ -174,10 +174,25 @@ classdef silinker < handle
         function turnOffPMTs(obj)
             % Turn off all PMTs
             obj.hSI.hPmts.powersOn = obj.hSI.hPmts.powersOn*0;
-        end% turnOffPMTs
+        end % turnOffPMTs
+
+
+        function turnOfPMTs(obj)
+            % Turn on all PMTs
+            obj.hSI.hPmts.powersOn = obj.hSI.hPmts.powersOn*1;
+        end % turnOffPMTs
+
+
+        function setPMTgains(obj,gain)
+            % Set gains of all PMTs
+            if isempty(gain) || gain<0
+                return
+            end
+            obj.hSI.hPmts.gains = repmat(gain,1,4) ;
+        end % turnOffPMTs
 
 
     end % Close methods
-    
-    
+
+
 end % Close classdef
