@@ -168,6 +168,7 @@ classdef measurePSF < handle
         verbose = false % If true we report to screen debugging information of various sorts
 
         fname % the name of the tiff stack loaded by the user
+        dataFolder % The folder that contains the PSF data
     end
 
 
@@ -238,6 +239,11 @@ classdef measurePSF < handle
                     micsPerPixelXY = metadata.micsPerPixelXY;
                 end
 
+                % Get the folder in which the file is situated
+                obj.dataFolder = fileparts(which(obj.fname));
+            else
+                % The "dataFolder" is otherwise the current directory
+                obj.dataFolder = pwd;
             end % ischar(inputPSFstack)
 
 
@@ -559,6 +565,7 @@ classdef measurePSF < handle
 
 
         function resetView(obj,~,~)
+            % Callback that resets (zooms back out) the bottom left view 
             obj.reportMethodEntry
             % Un-zoom other panels
             resetSize = [1,1,size(obj.PSFstack_Orig,1)-1,size(obj.PSFstack_Orig,2)-1];
@@ -585,6 +592,7 @@ classdef measurePSF < handle
 
 
         function medFiltSizeCallback(obj,~,~)
+            % Callback that runs a median filter on the stack
             newVal = str2double(obj.medFiltSize_editBox.String);
             if isnan(newVal) || newVal<=0
                 obj.medFiltSize_editBox.String = num2str(obj.medFiltSize);
@@ -605,6 +613,7 @@ classdef measurePSF < handle
 
 
         function saveImage(obj,~,~)
+            % Callback that saves the figure window to a PDF
             obj.toggleUIelements('off')
             origString = '';
             origFontSize= [];
@@ -621,7 +630,7 @@ classdef measurePSF < handle
                                 floor(obj.PSFstats.FWHMz), ...
                                 round(rem(obj.PSFstats.FWHMz, floor(obj.PSFstats.FWHMz)),1)*10 );
 
-                fname = fullfile(mpsf.tools.logpath,im_name);
+                fname = fullfile(obj.dataFolder,im_name);
 
                 % Show the file name of the tiff stack (if available) on screen.
                 origString = obj.hUserSelectedPlaneTitle.String;
@@ -641,6 +650,7 @@ classdef measurePSF < handle
                 rethrow(ME)
             end
 
+            %warning('off','MATLAB:handle_graphics:exceptions:SceneNode')
             print('-dpdf','-bestfit',[fname,'.pdf']) % PDF
 
             obj.hFig.UserData = obj.PSFstats;

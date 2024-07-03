@@ -58,9 +58,9 @@ classdef Grid2MicsPerPixel < handle
             %
             %
             % Inputs
-            % inputIM - 2D image of the grid. If empty, the function attempts to extract the grid
-            %           image from ScanImage. The function also attempts this if no input arguments
-            %           are provided.
+            % inputIM - 2D image of the grid. If empty or no input arguments provided, Grid2MicsPerPixel 
+            %           attempts to extract the grid image from the running instance of ScanImage. i.e.
+            %           it assumes a grid is currently being displayed in the channel windows. 
             %
             % Inputs (optional param/val pairs)
             % gridPitch   - pitch of the grid in microns (default is 25)
@@ -200,8 +200,9 @@ classdef Grid2MicsPerPixel < handle
 
 
         function savePDF(obj,~,~)
-            % Save the current figure as a PDF
-            fname = fullfile(mpsf_tools.logpath,[datestr(now,'yyyy-mm-dd_HH-MM-SS'),'_grid.pdf']);
+            % Save the current figure as a PDF to the desktop in a date-stamped folder
+            saveDir = mpsf.tools.makeTodaysDataDirectory;
+            fname = fullfile(saveDir,[datestr(now,'yyyy-mm-dd_HH-MM-SS'),'_grid.pdf']);
             obj.toggleButtonVisibility('off')
             print('-dpdf','-bestfit',fname)
             fprintf('Saved image to: %s\n',fname)
