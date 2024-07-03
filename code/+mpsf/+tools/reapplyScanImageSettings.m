@@ -40,6 +40,7 @@ function settings = reapplyScanImageSettings(API,settings)
     API.hSI.hChannels.loggingEnable = settings.loggingEnabled; 
     API.hSI.hScan2D.logAverageFactor = settings.logAveFact;
     API.hSI.hStackManager.framesPerSlice = settings.framesPerSlice;
+    API.hSI.acqsPerLoop = settings.acqsPerLoop;
 
     API.hSI.hScan2D.logFileStem = settings.logFileStem;
     API.hSI.hScan2D.logFilePath = settings.logFilePath;
@@ -48,3 +49,5 @@ function settings = reapplyScanImageSettings(API,settings)
     API.hSI.hBeams.powers = settings.laserPower;
 
     API.hSI.hPmts.gains = settings.pmtGains;
+
+    API.hSI.extTrigEnable = settings.extTrigEnable;

@@ -3,6 +3,11 @@ function standard_light_source()
     %
     % function record.standard_light_source()
     %
+    % Purpose
+    % Runs through a series of gain values to record signals from the 
+    % standard source. Places data in their own directory, as there is 
+    % one file per gain. 
+    % 
     %
     % Rob Campbell, SWC 2022
 
@@ -22,6 +27,16 @@ function standard_light_source()
         return
     end
 
+    % Determine the name of the files we will be saving and 
+    % make a sub-directory into which to store the data
+    SETTINGS=mpsf.settings.readSettings;
+    fileStem = sprintf('%s_standard_light_source__%s', ...
+        SETTINGS.microscope.name, ...
+        datestr(now,'yyyy-mm-dd_HH-MM-SS'));
+
+    lightSourceDir = fullfile(saveDir,fileStem);
+    mkdir(lightSourceDir)
+
     %Record the state of all ScanImage settings we will change so we can change them back
     settings = mpsf.tools.recordScanImageSettings(API);
 
@@ -38,27 +53,31 @@ function standard_light_source()
     API.hSI.hChannels.loggingEnable=true;
 
 
-    % Loop through a range of gains
-    gainsToTest = [0,400:50:700];
-
+    % Get gains to test for each PMT (remember PMTs can be GaAsp or multi-alkali)
+    gainsToTest = [];
+    for ii=1:length(API.hSI.hPmts.hPMTs)
+        gainsToTest = [gainsToTest; getPMTGainsToTest(API.hSI.hPmts.hPMTs{ii})];
+    end
+    
     API.turnOnPMTs; % Turn off PMTs
     pause(0.5)
 
-    SETTINGS=mpsf.settings.readSettings;
+    % Set the file name
+    API.hSI.hScan2D.logFileStem=fileStem;
+    API.hSI.hScan2D.logFilePath=lightSourceDir;
+    API.hSI.hScan2D.logFileCounter=1;
+
+    API.hSI.acqsPerLoop=length(gainsToTest);
+    API.hSI.extTrigEnable=true;
+
+    API.hSI.startLoop;
     for ii=1:length(gainsToTest)
         % Set file name and save dir
-        API.setPMTgains(gainsToTest(ii)); % Set gain
+        API.setPMTgains(gainsToTest(:,ii)); % Set gain
+        pause(0.5) % Out of abundance of caution
 
-        fileStem = sprintf('%s_standard_light_source__%dV__%s', ...
-            SETTINGS.microscope.name, ...
-            gainsToTest(ii), ...
-            datestr(now,'yyyy-mm-dd_HH-MM-SS'));
-
-        API.hSI.hScan2D.logFileStem=fileStem;
-        API.hSI.hScan2D.logFilePath=saveDir;
-        API.hSI.hScan2D.logFileCounter=1;
-
-        API.acquireAndWait;
+        API.hSI.hScan2D.trigIssueSoftwareAcq;
+        pause(0.5) % Images will be acquired in under a second
     end
 
     API.turnOffPMTs; % Turn off PMTs
@@ -71,3 +90,25 @@ function standard_light_source()
     % Report where the file was saved
     mpsf.tools.reportFileSaveLocation(saveDir,fileStem)
 
+
+
+function gainsToTest = getPMTGainsToTest(hPMT)
+    % If the max control voltage is under 2V then it must be a 
+    % GaAsP, as those have max control voltage of around 0.9 to 1.5V
+    %
+    % Also, if the max voltage is 1 or 100 then it's also likely to be a GaAsP
+
+
+    if hPMT.pmtSupplyRange_V(2) <= 100 || hPMT.aoRange_V(2) <= 2
+        isMultiAlkali = false;
+    else
+        isMultiAlkali = true;
+    end
+
+    numGains=12;
+    if isMultiAlkali
+        gainsToTest = [0,linspace(400,750,numGains)];
+    else
+        maxV = hPMT.pmtSupplyRange_V(2);
+        gainsToTest = [0, linspace(maxV*0.33,maxV*0.8,numGains)];
+    end

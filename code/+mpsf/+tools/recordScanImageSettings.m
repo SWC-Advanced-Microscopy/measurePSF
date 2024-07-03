@@ -12,7 +12,9 @@ function settings = recordScanImageSettings(API)
 %
 % See also
 % reapplyScanImageSettings
+%
 
+ 
 
     if API.versionGreaterThan('2020') 
         settings.stackManShutterClose = API.hSI.hStackManager.closeShutterBetweenSlices;
@@ -35,10 +37,10 @@ function settings = recordScanImageSettings(API)
     settings.stackManNumSlices = API.hSI.hStackManager.numSlices; 
     settings.stackManStepSize = API.hSI.hStackManager.stackZStepSize;
 
-
     settings.loggingEnabled = API.hSI.hChannels.loggingEnable; 
     settings.logAveFact = API.hSI.hScan2D.logAverageFactor;
     settings.framesPerSlice = API.hSI.hStackManager.framesPerSlice;
+    settings.acqsPerLoop = API.hSI.acqsPerLoop;
 
     settings.logFileStem = API.hSI.hScan2D.logFileStem;
     settings.logFilePath = API.hSI.hScan2D.logFilePath;
@@ -47,3 +49,5 @@ function settings = recordScanImageSettings(API)
     settings.laserPower = API.hSI.hBeams.powers;
 
     settings.pmtGains = API.hSI.hPmts.gains;
+
+    settings.extTrigEnable = API.hSI.extTrigEnable;

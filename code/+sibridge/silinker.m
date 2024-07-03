@@ -185,10 +185,21 @@ classdef silinker < handle
 
         function setPMTgains(obj,gain)
             % Set gains of all PMTs
-            if isempty(gain) || gain<0
+            %
+            % Inputs
+            % gain - If a scalar, the same gain is applied to all PMTs. If a vector
+            %      with the same length as the number of PMTs, we set each PMT gain
+            %      to the value it corresponds to in the vector.
+
+            if isempty(gain)
                 return
             end
-            obj.hSI.hPmts.gains = repmat(gain,1,4);
+
+            if length(gain)==1
+                obj.hSI.hPmts.gains = repmat(gain,1,4);
+            elseif length(obj.hSI.hPmts.gains) == length(gain)
+                obj.hSI.hPmts.gains = gain(:)';
+            end
         end % turnOffPMTs
 
 
