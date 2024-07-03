@@ -1,23 +1,26 @@
-function [imStack,metadata] = scanImage_stackLoad(fileName)
+function [imStack,metadata] = scanImage_stackLoad(fileName,subtractOffset)
 % load a z-stack from ScanImage for analysis return also in a structure useful metadata
 %
 %
-% function imStack = mpsf.tools.scanImage_stackLoad(fileName)
+% function imStack = mpsf.tools.scanImage_stackLoad(fileName,subtractOffset)
 %
 % Purpose
-% Return z stack and metadata. Subtracts any offset if needed.
+% Return z stack and metadata. By default subtracts any offset if needed.
 %
-% Inputs
-% fileName - string defining the file name to load
+% Inputs (required)
+% fileName - string defining the file name to load.
+%
+% Inputs (optional)
+% subtractOffset - if true, subtract the offset from the image data. Default is true.
 %
 % Outputs
 % imStack - 3D stack
-% metadata - useful metadata from scanimage header
-% 
+% metadata - useful metadata from scanimage header. Adds micsPerPixelXY.
+%
 % Example
 % [imS,metadata] = mpsf.tools.scanImageStackLoad('Bead_*.tif')
 %
-% 
+%
 %
 % Rob Campbell - SWC 2022
 
@@ -28,6 +31,10 @@ function [imStack,metadata] = scanImage_stackLoad(fileName)
     if ~exist(fileName,'file')
         fprintf('%s does not exist. Not loading.\n',fileName)
         return
+    end
+
+    if nargin<2 || isempty(subtractOffset)
+        subtractOffset = true;
     end
 
     imStack = mpsf.tools.load3Dtiff(fileName);
@@ -41,6 +48,14 @@ function [imStack,metadata] = scanImage_stackLoad(fileName)
         return
     end
 
+    % Calculate the FOV and add this to the meta-data
+    fov=diff(metadata.imagingFovUm(1:2));
+    metadata.micsPerPixelXY = fov/metadata.linesPerFrame;
+
+
+    if subtractOffset == false
+        return
+    end
 
     % subtract the offset if needed
     savedChans = metadata.channelSave; % The acquired channels
@@ -60,6 +75,3 @@ function [imStack,metadata] = scanImage_stackLoad(fileName)
     end
 
 
-    % Calculate the FOV
-    fov=diff(metadata.imagingFovUm(1:2));
-    metadata.micsPerPixelXY = fov/metadata.linesPerFrame;

@@ -10,7 +10,7 @@ function electrical_noise(fname)
 
     [imstack,metadata] = mpsf.tools.scanImage_stackLoad(fname);
     if isempty(imstack)
-        return 
+        return
     end
 
     % Make a new figure or return a plot handle as appropriate
