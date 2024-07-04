@@ -29,6 +29,21 @@ classdef (Abstract) settingsValuesTests
         % "mpsf.settings.checkSettingsAreValid" to determine whether any settings in the YAML at all
         % needed replacing.
 
+        function [actualStruct,isValid] = check_isCellArrayOfStrings(actualStruct,defaultStruct,sectionName,fieldName)
+            isValid = true;
+            if ~iscell(actualStruct.(sectionName).(fieldName))
+                fprintf('-> %s.%s should be a cell array of strings. Returning an empty array!.\n', ...
+                    sectionName,fieldName)
+                actualStruct.(sectionName).(fieldName) = [];
+                isValid = false;
+            elseif ~all(cellfun(@(x) ischar(x), actualStruct.(sectionName).(fieldName)))
+                fprintf('-> %s.%s should be a cell array of strings. Returning an empty array!.\n', ...
+                    sectionName,fieldName)
+                actualStruct.(sectionName).(fieldName) = [];
+                isValid = false;
+            end
+        end
+
         function [actualStruct,isValid] = check_isnumeric(actualStruct,defaultStruct,sectionName,fieldName)
             isValid = true;
             if ~isnumeric(actualStruct.(sectionName).(fieldName))

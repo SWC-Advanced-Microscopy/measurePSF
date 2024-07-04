@@ -48,7 +48,7 @@ function [settings,setTests] = default_settings
     setTests.objective.serialNumber = {@check_ischar};
 
 
-    % PMT_s
+    % PMTs
     settings.PMT_1.model = 'Hamamatsu ...';
     setTests.PMT_1.model = {@check_ischar};
     settings.PMT_1.serialNumber = 'XXXXX';
@@ -103,5 +103,9 @@ function [settings,setTests] = default_settings
     setTests.imagingLaser_3.model = {@check_ischar};
     settings.imagingLaser_3.serialNumber = '';
     setTests.imagingLaser_3.serialNumber = {@check_ischar};
+
+    %% QC tools
+    settings.QC.sourceIDs={};
+    setTests.QC.sourceIDs = {@check_isCellArrayOfStrings};
 
 end % default_settings

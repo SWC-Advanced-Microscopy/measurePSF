@@ -23,8 +23,6 @@ function standard_light_source(channelSave)
     % Rob Campbell, SWC 2022
 
 
-    fprintf('Place light source under objective and turn off enclosure lights then press return\n')
-    pause
 
     % Process input argument
     if nargin<1
@@ -45,13 +43,39 @@ function standard_light_source(channelSave)
         return
     end
 
-    % Determine the name of the files we will be saving and 
-    % make a sub-directory into which to store the data
+    % Determine the name of the files we will be saving
     SETTINGS=mpsf.settings.readSettings;
-    fileStem = sprintf('%s_standard_light_source__%s', ...
+
+    if ~isempty(SETTINGS.QC.sourceIDs)
+        if length(SETTINGS.QC.sourceIDs)==1
+            sourceID = SETTINGS.QC.sourceIDs{1};
+        elseif length(SETTINGS.QC.sourceIDs)>1
+            fprintf('Select source ID:\n')
+            for ii=1:length(SETTINGS.QC.sourceIDs)
+                fprintf('%d. %s\n', ii, SETTINGS.QC.sourceIDs{ii})
+            end
+            selectedIndex = [];
+            while isempty(selectedIndex)
+                response = input('Enter source number and press return: ');
+                if isnumeric(response) && isscalar(response) && ...
+                 response>0 && response<=length(SETTINGS.QC.sourceIDs)
+                 selectedIndex = response;
+             end
+            end
+            sourceID = SETTINGS.QC.sourceIDs{selectedIndex};
+        end
+    else
+        sourceID = 'UNSPECIFIED_SOURCE';
+        fprintf('NOTE: it is recommended you enter your standard light source names into the YML file.\n')
+        fprintf('See function help text\n')
+    end
+    fileStem = sprintf('%s_standard_light_source_%s__%s', ...
         SETTINGS.microscope.name, ...
+        sourceID, ...
         datestr(now,'yyyy-mm-dd_HH-MM-SS'));
 
+
+    % Now make the sub-directory
     lightSourceDir = fullfile(saveDir,fileStem);
     mkdir(lightSourceDir)
 
@@ -71,8 +95,10 @@ function standard_light_source(channelSave)
     API.hSI.hChannels.loggingEnable=true;
 
 
-    % Get gains to test for each PMT (remember PMTs can be GaAsp or multi-alkali)
     API.hSI.hChannels.channelSave = channsToSave;
+
+    % Get gains to test for each PMT (PMTs can be GaAsp or multi-alkali and this
+    % is taken into account here)
     gainsToTest = [];
     for ii=1:length(API.hSI.hPmts.hPMTs)
         gainsToTest = [gainsToTest; getPMTGainsToTest(API.hSI.hPmts.hPMTs{ii})];
