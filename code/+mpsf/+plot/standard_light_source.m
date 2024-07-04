@@ -48,8 +48,10 @@ function standard_light_source(dirToSearch)
     % Make a new figure or return a plot handle as appropriate
     fig = mpsf.tools.returnFigureHandleForFile([dirToSearch,mfilename]);
     offset_subtracted = mean_value-mean_value(1,:);
-    plot(offset_subtracted(:,1:4),'o-');
-    legend(metadata.channelName,'Location','NorthWest')
+    p=plot(offset_subtracted(:,1:4),'o-','MarkerSize',5);
+
+    legend(metadata.channelName(metadata.channelSave),'Location','NorthWest')
+
     set(gca,'XTickLabels',PMT_gain)
     xlabel('Gain')
     ylabel('Signal (AU relative to zero gain)')

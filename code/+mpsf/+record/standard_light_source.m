@@ -95,7 +95,7 @@ function standard_light_source(channelSave)
     API.hSI.hChannels.loggingEnable=true;
 
 
-    API.hSI.hChannels.channelSave = channsToSave;
+    API.hSI.hChannels.channelSave = channelSave;
 
     % Get gains to test for each PMT (PMTs can be GaAsp or multi-alkali and this
     % is taken into account here)
