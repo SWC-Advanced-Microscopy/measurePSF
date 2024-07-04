@@ -8,6 +8,7 @@ and for measuring field of view size using an EM grid.
 ## Main functions
 
 * `mpsf.record.PSF` to easily acquire PSF stacks with ScanImage.
+* `mpsf.record.lens_tissue` to acquire standardised data from lens tissue.
 * `measurePSF` to estimate PSF size. For a demo, run `measurePSF('demo')`. 
 * `Grid2MicsPerPixel`  measures the number of microns per pixel along x and y by analyzing an image of an EM grid. 
 * `mpsf_tools.meanFrame` plots the mean frame intensity as a function of time whilst you are scanning.
