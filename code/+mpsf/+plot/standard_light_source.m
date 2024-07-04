@@ -26,11 +26,23 @@ function standard_light_source(dirToSearch)
     PMT_gain = zeros(1,length(files));
     mean_value = zeros(length(files),4);
     for jj = 1:length(files)
-        [imstack,metadata] = mpsf.tools.scanImage_stackLoad(files(jj).name,false);
+        fname = fullfile(dirToSearch,files(jj).name);
+        [imstack,metadata] = mpsf.tools.scanImage_stackLoad(fname,false);
+
+        % Fail gracefully if the file could not be loaded
+        if isempty(imstack)
+            continue
+        end
+
+        % Log gain and mean pixel values
         PMT_gain(jj) = metadata.gains(1);
         mean_value(jj,:) = squeeze(mean(imstack,[1,2]));
     end
 
+    % Quit if nothing was loaded
+    if all(mean_value==0)
+        return
+    end
 
     % Plot!
     % Make a new figure or return a plot handle as appropriate
