@@ -1,13 +1,24 @@
-function standard_light_source()
+function standard_light_source(channelSave)
     % Record response to the standard light source on all four channels
     %
-    % function record.standard_light_source()
+    % function record.standard_light_source(channelSave)
     %
     % Purpose
     % Runs through a series of gain values to record signals from the 
     % standard source. Places data in their own directory, as there is 
     % one file per gain. 
-    % 
+    %
+    % INSTRUCTIONS
+    % You may have multiple standard light sources. If so, enter them 
+    % into the `QC.sourceIDs` field of the YML file. e.g. 
+    %  sourceIDs: ['Red_2024Q2','Green_2024Q2','Blue_2024Q2','White_2024Q2']
+    % You will then be prompted to enter which is the source when you run the function. 
+    %
+    %
+    % Optional Inputs
+    % channelSave - By default this is all four channels (1:4). But the user
+    %         can specify anything they like.
+    %
     %
     % Rob Campbell, SWC 2022
 
@@ -15,11 +26,18 @@ function standard_light_source()
     fprintf('Place light source under objective and turn off enclosure lights then press return\n')
     pause
 
+    % Process input argument
+    if nargin<1
+        channelSave = 1:4;
+    else
+        channelSave = unique(channelSave);
+        if length(channelSave)>4 || any(channelSave<1) || any(channelSave>4)
+            channelSave = 1:4;
+        end
+    end
+
     % Connect to ScanImage using the linker class
     API = sibridge.silinker;
-
-    API.hSI.hChannels.channelSave = 1:4;
-
 
     % Create 'diagnostic' directory in the user's desktop
     saveDir = mpsf.tools.makeTodaysDataDirectory;
@@ -41,7 +59,7 @@ function standard_light_source()
     settings = mpsf.tools.recordScanImageSettings(API);
 
 
-    %Apply common setting
+    %Apply settings for this acquisition 
     API.setZSlices(1)
     API.hSI.hBeams.powers=0; % set laser power to zero
     API.hSI.hStackManager.framesPerSlice=1; % We will record multiple frames
@@ -54,12 +72,13 @@ function standard_light_source()
 
 
     % Get gains to test for each PMT (remember PMTs can be GaAsp or multi-alkali)
+    API.hSI.hChannels.channelSave = channsToSave;
     gainsToTest = [];
     for ii=1:length(API.hSI.hPmts.hPMTs)
         gainsToTest = [gainsToTest; getPMTGainsToTest(API.hSI.hPmts.hPMTs{ii})];
     end
     
-    API.turnOnPMTs; % Turn off PMTs
+    API.turnOnPMTs; % Turn on all PMTs
     pause(0.5)
 
     % Set the file name
@@ -80,7 +99,7 @@ function standard_light_source()
         pause(0.5) % Images will be acquired in under a second
     end
 
-    API.turnOffPMTs; % Turn off PMTs
+    API.turnOffPMTs; % Turn off all PMTs
 
 
     mpsf.tools.reapplyScanImageSettings(API,settings);
