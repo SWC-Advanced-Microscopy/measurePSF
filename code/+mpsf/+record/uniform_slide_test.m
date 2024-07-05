@@ -17,9 +17,9 @@ function uniform_slide_test(varargin)
     % Rob Campbell, SWC 2022
 
 
-    params = parseInputVariable(varargin{:});
-    wavelength=params.Results.wavelength;
-    power=params.Results.power;
+    out =  mpsf.record.parseInputVariable(varargin{:});
+    wavelength=out.wavelength;
+    power=out.power;
 
     fprintf('wavelength is:\n ')
     disp(wavelength)
