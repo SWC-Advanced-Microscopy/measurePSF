@@ -69,14 +69,14 @@ function standard_light_source(channelSave)
         fprintf('NOTE: it is recommended you enter your standard light source names into the YML file.\n')
         fprintf('See function help text\n')
     end
-    fileStem = sprintf('%s_standard_light_source_%s__%s', ...
-        SETTINGS.microscope.name, ...
-        sourceID, ...
-        datestr(now,'yyyy-mm-dd_HH-MM-SS'));
-
 
     % Now make the sub-directory
-    lightSourceDir = fullfile(saveDir,fileStem);
+    subDirName = sprintf('%s_standard_light_source_%s__%s', ...
+            SETTINGS.microscope.name, ...
+            sourceID, ...
+            datestr(now,'yyyy-mm-dd_HH-MM'));
+
+    lightSourceDir = fullfile(saveDir,subDirName);
     mkdir(lightSourceDir)
 
     %Record the state of all ScanImage settings we will change so we can change them back
@@ -107,22 +107,25 @@ function standard_light_source(channelSave)
     API.turnOnPMTs; % Turn on all PMTs
     pause(0.5)
 
-    % Set the file name
-    API.hSI.hScan2D.logFileStem=fileStem;
-    API.hSI.hScan2D.logFilePath=lightSourceDir;
-    API.hSI.hScan2D.logFileCounter=1;
 
-    API.hSI.acqsPerLoop=length(gainsToTest);
-    API.hSI.extTrigEnable=true;
+    API.hSI.acqsPerLoop=1;
 
-    API.hSI.startLoop;
     for ii=1:length(gainsToTest)
         % Set file name and save dir
+        fileStem = sprintf('%s_standard_light_source_%s_%dV__%s', ...
+            SETTINGS.microscope.name, ...
+            sourceID, ...
+            gainsToTest(1,ii), ...
+            datestr(now,'yyyy-mm-dd_HH-MM-SS'));
+
+        API.hSI.hScan2D.logFileStem=fileStem;
+        API.hSI.hScan2D.logFilePath=lightSourceDir;
+        API.hSI.hScan2D.logFileCounter=1;
+
         API.setPMTgains(gainsToTest(:,ii)); % Set gain
         pause(0.5) % Out of abundance of caution
 
-        API.hSI.hScan2D.trigIssueSoftwareAcq;
-        pause(0.5) % Images will be acquired in under a second
+        API.acquireAndWait;
     end
 
     API.turnOffPMTs; % Turn off all PMTs
@@ -157,3 +160,5 @@ function gainsToTest = getPMTGainsToTest(hPMT)
         maxV = hPMT.pmtSupplyRange_V(2);
         gainsToTest = [0, linspace(maxV*0.33,maxV*0.8,numGains)];
     end
+
+    gainsToTest = round(gainsToTest);
