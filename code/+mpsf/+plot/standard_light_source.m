@@ -1,4 +1,4 @@
-function standard_light_source(dirToSearch)
+function varargout = standard_light_source(dirToSearch)
     % Make plots of data from the standard light source
     %
     % mpsf.plot.standard_light_source(dirToSearch)
@@ -9,6 +9,12 @@ function standard_light_source(dirToSearch)
     % Inputs
     % dirToSearch - Directory in which to search for standard light source data.
     %              Searches the current directory if is empty or missing.
+    %
+    % Outputs
+    % pltData - The data that underlies the plot
+    %
+    %
+    % Rob Campbell - SWC2024
 
 
     if nargin<1 || isempty(dirToSearch)
@@ -58,4 +64,8 @@ function standard_light_source(dirToSearch)
     grid on
 
 
-
+    if nargout>0
+        pltData.PMT_gain = PMT_gain;
+        pltData.mean_value = mean_value;
+        varargout{1} = pltData;
+    end
