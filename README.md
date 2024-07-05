@@ -9,6 +9,7 @@ and for measuring field of view size using an EM grid.
 
 * `mpsf.record.PSF` to easily acquire PSF stacks with ScanImage.
 * `mpsf.record.lens_tissue` to acquire standardised data from lens tissue.
+* `mpsf.record.standard_light_source` to data from a standard light source
 * `measurePSF` to estimate PSF size. For a demo, run `measurePSF('demo')`. 
 * `Grid2MicsPerPixel`  measures the number of microns per pixel along x and y by analyzing an image of an EM grid. 
 * `mpsf_tools.meanFrame` plots the mean frame intensity as a function of time whilst you are scanning.
@@ -121,6 +122,7 @@ This code has been written in collaboration with [Fred Marbach](https://www.sain
 
 
 # Change-Log
+* 2024/07/05 -- Updates to standard light source. Plotting of said. Bugfixes.
 * 2024/06/14 -- Add standard light source function. Add dark noise to electrical noise.
 * 2024/05/23 -- Implement a more elaborate microscope settings (parameters) system.
 * 2023/07/31 -- Integrate functionality of making PDF reports, uniform slide analyses, and plots of lens paper. 
