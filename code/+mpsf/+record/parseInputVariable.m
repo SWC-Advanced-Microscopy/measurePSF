@@ -79,7 +79,26 @@ function out = parseInputVariable(varargin)
        out.wavelength = response;
    end 
 
-
+   if isempty(params.Results.power)
+       %ASK QUESTION
+       default=20;
+       response = [];
+       while isempty(response)
+           response = input(sprintf('Please enter power (mW) [20]: '),'s');
+           % response = str2num(response);
+           if isempty(response)
+               response = default;
+           else
+               [response,tf] = str2num(response);
+               if tf==1 && isnumeric(response)
+                   response = response;
+               else
+                   response = [];
+               end
+           end 
+       end 
+       out.power = response;
+   end 
     % if isempty(params.Results.power)
     %     %ASK QUESTION
     %     % default=0.25;
@@ -95,3 +114,6 @@ function out = parseInputVariable(varargin)
  fprintf('wavelength is:\n');
     disp(out.wavelength);
 
+   
+ fprintf('power is:\n');
+    disp(out.power);
