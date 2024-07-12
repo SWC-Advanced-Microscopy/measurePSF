@@ -64,7 +64,7 @@ function out = parseInputVariable(varargin)
         response = [];
         while isempty(response) 
             response = input(sprintf('Please enter wavelength (nm) [920]: '),'s');
-            response = str2double(response);
+            % response = str2double(response);
              % response = str2num(response);
             if isempty(response)
                 response = default;
