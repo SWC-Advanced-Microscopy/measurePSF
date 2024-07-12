@@ -1,4 +1,4 @@
-function varargout = PSF(micronsToImage, stepSizeInMicrons,laser_power_in_mW,laser_wavelength)
+function varargout = PSF(varargin)
 
 % function record.PSF(micronsToImage, stepSizeInMicrons)
 %
@@ -33,23 +33,24 @@ function varargout = PSF(micronsToImage, stepSizeInMicrons,laser_power_in_mW,las
 % Rob Campbell - SWC Nov 2018
 
 
-    micronsToImage = abs(micronsToImage);
-    if nargin<2 || isempty(stepSizeInMicrons)
-        stepSizeInMicrons=0.25;
-    end
+    % micronsToImage = abs(micronsToImage);
+    % if nargin<2 || isempty(stepSizeInMicrons)
+    %     stepSizeInMicrons=0.25;
+    % end
+    % 
+    % if nargin<3
+    %     laser_power_in_mW = '';
+    % else
+    %     laser_power_in_mW = sprintf('_%dmW',round(laser_power_in_mW));
+    % end
+    % 
+    % if nargin<4
+    %     laser_wavelength = '';
+    % else
+    %     laser_wavelength = sprintf('_%dnm', round(laser_wavelength));
+    % end
 
-    if nargin<3
-        laser_power_in_mW = '';
-    else
-        laser_power_in_mW = sprintf('_%dmW',round(laser_power_in_mW));
-    end
-
-    if nargin<4
-        laser_wavelength = '';
-    else
-        laser_wavelength = sprintf('_%dnm', round(laser_wavelength));
-    end
-
+out =  mpsf.record.parseInputVariable(varargin{:});
 
     % Connect to ScanImage using the linker class
     API = sibridge.silinker;

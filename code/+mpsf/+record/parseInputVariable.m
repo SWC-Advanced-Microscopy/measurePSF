@@ -58,6 +58,27 @@ function out = parseInputVariable(varargin)
    %      end
    %  end
 
+   if isempty(params.Results.depthMicrons &&  strcmp(d(2).file,'PSF.m')
+       %ASK QUESTION
+       default=920;
+       response = [];
+       while isempty(response)
+           response = input(sprintf('Please enter depth (um) [20]: '),'s');
+           % response = str2num(response);
+           if isempty(response)
+               response = default;
+           else
+               [response,tf] = str2num(response);
+               if tf==1 && isnumeric(response)
+                   response = response;
+               else
+                   response = [];
+               end
+           end 
+       end 
+       out.depthMicrons = response;
+   end 
+
    if isempty(params.Results.wavelength)
        %ASK QUESTION
        default=920;
