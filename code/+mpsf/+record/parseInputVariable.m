@@ -19,7 +19,7 @@ function out = parseInputVariable(varargin)
     params.addParameter('wavelength', [], @(x) isnumeric(x));
     params.addParameter('power', [], @(x) isnumeric(x));
     params.addParameter('depthMicrons', [], @(x) isnumeric(x));
-    params.addParameter('stepSize', 0.25, @(x) isnumeric(x));
+    params.addParameter('stepSize', [], @(x) isnumeric(x));
 
     % Parse the input arguments
     params.parse(varargin{:});
@@ -33,33 +33,12 @@ function out = parseInputVariable(varargin)
     d=dbstack;
     d.file;
 
-   %  if isempty(params.Results.depthMicrons) &&  strcmp(d(2).file,'PSF.m')
-   %      %ASK QUESTION
-   %      default=20;
-   %      response = input(sprintf('Please enter depth to image (default = %d microns): ', default));
-   %      out.depthMicrons = response;
-   %      if iesmpty(response)
-   %          out.depthMicrons = params.Results.depthMicrons;
-   %      end
-   %  end
-   % 
-   % if isempty(params.Results.stepSize) &&  strcmp(d(2).file,'PSF.m')
-   %      %ASK QUESTION
-   %      default=0.25;
-   %      response = input(sprintf('Please enter step size (default = %d microns): ', default));
-   %      out.stepSize = response;
-   %      if iesmpty(response)
-   %         out.stepSize = params.Results.stepSize;
-   %      end
-   %  end
-
    if isempty(params.Results.depthMicrons) &&  strcmp(d(2).file,'PSF.m')
        %ASK QUESTION
        default=20;
        response = [];
        while isempty(response)
            response = input(sprintf('Please enter depth (um) [20]: '),'s');
-           % response = str2num(response);
            if isempty(response)
                response = default;
            else
@@ -76,11 +55,10 @@ function out = parseInputVariable(varargin)
 
     if isempty(params.Results.stepSize) &&  strcmp(d(2).file,'PSF.m')
        %ASK QUESTION
-       default=1;
+       default=0.25;
        response = [];
        while isempty(response)
-           response = input(sprintf('Please enter step size (um) [1]: '),'s');
-           % response = str2num(response);
+           response = input(sprintf('Please enter step size (um) [0.25]: '),'s');
            if isempty(response)
                response = default;
            else
@@ -136,9 +114,9 @@ function out = parseInputVariable(varargin)
    end 
 
     
- fprintf('wavelength is:\n');
-    disp(out.wavelength);
-
-   
- fprintf('power is:\n');
-    disp(out.power);
+ % fprintf('wavelength is:\n');
+ %    disp(out.wavelength);
+ % 
+ % 
+ % fprintf('power is:\n');
+ %    disp(out.power);

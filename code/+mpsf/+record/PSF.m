@@ -1,7 +1,5 @@
 function varargout = PSF(varargin)
 
-% function record.PSF(micronsToImage, stepSizeInMicrons)
-%
 % Purpose
 % Records a z-stack of a bead. Images a depth of "micronsToImage"
 % from the current Z position down using steps defined by
@@ -13,10 +11,8 @@ function varargout = PSF(varargin)
 % Inputs
 % micronsToImage - total depth to image in microns
 % stepSizeInMicrons - number of microns between each z step
-%
-% Inputs [optional]
-% laser_power_in_mW - manual entry of laser power in mW so it's in the file name.
-% laser_wavelength - manual entry of laser wavelength in nm so it's in the file name.
+% wavelength - of laser used
+% power - of light
 %
 % Outputs
 % Optionally returns path to the TIFF.
@@ -33,28 +29,13 @@ function varargout = PSF(varargin)
 % Rob Campbell - SWC Nov 2018
 
 
-    % micronsToImage = abs(micronsToImage);
-    % if nargin<2 || isempty(stepSizeInMicrons)
-    %     stepSizeInMicrons=0.25;
-    % end
-    % 
-    % if nargin<3
-    %     laser_power_in_mW = '';
-    % else
-    %     laser_power_in_mW = sprintf('_%dmW',round(laser_power_in_mW));
-    % end
-    % 
-    % if nargin<4
-    %     laser_wavelength = '';
-    % else
-    %     laser_wavelength = sprintf('_%dnm', round(laser_wavelength));
-    % end
-
 out =  mpsf.record.parseInputVariable(varargin{:});
  laser_wavelength=out.wavelength;
  laser_power_in_mW = out.power;
- micronsToImage = out.depthMicron;
+ micronsToImage = out.depthMicrons;
  stepSizeInMicrons = out.stepSize;
+  
+
     % Connect to ScanImage using the linker class
     API = sibridge.silinker;
 
