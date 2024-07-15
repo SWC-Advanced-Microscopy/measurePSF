@@ -112,7 +112,7 @@ function out = parseInputVariable(varargin)
                end
            end 
        end 
-       out.wavelength = response;
+       out.wavelength = round(response);
    end 
 
    if isempty(params.Results.power)
@@ -132,7 +132,7 @@ function out = parseInputVariable(varargin)
                end
            end 
        end 
-       out.power = response;
+       out.power = round(response);
    end 
 
     

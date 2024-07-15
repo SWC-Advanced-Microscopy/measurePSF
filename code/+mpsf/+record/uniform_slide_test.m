@@ -19,10 +19,10 @@ function uniform_slide_test(varargin)
 
     out =  mpsf.record.parseInputVariable(varargin{:});
     wavelength=out.wavelength;
-    % power=out.power;
+    power=out.power;
 
     fprintf('wavelength is:\n ')
     disp(wavelength)
 
-    % fprintf('power is:\n')
-    % disp(power)
+    fprintf('power is:\n')
+    disp(power)
