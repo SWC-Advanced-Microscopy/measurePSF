@@ -1,18 +1,16 @@
 function out = parseInputVariable(varargin)
 
-    % Parse laser power and wavelength from record functions
-    %
-    % function [laser_power_in_mW, laser_wavelength] = parsePowerAndWavelength(varargin)
-    %
+    % Parse laser power and wavelength for all record functions
+    % Parse depth in microns and step size for PSF function
+   
     % Purpose
     % Recording functions need the power and wavelength supplied by the user. The user
-    % may either do this as input args or, if they do not, as interactive inputs. This
-    % function handles this. The can supply the arguments in any order.
+    % may either do this as input args or, if they do not, as interactive inputs, and finally as a default value. 
+    % This function handles this. The can supply the arguments in any order.
     % See mpsf.record.uniform_slide and mpsf.record.lens_paper for examples
     %
     %
-    % Rob Campbell
-
+    % Rob Campbell and Isabell Whiteley
 
       % Make the inputParser object
     params = inputParser;
@@ -32,11 +30,8 @@ function out = parseInputVariable(varargin)
     out.depthMicrons=params.Results.depthMicrons;
     out.stepSize=params.Results.stepSize;
 
-
-
     d=dbstack;
     d.file;
-
 
    %  if isempty(params.Results.depthMicrons) &&  strcmp(d(2).file,'PSF.m')
    %      %ASK QUESTION
@@ -85,7 +80,6 @@ function out = parseInputVariable(varargin)
        response = [];
        while isempty(response)
            response = input(sprintf('Please enter wavelength (nm) [920]: '),'s');
-           % response = str2num(response);
            if isempty(response)
                response = default;
            else
@@ -106,7 +100,6 @@ function out = parseInputVariable(varargin)
        response = [];
        while isempty(response)
            response = input(sprintf('Please enter power (mW) [20]: '),'s');
-           % response = str2num(response);
            if isempty(response)
                response = default;
            else
@@ -120,16 +113,6 @@ function out = parseInputVariable(varargin)
        end 
        out.power = response;
    end 
-    % if isempty(params.Results.power)
-    %     %ASK QUESTION
-    %     % default=0.25;
-    %     response = input(sprintf('Please enter power (mW): '));
-    %     out.Results.power = response;
-    %     % params.Results.power = response;
-    %     % if iesmpty(response)
-    %         % params.Results.depthMicrons = default;
-    %     % end
-    % end
 
     
  fprintf('wavelength is:\n');

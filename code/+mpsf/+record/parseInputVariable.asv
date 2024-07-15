@@ -1,7 +1,7 @@
 function out = parseInputVariable(varargin)
 
-    % Parse laser power and wavelength from record functions
-    %
+    % Parse laser power and wavelength for all record functions
+    % Parse depth in microns and step size for PSF function
     % function [laser_power_in_mW, laser_wavelength] = parsePowerAndWavelength(varargin)
     %
     % Purpose
@@ -12,7 +12,6 @@ function out = parseInputVariable(varargin)
     %
     %
     % Rob Campbell
-
 
       % Make the inputParser object
     params = inputParser;
@@ -32,11 +31,8 @@ function out = parseInputVariable(varargin)
     out.depthMicrons=params.Results.depthMicrons;
     out.stepSize=params.Results.stepSize;
 
-
-
     d=dbstack;
     d.file;
-
 
    %  if isempty(params.Results.depthMicrons) &&  strcmp(d(2).file,'PSF.m')
    %      %ASK QUESTION
@@ -58,42 +54,71 @@ function out = parseInputVariable(varargin)
    %      end
    %  end
 
+   if isempty(params.Results.depthMicrons &&  strcmp(d(2).file,'PSF.m')
+       %ASK QUESTION
+       default=920;
+       response = [];
+       while isempty(response)
+           response = input(sprintf('Please enter depth (um) [20]: '),'s');
+           % response = str2num(response);
+           if isempty(response)
+               response = default;
+           else
+               [response,tf] = str2num(response);
+               if tf==1 && isnumeric(response)
+                   response = response;
+               else
+                   response = [];
+               end
+           end 
+       end 
+       out.depthMicrons = response;
+   end 
+
    if isempty(params.Results.wavelength)
        %ASK QUESTION
        default=920;
        response = [];
        while isempty(response)
            response = input(sprintf('Please enter wavelength (nm) [920]: '),'s');
-
-           % response = str2num(response);
            if isempty(response)
                response = default;
-           end
            else
-           [response,tf] = str2num(response);
-            if tf==1 && isnumeric(response)
-               response = response;
-             else
-               response = [];
-            end
-           end
-        end
-   out.wavelength = response;
-end
+               [response,tf] = str2num(response);
+               if tf==1 && isnumeric(response)
+                   response = response;
+               else
+                   response = [];
+               end
+           end 
+       end 
+       out.wavelength = response;
+   end 
 
-
-    % if isempty(params.Results.power)
-    %     %ASK QUESTION
-    %     % default=0.25;
-    %     response = input(sprintf('Please enter power (mW): '));
-    %     out.Results.power = response;
-    %     % params.Results.power = response;
-    %     % if iesmpty(response)
-    %         % params.Results.depthMicrons = default;
-    %     % end
-    % end
+   if isempty(params.Results.power)
+       %ASK QUESTION
+       default=20;
+       response = [];
+       while isempty(response)
+           response = input(sprintf('Please enter power (mW) [20]: '),'s');
+           if isempty(response)
+               response = default;
+           else
+               [response,tf] = str2num(response);
+               if tf==1 && isnumeric(response)
+                   response = response;
+               else
+                   response = [];
+               end
+           end 
+       end 
+       out.power = response;
+   end 
 
     
  fprintf('wavelength is:\n');
     disp(out.wavelength);
 
+   
+ fprintf('power is:\n');
+    disp(out.power);
