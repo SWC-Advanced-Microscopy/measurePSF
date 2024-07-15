@@ -51,7 +51,10 @@ function varargout = PSF(varargin)
     % end
 
 out =  mpsf.record.parseInputVariable(varargin{:});
-
+ laser_wavelength=out.wavelength;
+ laser_power_in_mW = out.power;
+ micronsToImage = out.depthMicron;
+ stepSizeInMicrons = out.stepSize;
     % Connect to ScanImage using the linker class
     API = sibridge.silinker;
 
