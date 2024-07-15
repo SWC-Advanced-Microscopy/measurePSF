@@ -15,9 +15,11 @@ function uniform_slide(varargin)
     %
     %
     % Rob Campbell, SWC 2022
-
-    [laser_power_in_mW,laser_wavelength] = mpsf.record.parsePowerAndWavelength(varargin{:});
-
+    % Updated: Isabell Whiteley, SWC 2024
+    
+    out =  mpsf.record.parseInputVariable(varargin{:});
+    laser_wavelength=out.wavelength;
+    laser_power_in_mW = out.power;
 
     % Connect to ScanImage using the linker class
     API = sibridge.silinker;
