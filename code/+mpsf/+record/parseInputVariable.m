@@ -10,11 +10,12 @@ function out = parseInputVariable(varargin)
     % See mpsf.record.uniform_slide and mpsf.record.lens_paper for examples
     %
     %
-    % Rob Campbell and Isabell Whiteley
+    % Isabell Whiteley, SWC 2024
 
       % Make the inputParser object
     params = inputParser;
     params.CaseSensitive = false; % So we do not have to be case sensitive
+
     % add parameters
     params.addParameter('wavelength', [], @(x) isnumeric(x));
     params.addParameter('power', [], @(x) isnumeric(x));
@@ -34,7 +35,6 @@ function out = parseInputVariable(varargin)
     d.file;
 
    if isempty(params.Results.depthMicrons) &&  strcmp(d(2).file,'PSF.m')
-       %ASK QUESTION
        default=20;
        response = [];
        while isempty(response)
@@ -54,7 +54,6 @@ function out = parseInputVariable(varargin)
    end 
 
     if isempty(params.Results.stepSize) &&  strcmp(d(2).file,'PSF.m')
-       %ASK QUESTION
        default=0.25;
        response = [];
        while isempty(response)
@@ -74,7 +73,6 @@ function out = parseInputVariable(varargin)
    end 
 
    if isempty(params.Results.wavelength)
-       %ASK QUESTION
        default=920;
        response = [];
        while isempty(response)
@@ -94,7 +92,6 @@ function out = parseInputVariable(varargin)
    end 
 
    if isempty(params.Results.power)
-       %ASK QUESTION
        default=20;
        response = [];
        while isempty(response)
@@ -112,11 +109,3 @@ function out = parseInputVariable(varargin)
        end 
        out.power = round(response);
    end 
-
-    
- % fprintf('wavelength is:\n');
- %    disp(out.wavelength);
- % 
- % 
- % fprintf('power is:\n');
- %    disp(out.power);

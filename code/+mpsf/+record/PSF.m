@@ -20,13 +20,14 @@ function varargout = PSF(varargin)
 %
 % Examples
 % 1) Record a 12 micron stack every 0.25 microns
-% >> record.PSF(12)
+% >> record.PSF('micronsToImage',12)
 %
 % 2) Record a 20 micron stack every 0.5 microns and return path to tiff
-% >> F=record.PSF(20,0.5);
+% >> F=record.PSF('micronsToImage',20,'stepSizeInMicrons',0.5);
 %
 %
 % Rob Campbell - SWC Nov 2018
+% Updated: Isabell Whiteley, SWC 2024
 
 
 out =  mpsf.record.parseInputVariable(varargin{:});

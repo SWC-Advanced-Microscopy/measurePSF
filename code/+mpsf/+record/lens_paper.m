@@ -19,7 +19,7 @@ function lens_paper(varargin)
     % e.g. In both the following examples the user is imaging at 920 nm and 10 mW
     % at the sample.
     % >> mpsf.record.lens_paper(10,920)
-    % >> mpsf.record.lens_paper(920,10)
+    % >> mpsf.record.lens_paper('wavelength',920,'power',10)
     %
     %
     % Rob Campbell, SWC 2022

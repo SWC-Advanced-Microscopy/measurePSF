@@ -11,7 +11,7 @@ function uniform_slide(varargin)
     % e.g.
     % >> mpsf.record.uniform_slide
     % >> mpsf.record.uniform_slide(10,920)
-    % >> mpsf.record.uniform_slide(920,10)
+    % >> mpsf.record.uniform_slide('wavelength',920,'power',10)
     %
     %
     % Rob Campbell, SWC 2022
