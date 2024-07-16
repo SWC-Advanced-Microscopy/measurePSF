@@ -53,7 +53,7 @@ function out = parseInputVariable(varargin)
         default=0.25;
         response = [];
         while isempty(response)
-            response = input(sprintf('Please enter step size (um) [%d]: ',default),'s');
+            response = input(sprintf('Please enter step size (um) [%0.3f]: ',default),'s');
             if isempty(response)
                 response = default;
             else
