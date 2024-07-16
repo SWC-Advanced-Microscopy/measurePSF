@@ -1,8 +1,9 @@
 function out = parseInputVariable(varargin)
 
-    % Parse laser power and wavelength for all record functions
+    % Parse power and wavelength for all functions and depth/step for psf
+    % 
     % Parse depth in microns and step size for PSF function
-   
+    % 
     % Purpose
     % Recording functions need the power and wavelength supplied by the user. The user
     % may either do this as input args or, if they do not, as interactive inputs, and finally as a default value. 
@@ -34,77 +35,57 @@ function out = parseInputVariable(varargin)
     d=dbstack;
     d.file;
 
-   if isempty(params.Results.depthMicrons) &&  strcmp(d(2).file,'PSF.m')
-       default=20;
-       response = [];
-       while isempty(response)
-           response = input(sprintf('Please enter depth (um) [20]: '),'s');
-           if isempty(response)
-               response = default;
-           else
-               [response,tf] = str2num(response);
-               if tf==1 && isnumeric(response)
-                   response = response;
-               else
-                   response = [];
-               end
-           end 
-       end 
-       out.depthMicrons = response;
-   end 
+    if isempty(params.Results.depthMicrons) &&  strcmp(d(2).file,'PSF.m')
+        default=20;
+        response = [];
+        while isempty(response)
+            response = input(sprintf('Please enter depth (um) [%d]: ',default),'s');
+            if isempty(response)
+                response = default;
+            else
+                response = str2num(response);
+            end
+        end
+        out.depthMicrons = response;
+    end
 
     if isempty(params.Results.stepSize) &&  strcmp(d(2).file,'PSF.m')
-       default=0.25;
-       response = [];
-       while isempty(response)
-           response = input(sprintf('Please enter step size (um) [0.25]: '),'s');
-           if isempty(response)
-               response = default;
-           else
-               [response,tf] = str2num(response);
-               if tf==1 && isnumeric(response)
-                   response = response;
-               else
-                   response = [];
-               end
-           end 
-       end 
-       out.stepSize = response;
-   end 
+        default=0.25;
+        response = [];
+        while isempty(response)
+            response = input(sprintf('Please enter step size (um) [%d]: ',default),'s');
+            if isempty(response)
+                response = default;
+            else
+                response = str2num(response);
+            end
+        end
+        out.stepSize = response;
+    end
 
-   if isempty(params.Results.wavelength)
-       default=920;
-       response = [];
-       while isempty(response)
-           response = input(sprintf('Please enter wavelength (nm) [920]: '),'s');
-           if isempty(response)
-               response = default;
-           else
-               [response,tf] = str2num(response);
-               if tf==1 && isnumeric(response)
-                   response = response;
-               else
-                   response = [];
-               end
-           end 
-       end 
-       out.wavelength = round(response);
-   end 
+    if isempty(params.Results.wavelength)
+        default=920;
+        response = [];
+        while isempty(response)
+            response = input(sprintf('Please enter wavelength (nm) [%d]: ',default),'s');
+            if isempty(response)
+                response = default;
+            else
+                response = str2num(response);
+            end
+        end
+        out.wavelength = round(response);
+    end
 
    if isempty(params.Results.power)
        default=20;
        response = [];
        while isempty(response)
-           response = input(sprintf('Please enter power (mW) [20]: '),'s');
+           response = input(sprintf('Please enter power (mW) [%d]: ',default),'s');
            if isempty(response)
                response = default;
            else
-               [response,tf] = str2num(response);
-               if tf==1 && isnumeric(response)
-                   response = response;
-               else
-                   response = [];
-               end
+               response = str2num(response);
            end 
        end 
        out.power = round(response);
