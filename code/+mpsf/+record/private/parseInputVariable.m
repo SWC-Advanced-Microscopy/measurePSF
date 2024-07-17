@@ -1,15 +1,19 @@
 function out = parseInputVariable(varargin)
-
-    % Parse power and wavelength for all functions and depth/step for psf
+    % Parse power and wavelength, and if required, depth and step size
     % 
     % Parse depth in microns and step size for PSF function
     % 
     % Purpose
-    % Recording functions need the power and wavelength supplied by the user. The user
+    % Recording functions need the power and wavelength, and sometimes depth and step size, supplied by the user. The user
     % may either do this as input args or, if they do not, as interactive inputs, and finally as a default value. 
     % This function handles this. The can supply the arguments in any order.
-    % See mpsf.record.uniform_slide and mpsf.record.lens_paper for examples
+    % See mpsf.record.uniform_slide, mpsf.record.lens_paper, and mpsf.record.PSF for examples
     %
+    % Inputs:
+    % wavelength (in nm, default value 920nm)
+    % power (in mW, defauly value 20mW)
+    % depthMicrons (in um, default value 20um)
+    % stepSize (in um, defualt value 0.25um)
     %
     % Isabell Whiteley, SWC 2024
 

@@ -1,6 +1,6 @@
 function varargout = PSF(varargin)
-
-% Purpose
+% Purpose: Records a z-stack to generate a PSF of beads
+%
 % Records a z-stack of a bead. Images a depth of "micronsToImage"
 % from the current Z position down using steps defined by
 % "stepSizeInMicrons" (0.25 microns by default). Averages using
@@ -19,7 +19,7 @@ function varargout = PSF(varargin)
 %
 %
 % Examples
-% 1) Record a 12 micron stack every 0.25 microns
+% 1) Record a 12 micron stack, and prompts user for other inputs.
 % >> record.PSF('micronsToImage',12)
 %
 % 2) Record a 20 micron stack every 0.5 microns and return path to tiff
@@ -30,7 +30,7 @@ function varargout = PSF(varargin)
 % Updated: Isabell Whiteley, SWC 2024
 
 
-out =  mpsf.record.parseInputVariable(varargin{:});
+out =  parseInputVariable(varargin{:});
  laser_wavelength=out.wavelength;
  laser_power_in_mW = out.power;
  micronsToImage = out.depthMicrons;

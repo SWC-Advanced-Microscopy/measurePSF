@@ -10,14 +10,13 @@ function uniform_slide(varargin)
     %
     % e.g.
     % >> mpsf.record.uniform_slide
-    % >> mpsf.record.uniform_slide(10,920)
     % >> mpsf.record.uniform_slide('wavelength',920,'power',10)
     %
     %
     % Rob Campbell, SWC 2022
     % Updated: Isabell Whiteley, SWC 2024
     
-    out =  mpsf.record.parseInputVariable(varargin{:});
+    out =  parseInputVariable(varargin{:});
     laser_wavelength=out.wavelength;
     laser_power_in_mW = out.power;
 
