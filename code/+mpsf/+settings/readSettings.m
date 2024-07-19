@@ -34,14 +34,23 @@ function reformattedSettings = readSettings(fname)
     if isempty(fname)
         [settingsFile,backupSettingsDir] = mpsf.settings.findSettingsFile;
     else
+        % cope with wildcards
+        if contains(fname,'*')
+            d = dir(fname);
+            if length(d)==1
+                fname = d.name;
+            end
+        end
         settingsFile = fname;
         backupSettingsDir = []; % Do not write to backup settings at all
     end
+
 
     if ~exist(settingsFile,'file')
         fprintf('Can not find settings file %s\n', settingsFile)
         return
     end
+
 
     settingsFromYML = mpsf.yaml.ReadYaml(settingsFile);
 
@@ -128,6 +137,12 @@ function reformattedSettings = readSettings(fname)
         end
     end
 
+
+    % Do a final tidy to handle corner cases (caution: hard-coded stuff here!)
+    if isempty(outputSettings.QC.sourceIDs)
+        % Replace with an empty cell array
+        outputSettings.QC.sourceIDs={};
+    end
 
 
     %%

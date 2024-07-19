@@ -5,7 +5,8 @@ function out = generate_summary_text(data_dir)
 %
 % Purpose
 % This function generates a text summary of the information present in this folder.
-% This can be embedded into a report.
+% This can be embedded into a report. This function looks for a user settings file
+% in the data folder.
 %
 % Inputs
 % data_dir - optional, if nothing is provided the current directory is used
@@ -47,8 +48,12 @@ else
 end
 
 
-% Get microscope information from the settings file
-mic = mpsf.settings.readSettings;
+% Get microscope information from the settings file in this folder
+settingsFile = dir(fullfile(data_dir,'*_SystemSettings.yml'));
+if length(settingsFile) == 1
+    settingsFile = fullfile(data_dir, settingsFile.name);
+    mic = mpsf.settings.readSettings(settingsFile);
+end
 
 
 if contains(header.scannerType,'RG')
@@ -66,8 +71,9 @@ end
 out = '';
 
 if ~isempty(mic)
-    if ~isempty(mic.microscope_name)
-        out = [out, sprintf('Report for microscope "%s" acquired %s ', mic.microscope.name, acqDate)];
+    if ~isempty(mic.microscope.name)
+        out = [out, sprintf('Report for microscope "%s" acquired %s ', ...
+         mic.microscope.name, acqDate)];
     else
         out = [out, sprintf('Microscope summary data were acquired %s ', acqDate)];
     end
@@ -81,7 +87,7 @@ out = [out, ...
 if ~isempty(mic)
     if ~isempty(mic.imagingLasers)
         for ii=1:length(mic.imagingLasers)
-            out = [out, sprintf('Laser: %s. ', mic.imaginingLasers(ii).name)];
+            out = [out, sprintf('Laser: %s. ', mic.imagingLasers(ii).model)];
         end
     end
     if ~isempty(mic.objective)

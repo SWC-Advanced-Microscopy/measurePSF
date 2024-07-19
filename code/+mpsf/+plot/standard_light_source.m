@@ -34,19 +34,21 @@ function varargout = standard_light_source(dirToSearch)
     PMT_gain = zeros(1,length(files));
     mean_value = zeros(length(files),length(m));
 
+    fprintf('Loading data')
     for jj = 1:length(files)
-        fname = fullfile(dirToSearch,files(jj).name)
+        fname = fullfile(dirToSearch,files(jj).name);
         [imstack,metadata] = mpsf.tools.scanImage_stackLoad(fname,false);
 
         % Fail gracefully if the file could not be loaded
         if isempty(imstack)
             continue
         end
-
+        fprintf('.')
         % Log gain and mean pixel values
         PMT_gain(jj) = metadata.gains(1);
         mean_value(jj,:) = squeeze(mean(imstack,[1,2]));
     end
+    fprintf('\n')
 
     % Quit if nothing was loaded
     if all(mean_value==0)
@@ -59,6 +61,11 @@ function varargout = standard_light_source(dirToSearch)
     offset_subtracted = mean_value-mean_value(1,:);
 
     p=plot(offset_subtracted,'o-','MarkerSize',5);
+
+    % Because ...'MarkerFaceColor','auto'... didn't do what was expected.
+    for ii=1:length(p)
+        p(ii).MarkerFaceColor = p(ii).Color;
+    end
 
     legend(metadata.channelName(metadata.channelSave),'Location','NorthWest')
 

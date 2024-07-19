@@ -12,13 +12,13 @@ function out = plot_functions_generator(data_dir)
 % PDFs or using the MATLAB report generator to make a nicely formatted report.
 %
 %
-%
 % Inputs
 % data_dir - optional, if nothing is provided the current directory is used
 %
 %
 % Also see:
 % mpsf.report.plotAllBasic
+%
 %
 % Rob Campbell - SWC 2022
 
@@ -35,12 +35,12 @@ n=1;
 for ii=1:length(d)
     tmp = d(ii);
 
-    if startsWith(tmp.name,'electrical')
+    if contains(tmp.name,'electrical_noise')
         out(n) = generic_generator_template(tmp);
         out(n).type = 'electrical_noise';
         out(n).plotting_func = @mpsf.plot.electrical_noise;
         n=n+1;
-    elseif startsWith(tmp.name,'uniform_slide_')
+    elseif contains(tmp.name,'uniform_slide_')
         out(n) = generic_generator_template(tmp);
         out(n).type = 'uniform_slide';
         out(n).plotting_func = @mpsf.plot.uniform_slide;
@@ -50,10 +50,15 @@ for ii=1:length(d)
         out(n).type = 'laser_stability';
         out(n).plotting_func = @mpsf.plot.uniform_slide_laser_stability;
         n=n+1;
-    elseif startsWith(tmp.name,'lens_paper_')
+    elseif contains(tmp.name,'lens_paper_')
         out(n) = generic_generator_template(tmp);
         out(n).type = 'lens_paper';
         out(n).plotting_func = @mpsf.plot.lens_paper;
+        n=n+1;
+    elseif contains(tmp.name,'standard_source')
+        out(n) = generic_generator_template(tmp);
+        out(n).type = 'standard_source';
+        out(n).plotting_func = @mpsf.plot.standard_light_source;
         n=n+1;
     end
 end

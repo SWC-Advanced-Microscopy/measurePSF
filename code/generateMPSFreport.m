@@ -36,6 +36,9 @@ function varargout=generateMPSFreport(data_dir)
     end
 
     GEN=mpsf.report.plot_functions_generator(data_dir);
+    if isempty(GEN)
+        return
+    end
 
     % Java imports
     import mlreportgen.dom.*;
@@ -53,7 +56,7 @@ function varargout=generateMPSFreport(data_dir)
     br = PageBreak();
 
 
-    %% Intro to the report by summarising whatever information we can automatically generate
+    %% Intro to the report by summarizing whatever information we can automatically generate
     chapter = Chapter('Title', 'Introduction');
     p1 = Paragraph(mpsf.report.generate_summary_text);
 
@@ -84,6 +87,26 @@ function varargout=generateMPSFreport(data_dir)
     add(rpt,chapter)
 
 
+
+
+    %% Standard light source
+    chapter = Chapter('Title', 'Response to standard light source');
+
+
+    f=find(strcmp({GEN.type},'standard_source'));
+    for ii=1:length(f)
+        GEN(f(ii)).plotting_func(GEN(f(ii)).full_path_to_data)
+
+        fig = Figure();
+
+        figImg = Image(getSnapshotImage(fig, rpt));
+        figImg.Style = imgStyle;
+        delete(gcf);
+
+        add(chapter, figImg);
+    end
+
+    add(rpt,chapter)
 
 
 
