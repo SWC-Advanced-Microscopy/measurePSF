@@ -143,6 +143,9 @@ function standard_light_source(channelSave)
     % Report where the file was saved
     mpsf.tools.reportFileSaveLocation(saveDir,fileStem)
 
+    % Save system settings to this location
+    settingsFilePath = mpsf.settings.findSettingsFile;
+    copyfile(settingsFilePath, saveDir)
 
 
 function gainsToTest = getPMTGainsToTest(hPMT)

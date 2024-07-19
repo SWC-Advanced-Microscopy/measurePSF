@@ -121,6 +121,9 @@ function varargout = PSF(varargin)
     % Report where the file was saved
     mpsf.tools.reportFileSaveLocation(saveDir,fileStem)
 
+    % Save system settings to this location
+    settingsFilePath = mpsf.settings.findSettingsFile;
+    copyfile(settingsFilePath, saveDir)
 
 
     if nargout>0
