@@ -15,13 +15,19 @@ function uniform_slide(varargin)
     %
     % Rob Campbell, SWC 2022
     % Updated: Isabell Whiteley, SWC 2024
-    
+
     out =  parseInputVariable(varargin{:});
     laser_wavelength=out.wavelength;
     laser_power_in_mW = out.power;
 
     % Connect to ScanImage using the linker class
     API = sibridge.silinker;
+
+    if API.linkSucceeded == false
+        return
+    end
+
+
     if ~strcmp(API.scannerType,'resonant')
         fprintf('%s only safe with resonant scanner. Quitting. \n',mfilename)
         return

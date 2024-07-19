@@ -18,7 +18,7 @@ function lens_paper(varargin)
     %
     % e.g. In the following example the user is imaging at 920 nm and 10 mW
     % at the sample.
-    % 
+    %
     % >> mpsf.record.lens_paper('wavelength',920,'power',10)
     %
     % e.g. If no inputs are given, user will be prompted for values
@@ -26,16 +26,20 @@ function lens_paper(varargin)
     %
     % Rob Campbell, SWC 2022
     % Updated: Isabell Whiteley, SWC 2024
-    
-   
+
+
     out =  parseInputVariable(varargin{:});
     laser_wavelength=out.wavelength;
     laser_power_in_mW = out.power;
 
 
-
     % Connect to ScanImage using the linker class
     API = sibridge.silinker;
+
+    if API.linkSucceeded == false
+        return
+    end
+
 
     saveChanName = API.getSaveChannelName;
     if isempty(saveChanName)
@@ -55,17 +59,17 @@ function lens_paper(varargin)
 
     %Apply common settings
     API.setZSlices(1)
-    
+
     API.hSI.hRoiManager.pixelsPerLine=256;
 
-    % We will acquire 5 seconds of data or 40 frames, whichever is larger. 
+    % We will acquire 5 seconds of data or 40 frames, whichever is larger.
     minFrames = 40;
     fiveSecondsOfFrames = ceil(5 / API.hSI.hRoiManager.scanFramePeriod);
     if fiveSecondsOfFrames < 40
         numFramesToAcquire = minFrames;
     else
         numFramesToAcquire = fiveSecondsOfFrames;
-    end 
+    end
 
     API.hSI.hStackManager.framesPerSlice=numFramesToAcquire;
 

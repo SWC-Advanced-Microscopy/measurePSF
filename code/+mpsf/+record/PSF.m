@@ -1,44 +1,49 @@
 function varargout = PSF(varargin)
-% Purpose: Records a z-stack to generate a PSF of beads
-%
-% Records a z-stack of a bead. Images a depth of "micronsToImage"
-% from the current Z position down using steps defined by
-% "stepSizeInMicrons" (0.25 microns by default). Averages using
-% the number of frames entered in the ScanImage IMAGE CONTROLS window.
-% Data will be saved to a TIFF on the desktop in a directory called
-% "PSF". This will be made if needed.
-%
-% Inputs
-% micronsToImage - total depth to image in microns
-% stepSizeInMicrons - number of microns between each z step
-% wavelength - of laser used
-% power - of light
-%
-% Outputs
-% Optionally returns path to the TIFF.
-%
-%
-% Examples
-% 1) Record a 12 micron stack, and prompts user for other inputs.
-% >> record.PSF('micronsToImage',12)
-%
-% 2) Record a 20 micron stack every 0.5 microns and return path to tiff
-% >> F=record.PSF('micronsToImage',20,'stepSizeInMicrons',0.5);
-%
-%
-% Rob Campbell - SWC Nov 2018
-% Updated: Isabell Whiteley, SWC 2024
+    % Purpose: Records a z-stack to generate a PSF of beads
+    %
+    % Records a z-stack of a bead. Images a depth of "micronsToImage"
+    % from the current Z position down using steps defined by
+    % "stepSizeInMicrons" (0.25 microns by default). Averages using
+    % the number of frames entered in the ScanImage IMAGE CONTROLS window.
+    % Data will be saved to a TIFF on the desktop in a directory called
+    % "PSF". This will be made if needed.
+    %
+    % Inputs
+    % micronsToImage - total depth to image in microns
+    % stepSizeInMicrons - number of microns between each z step
+    % wavelength - of laser used
+    % power - of light
+    %
+    % Outputs
+    % Optionally returns path to the TIFF.
+    %
+    %
+    % Examples
+    % 1) Record a 12 micron stack, and prompts user for other inputs.
+    % >> record.PSF('micronsToImage',12)
+    %
+    % 2) Record a 20 micron stack every 0.5 microns and return path to tiff
+    % >> F=record.PSF('micronsToImage',20,'stepSizeInMicrons',0.5);
+    %
+    %
+    % Rob Campbell - SWC Nov 2018
+    % Updated: Isabell Whiteley, SWC 2024
 
 
-out =  parseInputVariable(varargin{:});
- laser_wavelength=out.wavelength;
- laser_power_in_mW = out.power;
- micronsToImage = out.depthMicrons;
- stepSizeInMicrons = out.stepSize;
-  
+    out =  parseInputVariable(varargin{:});
+    laser_wavelength=out.wavelength;
+    laser_power_in_mW = out.power;
+    micronsToImage = out.depthMicrons;
+    stepSizeInMicrons = out.stepSize;
+
 
     % Connect to ScanImage using the linker class
     API = sibridge.silinker;
+
+    if API.linkSucceeded == false
+        return
+    end
+
 
     if length(API.hSI.hChannels.channelSave) > 1
         fprintf('Select just one channel to save\n')

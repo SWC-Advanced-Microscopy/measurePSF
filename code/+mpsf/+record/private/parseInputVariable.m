@@ -1,23 +1,36 @@
 function out = parseInputVariable(varargin)
     % Parse power and wavelength, and if required, depth and step size
-    % 
-    % Parse depth in microns and step size for PSF function
-    % 
-    % Purpose
-    % Recording functions need the power and wavelength, and sometimes depth and step size, supplied by the user. The user
-    % may either do this as input args or, if they do not, as interactive inputs, and finally as a default value. 
-    % This function handles this. The can supply the arguments in any order.
-    % See mpsf.record.uniform_slide, mpsf.record.lens_paper, and mpsf.record.PSF for examples
     %
-    % Inputs:
-    % wavelength (in nm, default value 920nm)
-    % power (in mW, defauly value 20mW)
-    % depthMicrons (in um, default value 20um)
-    % stepSize (in um, defualt value 0.25um)
+    % out = parseInputVariable('param1', val1, ...)
+    %
+    % Purpose
+    % Recording functions need the power and wavelength, and sometimes depth and step
+    % size, supplied by the user. The user may either do this by supplying input args as
+    % parameter/value pairs or, if they do not, as interactive inputs that have a default
+    % value. This function handles this. This function is called by the mpsf.record.
+    % functions such as mpsf.record.uniform_slide, .lens_paper, and .PSF.
+    %
+    %
+    % Inputs (optional param/val pairs)
+    %  'wavelength' - Excitation wavelength of the laser. Defined in nm.
+    %  'power' - Power at the sample. Defined in mW.
+    %  'depthMicrons' - The number of microns over which to take a Z stack. Defined in um.
+    %  'stepSize' - Step size between optical planes in a z-stack. Defined in um.
+    %
+    % Note: all inputs apart from stepSize are rounded to the nearest whole number.
+    %
+    %
+    % Outputs
+    % out - A structure containing the user's choices.
+    % e.g.
+    %  out.wavelength = 920;
+    %  out.power = 20;
+    %
     %
     % Isabell Whiteley, SWC 2024
 
-      % Make the inputParser object
+
+    % Make the inputParser object
     params = inputParser;
     params.CaseSensitive = false; % So we do not have to be case sensitive
 
@@ -36,61 +49,48 @@ function out = parseInputVariable(varargin)
     out.depthMicrons=params.Results.depthMicrons;
     out.stepSize=params.Results.stepSize;
 
-    d=dbstack;
-    d.file;
 
-    if isempty(params.Results.depthMicrons) &&  strcmp(d(2).file,'PSF.m')
+    % Used to determine the identity of the calling function
+    dStack = dbstack;
+
+
+    % Interactively handle each input argument if it was not supplied as a param/val pair
+    if isempty(params.Results.depthMicrons) && strcmp(dStack(2).file,'PSF.m')
         default=20;
-        response = [];
-        while isempty(response)
-            response = input(sprintf('Please enter depth (um) [%d]: ',default),'s');
-            if isempty(response)
-                response = default;
-            else
-                response = str2num(response);
-            end
-        end
-        out.depthMicrons = response;
+        txt = sprintf('Please enter depth (um) [%d]: ',default);
+        out.depthMicrons =  round(parseResponse(txt,default));
     end
 
-    if isempty(params.Results.stepSize) &&  strcmp(d(2).file,'PSF.m')
+    if isempty(params.Results.stepSize) && strcmp(dStack(2).file,'PSF.m')
         default=0.25;
-        response = [];
-        while isempty(response)
-            response = input(sprintf('Please enter step size (um) [%0.3f]: ',default),'s');
-            if isempty(response)
-                response = default;
-            else
-                response = str2num(response);
-            end
-        end
-        out.stepSize = response;
+        txt = sprintf('Please enter step size (um) [%0.3f]: ',default);
+        out.stepSize = parseResponse(txt,default);
     end
 
     if isempty(params.Results.wavelength)
         default=920;
-        response = [];
-        while isempty(response)
-            response = input(sprintf('Please enter wavelength (nm) [%d]: ',default),'s');
-            if isempty(response)
-                response = default;
-            else
-                response = str2num(response);
-            end
-        end
-        out.wavelength = round(response);
+        txt = sprintf('Please enter wavelength (nm) [%d]: ',default);
+        out.wavelength = round(parseResponse(txt,default));
     end
 
-   if isempty(params.Results.power)
-       default=20;
-       response = [];
-       while isempty(response)
-           response = input(sprintf('Please enter power (mW) [%d]: ',default),'s');
-           if isempty(response)
-               response = default;
-           else
-               response = str2num(response);
-           end 
-       end 
-       out.power = round(response);
-   end 
+    if isempty(params.Results.power)
+        default=20;
+        txt = sprintf('Please enter power (mW) [%d]: ',default);
+        out.power = round(parseResponse(txt,default));
+    end
+
+
+
+function response = parseResponse(promptString,default)
+    % Conducts an interactive prompt to help the user choose a value
+
+    response = [];
+    while isempty(response)
+        response = input(promptString,'s');
+        if isempty(response)
+            response = default;
+        else
+            response = str2num(response);
+        end
+   end
+

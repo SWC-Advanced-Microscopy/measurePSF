@@ -4,15 +4,15 @@ function standard_light_source(channelSave)
     % function record.standard_light_source(channelSave)
     %
     % Purpose
-    % Runs through a series of gain values to record signals from the 
-    % standard source. Places data in their own directory, as there is 
-    % one file per gain. 
+    % Runs through a series of gain values to record signals from the
+    % standard source. Places data in their own directory, as there is
+    % one file per gain.
     %
     % INSTRUCTIONS
-    % You may have multiple standard light sources. If so, enter them 
-    % into the `QC.sourceIDs` field of the YML file. e.g. 
+    % You may have multiple standard light sources. If so, enter them
+    % into the `QC.sourceIDs` field of the YML file. e.g.
     %  sourceIDs: ['Red_2024Q2','Green_2024Q2','Blue_2024Q2','White_2024Q2']
-    % You will then be prompted to enter which is the source when you run the function. 
+    % You will then be prompted to enter which is the source when you run the function.
     %
     %
     % Optional Inputs
@@ -36,6 +36,11 @@ function standard_light_source(channelSave)
 
     % Connect to ScanImage using the linker class
     API = sibridge.silinker;
+
+    if API.linkSucceeded == false
+        return
+    end
+
 
     % Create 'diagnostic' directory in the user's desktop
     saveDir = mpsf.tools.makeTodaysDataDirectory;
@@ -83,7 +88,7 @@ function standard_light_source(channelSave)
     settings = mpsf.tools.recordScanImageSettings(API);
 
 
-    %Apply settings for this acquisition 
+    %Apply settings for this acquisition
     API.setZSlices(1)
     API.hSI.hBeams.powers=0; % set laser power to zero
     API.hSI.hStackManager.framesPerSlice=1; % We will record multiple frames
@@ -103,7 +108,7 @@ function standard_light_source(channelSave)
     for ii=1:length(API.hSI.hPmts.hPMTs)
         gainsToTest = [gainsToTest; getPMTGainsToTest(API.hSI.hPmts.hPMTs{ii})];
     end
-    
+
     API.turnOnPMTs; % Turn on all PMTs
     pause(0.5)
 
@@ -141,7 +146,7 @@ function standard_light_source(channelSave)
 
 
 function gainsToTest = getPMTGainsToTest(hPMT)
-    % If the max control voltage is under 2V then it must be a 
+    % If the max control voltage is under 2V then it must be a
     % GaAsP, as those have max control voltage of around 0.9 to 1.5V
     %
     % Also, if the max voltage is 1 or 100 then it's also likely to be a GaAsP

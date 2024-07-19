@@ -12,8 +12,8 @@ function hSI = getSIobject
 % None
 %
 % Outputs
-% hSI - A copy of the ScanImage object. If ScanImage is not started or 
-%       otherwise not present, then hSI will be empty. 
+% hSI - A copy of the ScanImage object. If ScanImage is not started or
+%       otherwise not present, then hSI will be empty.
 %
 %
 % Rob Campbell - Jan 2020
@@ -24,10 +24,10 @@ scanimageObjectName='hSI';
 W = evalin('base','whos');
 SIexists = ismember(scanimageObjectName,{W.name});
 
-hSI=[];            
+hSI=[];
 
 if ~SIexists
-    fprintf('ScanImage not started, unable to link to it.\n')
+    fprintf('\nScanImage not started, unable to link to it.\n\n')
     return
 end
 

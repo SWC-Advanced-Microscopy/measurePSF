@@ -10,8 +10,12 @@ classdef silinker < handle
         scanimageObjectName = 'hSI' % If connecting to ScanImage look for this variable in the base workspace
         hSI % The ScanImage API attaches here
         listeners = {} % Reserved for listeners we might make
+
     end % Close hidden methods
 
+    properties
+        linkSucceeded % true if SI connected
+    end
 
     methods
 
@@ -41,11 +45,12 @@ classdef silinker < handle
 
             API = sibridge.getSIobject;
             if isempty(API)
-                fprintf('ScanImage not found, unable to link to it.\n')
+                obj.linkSucceeded = false;
                 return
             end
 
             obj.hSI=API; % Make composite object
+            obj.linkSucceeded = true;
             success=true;
         end % linkToScanImageAPI
 
