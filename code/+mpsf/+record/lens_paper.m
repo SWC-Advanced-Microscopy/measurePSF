@@ -1,7 +1,7 @@
 function lens_paper(varargin)
     % Image lens paper to provide qualitative indications of images quality
     %
-    % function mpsf.record.lens_paper(laser_power_in_mW,laser_wavelength)
+    % function mpsf.record.lens_paper('power',value, 'wavelength', value)
     %
     % Purpose
     % Imaging lens paper (e.g. purchased from ThorLabs) is a quick and dirty way of
@@ -16,16 +16,22 @@ function lens_paper(varargin)
     % they are prompted at CLI. The order of the two arguments
     % does not matter.
     %
-    % e.g. In both the following examples the user is imaging at 920 nm and 10 mW
+    % e.g. In the following example the user is imaging at 920 nm and 10 mW
     % at the sample.
-    % >> mpsf.record.lens_paper(10,920)
-    % >> mpsf.record.lens_paper(920,10)
+    % 
+    % >> mpsf.record.lens_paper('wavelength',920,'power',10)
     %
+    % e.g. If no inputs are given, user will be prompted for values
+    % >> mpsf.record.lens_paper
     %
     % Rob Campbell, SWC 2022
+    % Updated: Isabell Whiteley, SWC 2024
+    
+   
+    out =  parseInputVariable(varargin{:});
+    laser_wavelength=out.wavelength;
+    laser_power_in_mW = out.power;
 
-
-    [laser_power_in_mW,laser_wavelength] = mpsf.record.parsePowerAndWavelength(varargin{:});
 
 
     % Connect to ScanImage using the linker class

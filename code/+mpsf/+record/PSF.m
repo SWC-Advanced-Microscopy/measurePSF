@@ -1,8 +1,6 @@
-function varargout = PSF(micronsToImage, stepSizeInMicrons,laser_power_in_mW,laser_wavelength)
-
-% function record.PSF(micronsToImage, stepSizeInMicrons)
+function varargout = PSF(varargin)
+% Purpose: Records a z-stack to generate a PSF of beads
 %
-% Purpose
 % Records a z-stack of a bead. Images a depth of "micronsToImage"
 % from the current Z position down using steps defined by
 % "stepSizeInMicrons" (0.25 microns by default). Averages using
@@ -13,43 +11,31 @@ function varargout = PSF(micronsToImage, stepSizeInMicrons,laser_power_in_mW,las
 % Inputs
 % micronsToImage - total depth to image in microns
 % stepSizeInMicrons - number of microns between each z step
-%
-% Inputs [optional]
-% laser_power_in_mW - manual entry of laser power in mW so it's in the file name.
-% laser_wavelength - manual entry of laser wavelength in nm so it's in the file name.
+% wavelength - of laser used
+% power - of light
 %
 % Outputs
 % Optionally returns path to the TIFF.
 %
 %
 % Examples
-% 1) Record a 12 micron stack every 0.25 microns
-% >> record.PSF(12)
+% 1) Record a 12 micron stack, and prompts user for other inputs.
+% >> record.PSF('micronsToImage',12)
 %
 % 2) Record a 20 micron stack every 0.5 microns and return path to tiff
-% >> F=record.PSF(20,0.5);
+% >> F=record.PSF('micronsToImage',20,'stepSizeInMicrons',0.5);
 %
 %
 % Rob Campbell - SWC Nov 2018
+% Updated: Isabell Whiteley, SWC 2024
 
 
-    micronsToImage = abs(micronsToImage);
-    if nargin<2 || isempty(stepSizeInMicrons)
-        stepSizeInMicrons=0.25;
-    end
-
-    if nargin<3
-        laser_power_in_mW = '';
-    else
-        laser_power_in_mW = sprintf('_%dmW',round(laser_power_in_mW));
-    end
-
-    if nargin<4
-        laser_wavelength = '';
-    else
-        laser_wavelength = sprintf('_%dnm', round(laser_wavelength));
-    end
-
+out =  parseInputVariable(varargin{:});
+ laser_wavelength=out.wavelength;
+ laser_power_in_mW = out.power;
+ micronsToImage = out.depthMicrons;
+ stepSizeInMicrons = out.stepSize;
+  
 
     % Connect to ScanImage using the linker class
     API = sibridge.silinker;
