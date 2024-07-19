@@ -1,5 +1,6 @@
 function result = WriteYaml(filename, data, flowstyle)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
+
 if ~exist('flowstyle','var')
         flowstyle = 0;
     end;
@@ -41,7 +42,7 @@ if ~exist('flowstyle','var')
     end;
 end
 function result = scan(r)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
 if ischar(r)
         result = scan_char(r);
     elseif iscell(r)
@@ -61,7 +62,7 @@ if ischar(r)
     end
 end
 function result = scan_numeric(r)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
 if isempty(r)
         result = java.util.ArrayList();
     elseif(isinteger(r))
@@ -71,7 +72,7 @@ if isempty(r)
     end
 end
 function result = scan_logical(r)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
 if isempty(r)
         result = java.util.ArrayList();
     else
@@ -79,7 +80,7 @@ if isempty(r)
     end
 end
 function result = scan_char(r)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
 if isempty(r)
         result = java.util.ArrayList();
     else
@@ -87,14 +88,14 @@ if isempty(r)
     end
 end
 function result = scan_datetime(r)
-import stitchit.yaml.*;
-[Y, M, D, H, MN,S] = datevec(double(r));            
+import mpsf.yaml.*;
+[Y, M, D, H, MN,S] = datevec(double(r));
 	result = java.util.GregorianCalendar(Y, M-1, D, H, MN,S);
 	result.setTimeZone(java.util.TimeZone.getTimeZone('UTC'));
 end
 function result = scan_cell(r)
-import stitchit.yaml.*;
-if(isrowvector(r))  
+import mpsf.yaml.*;
+if(isrowvector(r))
         result = scan_cell_row(r);
     elseif(iscolumnvector(r))
         result = scan_cell_column(r);
@@ -109,7 +110,7 @@ if(isrowvector(r))
     end;
 end
 function result = scan_ord(r)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
 if(isrowvector(r))
         result = scan_ord_row(r);
     elseif(iscolumnvector(r))
@@ -125,14 +126,14 @@ if(isrowvector(r))
     end;
 end
 function result = scan_cell_row(r)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
 result = java.util.ArrayList();
     for ii = 1:size(r,2)
         result.add(scan(r{ii}));
     end;
 end
 function result = scan_cell_column(r)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
 result = java.util.ArrayList();
     for ii = 1:size(r,1)
         tmp = r{ii};
@@ -140,10 +141,10 @@ result = java.util.ArrayList();
             tmp = {tmp};
         end;
         result.add(scan(tmp));
-    end;    
+    end;
 end
 function result = scan_cell_matrix(r)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
 result = java.util.ArrayList();
     for ii = 1:size(r,1)
         i = r(ii,:);
@@ -151,40 +152,40 @@ result = java.util.ArrayList();
     end;
 end
 function result = scan_cell_single(r)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
 result = java.util.ArrayList();
     result.add(scan(r{1}));
 end
 function result = scan_ord_row(r)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
 result = java.util.ArrayList();
     for i = r
         result.add(scan(i));
     end;
 end
 function result = scan_ord_column(r)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
 result = java.util.ArrayList();
     for i = 1:size(r,1)
         result.add(scan_ord_row(r(i)));
     end;
 end
 function result = scan_ord_matrix(r)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
 result = java.util.ArrayList();
     for i = r'
         result.add(scan_ord_row(i'));
     end;
 end
 function result = scan_ord_single(r)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
 result = java.util.ArrayList();
     for i = r'
         result.add(r);
     end;
 end
 function result = scan_struct(r)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
 result = java.util.LinkedHashMap();
     for i = fields(r)'
         key = i{1};

@@ -1,4 +1,4 @@
 function result = kwd_parent()
-import stitchit.yaml.*;
+import mpsf.yaml.*;
 result = 'parent';
 end

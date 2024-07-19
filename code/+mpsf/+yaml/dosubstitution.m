@@ -1,12 +1,13 @@
 function result = dosubstitution(r, dictionary)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
+
 if ~exist('dictionary','var')
         dictionary = {};
     end;
     result = recurse(r, 0, dictionary);
 end
 function result = recurse(data, level, dictionary)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
 if iscell(data) && ~ismymatrix(data)
         result = iter_cell(data, level, dictionary);
     elseif isstruct(data)
@@ -18,14 +19,14 @@ if iscell(data) && ~ismymatrix(data)
     end;
 end
 function result = iter_cell(data, level, dictionary)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
 result = {};
     for i = 1:length(data)
         result{i} = recurse(data{i}, level + 1, dictionary);
     end;
 end
 function result = iter_struct(data, level, dictionary)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
 result = data;
     for i = fields(data)'
         fld = char(i);

@@ -28,11 +28,14 @@ function varargout = standard_light_source(dirToSearch)
         return
     end
 
+    % get the number PMT channels by looking at the first file in the list
+    m = imfinfo(fullfile(dirToSearch,files(1).name)); % length == num chans
 
     PMT_gain = zeros(1,length(files));
-    mean_value = zeros(length(files),4);
+    mean_value = zeros(length(files),length(m));
+
     for jj = 1:length(files)
-        fname = fullfile(dirToSearch,files(jj).name);
+        fname = fullfile(dirToSearch,files(jj).name)
         [imstack,metadata] = mpsf.tools.scanImage_stackLoad(fname,false);
 
         % Fail gracefully if the file could not be loaded
@@ -54,7 +57,8 @@ function varargout = standard_light_source(dirToSearch)
     % Make a new figure or return a plot handle as appropriate
     fig = mpsf.tools.returnFigureHandleForFile([dirToSearch,mfilename]);
     offset_subtracted = mean_value-mean_value(1,:);
-    p=plot(offset_subtracted(:,1:4),'o-','MarkerSize',5);
+
+    p=plot(offset_subtracted,'o-','MarkerSize',5);
 
     legend(metadata.channelName(metadata.channelSave),'Location','NorthWest')
 
@@ -66,6 +70,6 @@ function varargout = standard_light_source(dirToSearch)
 
     if nargout>0
         pltData.PMT_gain = PMT_gain;
-        pltData.mean_value = mean_value;
+        pltData.mean_value = offset_subtracted;
         varargout{1} = pltData;
     end

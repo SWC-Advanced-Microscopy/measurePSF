@@ -1,12 +1,12 @@
 function result = mergeimports(data, verb)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
 if ~exist('verb','var')
         verb = 0;
     end;
     result = recurse(data, 0, [], verb);
 end
 function result = recurse(data, level, addit, verb)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
 indent = repmat(' | ',1,level); % for debugging
     if iscell(data)
         result = iter_cell(data, level, addit, verb);
@@ -21,7 +21,7 @@ indent = repmat(' | ',1,level); % for debugging
     end;
 end
 function result = iter_cell(data, level, addit, verb)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
 indent = repmat(' | ',1,level); % for debugging
     result = {};
     if any(verb == 1); fprintf([indent,'cell {\n']); end; % for debugging
@@ -32,7 +32,7 @@ indent = repmat(' | ',1,level); % for debugging
     if any(verb == 1); fprintf([indent,'} cell\n']); end; % for debugging
 end
 function result = iter_struct(data, level, addit, verb)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
 indent = repmat(' | ',1,level); % for debugging
     result = struct();
     collected_imports = {};
@@ -58,7 +58,7 @@ indent = repmat(' | ',1,level); % for debugging
     if any(verb == 1); fprintf([indent,'} struct\n']); end; % for debugging
 end
 function result = process_import_field(data)
-import stitchit.yaml.*;
+import mpsf.yaml.*;
 if iscell(data)
         merged_structs = struct();
         collected_nonstruct = {};

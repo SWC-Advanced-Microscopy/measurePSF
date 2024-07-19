@@ -63,8 +63,8 @@ PSF_files = dir('PSF_*');
 bead_files = dir('Bead_PSF_*.fig');
 
 if ~isempty(PSF_files)>0 && isempty(bead_files)
-    fprintf('\nYou have acquired PSF data but not selected and beads and saved the images\n')
-    fprintf('You should do this if you want to incorporate bead PSF in the summary graphics\n\n')
+    fprintf('\nYou have acquired PSF data but not selected any beads and saved the images.\n')
+    fprintf('You should do this if you want to incorporate bead PSFs in the summary graphics.\n\n')
 end
 
 % Otherwise if we have found bead PSF figure files, we can add them to the list
