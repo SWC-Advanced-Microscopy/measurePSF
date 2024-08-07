@@ -9,7 +9,7 @@ function varargout = PSF(varargin)
     % "PSF". This will be made if needed.
     %
     % Inputs
-    % micronsToImage - total depth to image in microns
+    % depthMicrons - total depth to image in microns
     % stepSizeInMicrons - number of microns between each z step
     % wavelength - of laser used
     % power - of light
@@ -20,10 +20,10 @@ function varargout = PSF(varargin)
     %
     % Examples
     % 1) Record a 12 micron stack, and prompts user for other inputs.
-    % >> record.PSF('micronsToImage',12)
+    % >> record.PSF('depthMicrons',12)
     %
     % 2) Record a 20 micron stack every 0.5 microns and return path to tiff
-    % >> F=record.PSF('micronsToImage',20,'stepSizeInMicrons',0.5);
+    % >> F=record.PSF('depthMicrons',20,'stepSizeInMicrons',0.5);
     %
     %
     % Rob Campbell - SWC Nov 2018
@@ -65,7 +65,7 @@ function varargout = PSF(varargin)
     % We will set up ScanImage to acquire the z-stack
     framesToAverage = API.hSI.hDisplay.displayRollingAverageFactor;
     numSlices = round(micronsToImage/stepSizeInMicrons);
-    fileStem = sprintf('PSF%s%s_%s', ....
+    fileStem = sprintf('PSF__%d_nm__%d_mW__%s', ....
             laser_wavelength, ...
             laser_power_in_mW, ...
             datestr(now,'yyyy-mm-dd_HH-MM-SS'));
@@ -111,7 +111,6 @@ function varargout = PSF(varargin)
         mpsf.tools.reapplyScanImageSettings(API,settings);
         return
     end
-
 
     % Start the acquisition and wait for it to finish
     API.acquireAndWait;
