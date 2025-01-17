@@ -1,7 +1,7 @@
-function standard_light_source(channelSave)
+function standard_light_source(channelSave,nFrames)
     % Record response to the standard light source on all four channels
     %
-    % function record.standard_light_source(channelSave)
+    % function record.standard_light_source(channelSave,nFames)
     %
     % Purpose
     % Runs through a series of gain values to record signals from the
@@ -18,6 +18,9 @@ function standard_light_source(channelSave)
     % Optional Inputs
     % channelSave - By default this is all four channels (1:4). But the user
     %         can specify anything they like.
+    % nFrames - [Optional, 1 by default] If >1 we save this many frames per gain.
+    %           This setting is used for situations where we want to convert data
+    %           from raw values to photons. 100 to 200 frames suggested.
     %
     %
     % Rob Campbell, SWC 2022
@@ -33,6 +36,11 @@ function standard_light_source(channelSave)
             channelSave = 1:4;
         end
     end
+
+    if nargin<2
+        nFrames = 1;
+    end
+
 
     % Connect to ScanImage using the linker class
     API = sibridge.silinker;
@@ -89,12 +97,12 @@ function standard_light_source(channelSave)
 
 
     %Apply settings for this acquisition
-    API.setZSlices(1)
+    API.setZSlices(1) % Just one z slice
     API.hSI.hBeams.powers=0; % set laser power to zero
-    API.hSI.hStackManager.framesPerSlice=1; % We will record multiple frames
+    API.hSI.hStackManager.framesPerSlice=nFrames; % Optionally we will record multiple frames
     API.hSI.hRoiManager.pixelsPerLine=256;
 
-    API.hSI.hScan2D.logAverageFactor = 1;
+    API.hSI.hScan2D.logAverageFactor = 1; % Do not average frames
     API.hSI.hDisplay.volumeDisplayStyle='Current';
 
     API.hSI.hChannels.loggingEnable=true;
