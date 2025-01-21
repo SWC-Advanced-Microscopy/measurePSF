@@ -19,8 +19,7 @@ function standard_light_source(channelSave,nFrames)
     % channelSave - By default this is all four channels (1:4). But the user
     %         can specify anything they like.
     % nFrames - [Optional, 1 by default] If >1 we save this many frames per gain.
-    %           This setting is used for situations where we want to convert data
-    %           from raw values to photons. 100 to 200 frames suggested.
+    %           There is unlikely to be a reason for this.
     %
     %
     % Rob Campbell, SWC 2022
@@ -28,6 +27,7 @@ function standard_light_source(channelSave,nFrames)
 
 
     % Process input argument
+    % TODO: https://github.com/SWC-Advanced-Microscopy/measurePSF/issues/78
     if nargin<1
         channelSave = 1:4;
     else
@@ -100,7 +100,7 @@ function standard_light_source(channelSave,nFrames)
     API.setZSlices(1) % Just one z slice
     API.hSI.hBeams.powers=0; % set laser power to zero
     API.hSI.hStackManager.framesPerSlice=nFrames; % Optionally we will record multiple frames
-    API.hSI.hRoiManager.pixelsPerLine=256;
+    API.hSI.hRoiManager.pixelsPerLine=128;
 
     API.hSI.hScan2D.logAverageFactor = 1; % Do not average frames
     API.hSI.hDisplay.volumeDisplayStyle='Current';
@@ -110,25 +110,20 @@ function standard_light_source(channelSave,nFrames)
 
     API.hSI.hChannels.channelSave = channelSave;
 
-    % Get gains to test for each PMT (PMTs can be GaAsp or multi-alkali and this
-    % is taken into account here)
-    gainsToTest = [];
-    for ii=1:length(API.hSI.hPmts.hPMTs)
-        gainsToTest = [gainsToTest; getPMTGainsToTest(API.hSI.hPmts.hPMTs{ii})];
-    end
+
 
     API.turnOnPMTs; % Turn on all PMTs
     pause(0.5)
 
 
     API.hSI.acqsPerLoop=1;
-
+    gainsToTest = getPMTGainsToTest;
     for ii=1:length(gainsToTest)
         % Set file name and save dir
         fileStem = sprintf('%s_standard_light_source_%s_%dV__%s', ...
             SETTINGS.microscope.name, ...
             sourceID, ...
-            gainsToTest(1,ii), ...
+            gainsToTest(1,ii), ... %TODO! This is only first PMT gain!
             datestr(now,'yyyy-mm-dd_HH-MM-SS'));
 
         API.hSI.hScan2D.logFileStem=fileStem;
@@ -154,27 +149,3 @@ function standard_light_source(channelSave,nFrames)
     % Save system settings to this location
     settingsFilePath = mpsf.settings.findSettingsFile;
     copyfile(settingsFilePath, saveDir)
-
-
-function gainsToTest = getPMTGainsToTest(hPMT)
-    % If the max control voltage is under 2V then it must be a
-    % GaAsP, as those have max control voltage of around 0.9 to 1.5V
-    %
-    % Also, if the max voltage is 1 or 100 then it's also likely to be a GaAsP
-
-
-    if hPMT.pmtSupplyRange_V(2) <= 100 || hPMT.aoRange_V(2) <= 2
-        isMultiAlkali = false;
-    else
-        isMultiAlkali = true;
-    end
-
-    numGains=12;
-    if isMultiAlkali
-        gainsToTest = [0,linspace(400,750,numGains)];
-    else
-        maxV = hPMT.pmtSupplyRange_V(2);
-        gainsToTest = [0, linspace(maxV*0.33,maxV*0.8,numGains)];
-    end
-
-    gainsToTest = round(gainsToTest);
