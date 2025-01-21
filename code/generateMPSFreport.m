@@ -66,140 +66,140 @@ function varargout=generateMPSFreport(data_dir)
 
 
 
-
     %% Electrical noise at each channel
-    chapter = Chapter('Title', 'Electrical Noise At Each Channel');
-
-
     f=find(strcmp({GEN.type},'electrical_noise'));
-    for ii=1:length(f)
-        GEN(f(ii)).plotting_func(GEN(f(ii)).full_path_to_data)
+    if ~isempty(f)
+        chapter = Chapter('Title', 'Electrical Noise At Each Channel');
 
-        fig = Figure();
+        for ii=1:length(f)
+            GEN(f(ii)).plotting_func(GEN(f(ii)).full_path_to_data)
 
-        figImg = Image(getSnapshotImage(fig, rpt));
-        figImg.Style = imgStyle;
-        delete(gcf);
+            fig = Figure();
 
-        add(chapter, figImg);
+            figImg = Image(getSnapshotImage(fig, rpt));
+            figImg.Style = imgStyle;
+            delete(gcf);
+
+            add(chapter, figImg);
+        end
+
+        add(rpt,chapter)
     end
-
-    add(rpt,chapter)
-
-
 
 
     %% Standard light source
-    chapter = Chapter('Title', 'Response to standard light source');
-
-
     f=find(strcmp({GEN.type},'standard_source'));
-    for ii=1:length(f)
-        GEN(f(ii)).plotting_func(GEN(f(ii)).full_path_to_data)
+    if ~isempty(f)
+        chapter = Chapter('Title', 'Response to standard light source');
 
-        fig = Figure();
+        for ii=1:length(f)
+            GEN(f(ii)).plotting_func(GEN(f(ii)).full_path_to_data)
 
-        figImg = Image(getSnapshotImage(fig, rpt));
-        figImg.Style = imgStyle;
-        delete(gcf);
+            fig = Figure();
 
-        add(chapter, figImg);
+            figImg = Image(getSnapshotImage(fig, rpt));
+            figImg.Style = imgStyle;
+            delete(gcf);
+
+            add(chapter, figImg);
+        end
+
+        add(rpt,chapter)
     end
-
-    add(rpt,chapter)
-
 
 
     %% Uniform slide image
-    chapter = Chapter('Title', 'Image uniformity');
-
     f=find(strcmp({GEN.type},'uniform_slide'));
+    if ~isempty(f)
+        chapter = Chapter('Title', 'Image uniformity');
 
-    for ii=1:length(f)
-        GEN(f(ii)).plotting_func(GEN(f(ii)).full_path_to_data);
-        fig = Figure();
+        for ii=1:length(f)
+            GEN(f(ii)).plotting_func(GEN(f(ii)).full_path_to_data);
+            fig = Figure();
 
-        figImg = Image(getSnapshotImage(fig, rpt));
-        figImg.Style = imgStyle;
-        delete(gcf);
+            figImg = Image(getSnapshotImage(fig, rpt));
+            figImg.Style = imgStyle;
+            delete(gcf);
 
-        add(chapter, figImg);
+            add(chapter, figImg);
+        end
+
+        add(rpt, chapter);
     end
-
-    add(rpt, chapter);
-
 
 
     %% Image stability with time
-    chapter = Chapter('Title', 'Laser stability');
-
     f=find(strcmp({GEN.type},'laser_stability'));
+    if ~isempty(f)
+        chapter = Chapter('Title', 'Laser stability');
 
-    for ii=1:length(f)
-        txt = GEN(f(ii)).plotting_func(GEN(f(ii)).full_path_to_data);
+        for ii=1:length(f)
+            txt = GEN(f(ii)).plotting_func(GEN(f(ii)).full_path_to_data);
 
-        p1 = Paragraph(txt);
-        p1.Style = {FontSize('10pt')};
-        fig = Figure();
-        figImg = Image(getSnapshotImage(fig, rpt));
-        figImg.Style = {Width('6.5in')};%imgStyle;
+            p1 = Paragraph(txt);
+            p1.Style = {FontSize('10pt')};
+            fig = Figure();
+            figImg = Image(getSnapshotImage(fig, rpt));
+            figImg.Style = {Width('6.5in')};%imgStyle;
 
-        delete(gcf);
+            delete(gcf);
 
-        % Organise into a table
-        tbl = Table({p1,figImg});
-        tbl.Style={Border('none')};
-        add(chapter,tbl)
+            % Organise into a table
+            tbl = Table({p1,figImg});
+            tbl.Style={Border('none')};
+            add(chapter,tbl)
+        end
+
+        add(rpt, chapter);
     end
-
-    add(rpt, chapter);
 
 
     %% PSFs
-    chapter = Chapter('Title', 'Bead PSF');
-
     f=find(strcmp({GEN.type},'bead_psf'));
+    if ~isempty(f)
+        chapter = Chapter('Title', 'Bead PSF');
 
-    for ii=1:length(f)
-        GEN(f(ii)).plotting_func(GEN(f(ii)).full_path_to_data)
+        for ii=1:length(f)
+            GEN(f(ii)).plotting_func(GEN(f(ii)).full_path_to_data)
 
-        fig = Figure();
+            fig = Figure();
 
-        figImg = Image(getSnapshotImage(fig, rpt));
-        figImg.Style = imgStyle;
-        delete(gcf);
+            figImg = Image(getSnapshotImage(fig, rpt));
+            figImg.Style = imgStyle;
+            delete(gcf);
 
-        add(chapter, figImg);
+            add(chapter, figImg);
+        end
+
+        add(rpt, chapter);
     end
-
-    add(rpt, chapter);
-
 
 
     %% Lens paper
-    chapter = Chapter('Title', 'Gain from lens paper');
-
     f=find(strcmp({GEN.type},'lens_paper'));
+    if ~isempty(f)
+        chapter = Chapter('Title', 'Gain from lens paper');
 
-    for ii=1:length(f)
-        [~,txt] = GEN(f(ii)).plotting_func(GEN(f(ii)).full_path_to_data,4);
+        for ii=1:length(f)
+            [~,txt] = GEN(f(ii)).plotting_func(GEN(f(ii)).full_path_to_data,4);
 
-        fig = Figure();
+            fig = Figure();
 
-        figImg = Image(getSnapshotImage(fig, rpt));
-        figImg.Style = imgStyle;
-        delete(gcf);
+            figImg = Image(getSnapshotImage(fig, rpt));
+            figImg.Style = imgStyle;
+            delete(gcf);
 
-        [~,fname] = fileparts(GEN(f(ii)).full_path_to_data);
+            [~,fname] = fileparts(GEN(f(ii)).full_path_to_data);
 
-        p1 = Paragraph(txt);
+            p1 = Paragraph(txt);
 
-        add(chapter,p1)
-        add(chapter, figImg);
-        add(chapter,br)
+            add(chapter,p1)
+            add(chapter, figImg);
+            add(chapter,br)
+        end
+
+        add(rpt, chapter);
     end
-
-    add(rpt, chapter);
 
 
 

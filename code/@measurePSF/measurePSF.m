@@ -6,19 +6,19 @@ classdef measurePSF < handle
     % USAGE
     % Fit and display a PSF. Reports FWHM to on-screen figure with simple GUI elements
     % for interacting with it. The brightest bead is automatically found and used to estimate
-    % the PSF, however the function does not zoom in to the bead. To do this, click on 
-    % "Select bead", draw a box around the desired bead in the bottom/left plot, then 
+    % the PSF, however the function does not zoom in to the bead. To do this, click on
+    % "Select bead", draw a box around the desired bead in the bottom/left plot, then
     % double-click to select. The other plots will update. Zoom back out again by clicking
     % "Reset view".
     %
-    % 
+    %
     % To run a demo: measurePSF('demo')
     %
     %
     % INPUTS (optional)
     % PSFstack  - Either: A 3-D array (imagestack). First layer should be that nearest the objective
     %                 OR: Path to a file containing a TIFF stack with one channel.
-    %                 OR: If empty or no input arguments then a file load GUI is presented. 
+    %                 OR: If empty or no input arguments then a file load GUI is presented.
     %
     % INPUTS (optional param/val pairs)
     % micsPixZ - number of microns per pixel in Z (i.e. distance between adjacent Z planes)
@@ -26,12 +26,12 @@ classdef measurePSF < handle
     % useZmax - [false by default] if true we use the max intensity projection
     %                   for the Z PSFs. This is likely necessary if the PSF is very tilted.
     % zFitOrder - [1 by default]. Number of Gaussians to use for the fit of the Z PSF
-    % medFiltSize - [1 by default -- no filtering]. If more than one performs a median filtering 
+    % medFiltSize - [1 by default -- no filtering]. If more than one performs a median filtering
     %               operation on each slice with a filter of this size.
     %
     %
     % OUTPUTS
-    % Press the "PSF data to workspace" button to return a structure containing useful 
+    % Press the "PSF data to workspace" button to return a structure containing useful
     % data to the base workspace. The "PSFstats" structure contains:
     %
     %
@@ -93,7 +93,7 @@ classdef measurePSF < handle
         medFiltSize % size of the median filter used to clean up the image stack
 
 
-        % The following are default values. If they aren't changed 
+        % The following are default values. If they aren't changed
         % (along with the "reportFWHM" properties being true) then
         % the associated FWHM value is not reported.
         micsPerPixelXY=1 % Number of microns per pixel in X/Y
@@ -112,7 +112,7 @@ classdef measurePSF < handle
         psfCenterInZ
         badFit
 
-        zoomedArea % Area to zoom into if the user has drawn a rectangle over the bottom/left image. 
+        zoomedArea % Area to zoom into if the user has drawn a rectangle over the bottom/left image.
                    % Should be [bottom_pos, left_pos, width, height]
                    % See "areaSelector" and "resetView" callbacks.
     end
@@ -161,7 +161,7 @@ classdef measurePSF < handle
         showHelpTextIfTooFewArgsProvided=false
         listeners={}
 
-        % If user does not supply a pixel size then the associated FWHM value will not be reported to screen 
+        % If user does not supply a pixel size then the associated FWHM value will not be reported to screen
         reportFWHMxy=false
         reportFWHMz=false
 
@@ -272,8 +272,8 @@ classdef measurePSF < handle
 
             obj.setUpFigureWindow; % Make the axes and so forth
 
-            % Set up listeners that will update the plots when the PSF stack is modified or 
-            % other relevant properties are changed. 
+            % Set up listeners that will update the plots when the PSF stack is modified or
+            % other relevant properties are changed.
             obj.listeners{end+1} = addlistener(obj, 'PSFstack', 'PostSet', @obj.plotNewImageStack);
             obj.listeners{end+1} = addlistener(obj, 'maxZplaneForFit', 'PostSet', @obj.fitPSFandUpdateSlicePlots);
             obj.listeners{end+1} = addlistener(obj, 'useMaxIntensityForZpsf', 'PostSet', @obj.redrawGUI);
@@ -347,7 +347,7 @@ classdef measurePSF < handle
             obj.hPSF_midPointText.String = sprintf('PSF center at slice #%d',obj.psfCenterInZ);
 
 
-            %Optionally, show the axes. Right now, I don't think we want this at all so it's not an input argument 
+            %Optionally, show the axes. Right now, I don't think we want this at all so it's not an input argument
             showAxesInMainPSFplot=0;
             if showAxesInMainPSFplot
                 Xtick = linspace(1,size(obj.maxZplane,1),8);
@@ -368,14 +368,14 @@ classdef measurePSF < handle
 
 
             % Modify the lines to show where we are slicing it to take the cross-sections
-            obj.setCrossSectionLinesInMainPSFImage 
+            obj.setCrossSectionLinesInMainPSFImage
 
             obj.hUserSelectedPlaneTitle.String = sprintf('Slice #%d', obj.psfCenterInZ);
         end % Close plotNewImageStack
 
 
         function setCrossSectionLinesInMainPSFImage(obj,~,~)
-            %Set new cross-hair location on the bottom/left image based upon the 
+            %Set new cross-hair location on the bottom/left image based upon the
             %x/y centroid of the bead (PSF)
             obj.reportMethodEntry
             set(obj.hPS_midPointImageXhairs(1), 'XData', obj.hPSF_XYmidpointImageAx.XLim, ...
@@ -455,7 +455,7 @@ classdef measurePSF < handle
             obj.hPSF_ZYax.NextPlot='Replace';
 
             Xtick = linspace(1,size(PSF_ZY,2),3);
-            set(obj.hPSF_ZYax,'YAxisLocation','Right', ... 
+            set(obj.hPSF_ZYax,'YAxisLocation','Right', ...
                     'CLim', [min(PSF_ZY(:)),max(PSF_ZY(:))], ...
                     'XTick',Xtick,'XTickLabel',round(Xtick*obj.micsPerPixelXY,2), ...
                     'YTick',[])
@@ -516,7 +516,7 @@ classdef measurePSF < handle
 
 
         function copyFitToBaseWorkSpace(obj,~,~)
-            % Copy the PSFstats property to the base workspace. 
+            % Copy the PSFstats property to the base workspace.
             obj.reportMethodEntry
             if isempty(obj.PSFstats)
                 return
@@ -565,12 +565,12 @@ classdef measurePSF < handle
 
 
         function resetView(obj,~,~)
-            % Callback that resets (zooms back out) the bottom left view 
+            % Callback that resets (zooms back out) the bottom left view
             obj.reportMethodEntry
             % Un-zoom other panels
             resetSize = [1,1,size(obj.PSFstack_Orig,1)-1,size(obj.PSFstack_Orig,2)-1];
 
-            %Only apply if different to avoid hitting listeners    
+            %Only apply if different to avoid hitting listeners
             if ~isequal(obj.zoomedArea,resetSize)
                 obj.zoomedArea=resetSize;
                 obj.PSFstack = obj.PSFstack_Orig;
@@ -582,7 +582,7 @@ classdef measurePSF < handle
         function redrawGUI(obj,~,~)
             % Used to apply changes to setting such as median filter size
             % This is called by a listener on the properties themselves.
-            obj.PSFstack = obj.PSFstack_Orig;            
+            obj.PSFstack = obj.PSFstack_Orig;
         end % Close redrawGUI
 
 
@@ -643,7 +643,7 @@ classdef measurePSF < handle
                 obj.toggleUIelements('on')
                 if ~isempty(origString)
                     obj.hUserSelectedPlaneTitle.String = origString;
-                end 
+                end
                 if ~isempty(origFontSize)
                     obj.hUserSelectedPlaneTitle.FontSize = origFontSize;
                 end
