@@ -9,6 +9,9 @@ function out = parseInputVariable(varargin)
     % parameter/value pairs or, if they do not, as interactive inputs that have a default
     % value. This function handles this. This function is called by the mpsf.record.
     % functions such as mpsf.record.uniform_slide, .lens_paper, and .PSF.
+    % The behavior of this function depends on the function that called it. e.g. it
+    % will not return depthMicrons and stepSize if it was called by the lens paper
+    % recording function.
     %
     %
     % Inputs (optional param/val pairs)
@@ -17,7 +20,10 @@ function out = parseInputVariable(varargin)
     %  'depthMicrons' - The number of microns over which to take a Z stack. Defined in um.
     %  'stepSize' - Step size between optical planes in a z-stack. Defined in um.
     %
-    % Note: all inputs apart from stepSize are rounded to the nearest whole number.
+    % Notes:
+    %  1. All inputs apart from stepSize are rounded to the nearest whole number.
+    %  2. Any param/val pairs other than the above are returned in the output structure
+    %     without any processing or checks.
     %
     %
     % Outputs
@@ -33,7 +39,7 @@ function out = parseInputVariable(varargin)
     % Make the inputParser object
     params = inputParser;
     params.CaseSensitive = false; % So we do not have to be case sensitive
-
+    params.KeepUnmatched = true;
     % add parameters
     params.addParameter('wavelength', [], @(x) isnumeric(x));
     params.addParameter('power', [], @(x) isnumeric(x));
@@ -43,25 +49,36 @@ function out = parseInputVariable(varargin)
     % Parse the input arguments
     params.parse(varargin{:});
 
-    % Extract the variables
-    out.wavelength=params.Results.wavelength;
-    out.power=params.Results.power;
-    out.depthMicrons=params.Results.depthMicrons;
-    out.stepSize=params.Results.stepSize;
+    % Extract the variables (both the ones defined above and any the user happens to add)
+    tFields = fields(params.Results);
+    for ii=1:length(tFields)
+        out.(tFields{ii}) = params.Results.(tFields{ii});
+    end
+
+    tFields = fields(params.Unmatched);
+    for ii=1:length(tFields)
+        out.(tFields{ii}) = params.Unmatched.(tFields{ii});
+    end
+
+
 
 
     % Used to determine the identity of the calling function
     dStack = dbstack;
-
+    if length(dStack)>1
+        callerFile = dStack(2).file;
+    else
+        callerFile = '';
+    end
 
     % Interactively handle each input argument if it was not supplied as a param/val pair
-    if isempty(params.Results.depthMicrons) && strcmp(dStack(2).file,'PSF.m')
+    if isempty(params.Results.depthMicrons) && strcmp(callerFile,'PSF.m')
         default=20;
         txt = sprintf('Please enter depth (um) [%d]: ',default);
         out.depthMicrons =  round(parseResponse(txt,default));
     end
 
-    if isempty(params.Results.stepSize) && strcmp(dStack(2).file,'PSF.m')
+    if isempty(params.Results.stepSize) && strcmp(callerFile,'PSF.m')
         default=0.25;
         txt = sprintf('Please enter step size (um) [%0.3f]: ',default);
         out.stepSize = parseResponse(txt,default);
