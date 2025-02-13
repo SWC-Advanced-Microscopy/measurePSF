@@ -157,7 +157,7 @@ classdef silinker < handle
             % Return the name of the channel being saved as a string
             %
             % Purpose
-            % We want to log to the file name the channel name bei ng saved.
+            % We want to log to the file name the channel name being saved.
             % If more than one channel has been selected for saving we will
             % return empty and prompt the user to select only one channel
             % to save.
@@ -206,6 +206,21 @@ classdef silinker < handle
                 obj.hSI.hPmts.gains = gain(:)';
             end
         end % turnOffPMTs
+
+
+        function zFactStr = returnZoomFactorAsString(obj)
+            % Return the zoom factor as a neatly formatted string for file names.
+            %
+            % Inputs
+            % none
+            %
+            % Outputs
+            % Returns a string specifying the current ScanImage zoom factor. The string
+            % is used for building file names so the '.' is replaced with '-'
+
+            zFactStr = strrep(num2str(obj.hSI.hRoiManager.scanZoomFactor),'.','-');
+
+        end % returnZoomFactorAsString
 
 
     end % Close methods
