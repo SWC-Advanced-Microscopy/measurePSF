@@ -73,7 +73,10 @@ function uniform_slide(varargin)
     end
 
     %Record the state of all ScanImage settings we will change so we can change them back
-    settings = mpsf.tools.recordScanImageSettings(API);
+    initialSettings = mpsf.tools.recordScanImageSettings(API);
+
+    %Define a cleanup object
+    tidyUp = onCleanup(@cleanupAfterAcquisition);
 
 
     %Apply common setting
@@ -106,8 +109,14 @@ function uniform_slide(varargin)
 
     API.acquireAndWait;
 
-
-    mpsf.tools.reapplyScanImageSettings(API,settings);
-
     % Report saved file location and copy mpsf settings there
     postAcqTasks(saveDir,fileStem)
+
+    % Nested cleanup function that will return ScanImage to its original settings. The
+    % cleanup function was defined near the top of the file.
+    function cleanupAfterAcquisition
+       % Return ScanImage to the state it was in before we started.
+       mpsf.tools.reapplyScanImageSettings(API,initialSettings);
+    end
+
+end

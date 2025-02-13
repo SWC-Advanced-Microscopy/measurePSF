@@ -95,6 +95,8 @@ function lens_paper(varargin)
     %Record the state of all ScanImage settings we will change so we can change them back
     initialSettings = mpsf.tools.recordScanImageSettings(API);
 
+    %Define a cleanup object
+    tidyUp = onCleanup(@cleanupAfterAcquisition);
 
     %Apply common settings
     API.setZSlices(1)
@@ -172,10 +174,15 @@ function lens_paper(varargin)
     end
 
 
-    % Return ScanImage to the state it was in before we started.
-    mpsf.tools.reapplyScanImageSettings(API,initialSettings);
-
-
     % Report saved file location and copy mpsf settings there
     postAcqTasks(saveDir,fileStem)
 
+
+    % Nested cleanup function that will return ScanImage to its original settings. The
+    % cleanup function was defined near the top of the file.
+    function cleanupAfterAcquisition
+       % Return ScanImage to the state it was in before we started.
+       mpsf.tools.reapplyScanImageSettings(API,initialSettings);
+    end
+
+end

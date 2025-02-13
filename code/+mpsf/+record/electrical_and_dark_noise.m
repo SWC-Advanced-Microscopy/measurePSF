@@ -28,7 +28,7 @@ function electrical_and_dark_noise()
     end
 
     %Record the state of all ScanImage settings we will change so we can change them back
-    settings = mpsf.tools.recordScanImageSettings(API);
+    initialSettings = mpsf.tools.recordScanImageSettings(API);
 
 
     %Apply common setting
@@ -77,13 +77,16 @@ function electrical_and_dark_noise()
     API.acquireAndWait;
 
 
-    API.turnOffPMTs;
-
-
-    mpsf.tools.reapplyScanImageSettings(API,settings);
-
-    API.hSI.hChannels.channelSave = API.hSI.hChannels.channelDisplay;
-
     % Report saved file location and copy mpsf settings there
     postAcqTasks(saveDir,fileStem)
 
+    % Nested cleanup function that will return ScanImage to its original settings. The
+    % cleanup function was defined near the top of the file.
+    function cleanupAfterAcquisition
+        % Return ScanImage to the state it was in before we started.
+        mpsf.tools.reapplyScanImageSettings(API,initialSettings);
+        API.hSI.hChannels.channelSave = API.hSI.hChannels.channelDisplay;
+        API.turnOffPMTs;
+    end
+
+end

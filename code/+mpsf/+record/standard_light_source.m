@@ -93,8 +93,10 @@ function standard_light_source(channelSave,nFrames)
     mkdir(lightSourceDir)
 
     %Record the state of all ScanImage settings we will change so we can change them back
-    settings = mpsf.tools.recordScanImageSettings(API);
+    initialSettings = mpsf.tools.recordScanImageSettings(API);
 
+    %Define a cleanup object
+    tidyUp = onCleanup(@cleanupAfterAcquisition);
 
     %Apply settings for this acquisition
     API.setZSlices(1) % Just one z slice
@@ -136,12 +138,18 @@ function standard_light_source(channelSave,nFrames)
         API.acquireAndWait;
     end
 
-    API.turnOffPMTs; % Turn off all PMTs
-
-
-    mpsf.tools.reapplyScanImageSettings(API,settings);
-
-    API.hSI.hChannels.channelSave = API.hSI.hChannels.channelDisplay;
 
     % Report saved file location and copy mpsf settings there
     postAcqTasks(saveDir,fileStem)
+
+
+    % Nested cleanup function that will return ScanImage to its original settings. The
+    % cleanup function was defined near the top of the file.
+    function cleanupAfterAcquisition
+       API.turnOffPMTs; % Turn off all PMTs
+       % Return ScanImage to the state it was in before we started.
+       mpsf.tools.reapplyScanImageSettings(API,initialSettings);
+       API.hSI.hChannels.channelSave = API.hSI.hChannels.channelDisplay;
+    end
+
+end

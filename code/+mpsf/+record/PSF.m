@@ -58,8 +58,10 @@ function varargout = PSF(varargin)
 
 
     %Record the state of all ScanImage settings we will change so we can change them back
-    settings = mpsf.tools.recordScanImageSettings(API);
+    initialSettings = mpsf.tools.recordScanImageSettings(API);
 
+    %Define a cleanup object
+    tidyUp = onCleanup(@cleanupAfterAcquisition);
 
 
     % We will set up ScanImage to acquire the z-stack
@@ -108,22 +110,27 @@ function varargout = PSF(varargin)
         %If something went wrong we revert the scan settings
         fprintf('Failed to set scan settings\n')
         fprintf(ME.message)
-        mpsf.tools.reapplyScanImageSettings(API,settings);
         return
     end
 
     % Start the acquisition and wait for it to finish
     API.acquireAndWait;
 
-    mpsf.tools.reapplyScanImageSettings(API,settings);
-
     % Report saved file location and copy mpsf settings there
     postAcqTasks(saveDir,fileStem)
 
 
 
+
     if nargout>0
         varargout{1} = pathToTiff;
+    end
+
+    % Nested cleanup function that will return ScanImage to its original settings. The
+    % cleanup function was defined near the top of the file.
+    function cleanupAfterAcquisition
+       % Return ScanImage to the state it was in before we started.
+       mpsf.tools.reapplyScanImageSettings(API,initialSettings);
     end
 
 end % record.PSF
