@@ -1,6 +1,6 @@
 # measurePSF
 
-This repository contains tools for measuring microscope performance with ScanImage. 
+This repository contains various tools for measuring microscope performance with ScanImage. 
 In particular, there are functions for recording and measuring Point Spread Functions (PSFs), 
 and for measuring field of view size using an EM grid. 
 
@@ -111,37 +111,11 @@ The function has been well well-tested under R2016b and later.
 It should also work on R2016a. It's known to fail on 2015b and earlier.
 Requires the Curve-Fitting Toolbox, the Image Processing Toolbox, and the Stats Toolbox.
 The MATLAB Report Generator is needed if you want to make PDF reports.
-It is known to work with ScanImage 2020 to 2022 and likely earlier versions are also OK.
+It is known to work with ScanImage Basic 2020 to 2022 and likely earlier versions are also OK.
 
 ## Known Obvious Issues
-Please see the [list of known obvious issues](https://github.com/raacampbell/measurePSF/issues?q=is%3Aissue+is%3Aopen+label%3A%22known+obvious+issues%22) before using the software. 
+Please see the [list of known obvious issues](https://github.com/SWC-Advanced-Microscopy/measurePSF/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22known%20obvious%20issues%22) before using the software. 
 
 
 ### Acknowledgments
 This code has been written in collaboration with [Fred Marbach](https://www.sainsburywellcome.org/web/people/fred-marbach) ([SWC](https://www.sainsburywellcome.org)), and Bruno Pichler and Mark Walling of [INSS](https://www.inss.org.uk/). 
-
-
-# Change-Log
-* 2024/07/05 -- Updates to standard light source. Plotting of said. Bugfixes.
-* 2024/06/14 -- Add standard light source function. Add dark noise to electrical noise.
-* 2024/05/23 -- Implement a more elaborate microscope settings (parameters) system.
-* 2023/07/31 -- Integrate functionality of making PDF reports, uniform slide analyses, and plots of lens paper. 
-* 2022/08/02 -- Add function for imaging electrical noise and document protocol.
-* 2022/08/01 -- Add functions for recording lens paper and uniform slides.
-* 2020/02/19 -- Add tiff stack name to title of top right plot. v 5.0
-* 2020/02/18 -- tidy measurePSF pdf and add dummy values to demo mode. v 4.75
-* 2020/02/18 -- bug fixes, check coarse z acquisition works, add PDF saving to grid tool. v 4.5
-* 2020/02/17 -- bugfixes v3.25
-* 2020/02/12 -- bugfixes v2.75
-* 2020/01/30 -- Add "mpsf_tools.meanFrame" for displaying a rolling frame average.
-* 2020/01/14 -- Add button that allows the current image to be saved to the desktop.
-* 2020/01/14 -- Add edit boxes and checkboxes to allow the user to modify on the fly what would otherwise have been input arguments.
-* 2020/01/14 -- Get voxel size from ScanImage TIFF header.
-* 2020/01/14 -- If no input args to measurePSF, bring up the load GUI.
-* 2020/01/13 -- Convert Grid2MicsPerPixel to a class and add buttons to interact with SI.
-* 2020/01/08 -- Grid2MicsPerPixel optionally can extract the grid image directly from ScanImage.
-* 2018/11/09 -- Add `record.PSF`.
-* 2017/11/28 -- Simple GUI for interactive cropping of a desired bead.
-* 2017/11/28 -- Improve output data and don't display FWHM for directions in which the user defined no microns per pixel.
-* 2017/11/27 -- Convert `measurePSF` to a class so adding new features is easier.
-

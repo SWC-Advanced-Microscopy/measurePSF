@@ -26,7 +26,7 @@ function varargout = PSF(varargin)
     % >> F=record.PSF('depthMicrons',20,'stepSizeInMicrons',0.5);
     %
     %
-    % Rob Campbell - SWC Nov 2018
+    % Rob Campbell - first committed SWC Nov 2018
     % Updated: Isabell Whiteley, SWC 2024
 
 
@@ -93,8 +93,6 @@ function varargout = PSF(varargin)
 
         API.hSI.hStackManager.numSlices=numSlices;
         API.hSI.hStackManager.stackZStepSize=stepSizeInMicrons;
-
-
 
         API.hSI.hChannels.loggingEnable=true;
 

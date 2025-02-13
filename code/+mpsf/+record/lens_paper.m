@@ -42,7 +42,7 @@ function lens_paper(varargin)
     % e.g. If no inputs are given, user will be prompted for values
     % >> mpsf.record.lens_paper
     %
-    % Rob Campbell, SWC 2022
+    % Rob Campbell, first committed SWC 2022
     % Updated: Isabell Whiteley, SWC 2024
 
 
