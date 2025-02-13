@@ -84,9 +84,6 @@ function electrical_and_dark_noise()
 
     API.hSI.hChannels.channelSave = API.hSI.hChannels.channelDisplay;
 
-    % Report where the file was saved
-    mpsf.tools.reportFileSaveLocation(saveDir,fileStem)
+    % Report saved file location and copy mpsf settings there
+    postAcqTasks(saveDir,fileStem)
 
-    % Save system settings to this location
-    settingsFilePath = mpsf.settings.findSettingsFile;
-    copyfile(settingsFilePath, saveDir)

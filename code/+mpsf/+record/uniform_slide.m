@@ -109,9 +109,5 @@ function uniform_slide(varargin)
 
     mpsf.tools.reapplyScanImageSettings(API,settings);
 
-    % Report where the file was saved
-    mpsf.tools.reportFileSaveLocation(saveDir,fileStem)
-
-    % Save system settings to this location
-    settingsFilePath = mpsf.settings.findSettingsFile;
-    copyfile(settingsFilePath, saveDir)
+    % Report saved file location and copy mpsf settings there
+    postAcqTasks(saveDir,fileStem)
