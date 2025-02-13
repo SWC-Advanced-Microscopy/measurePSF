@@ -1,18 +1,24 @@
 function varargout = PSF(varargin)
-    % Purpose: Records a z-stack to generate a PSF of beads
+    % Record a z-stack of beads to later generate a PSF
     %
-    % Records a z-stack of a bead. Images a depth of "micronsToImage"
-    % from the current Z position down using steps defined by
-    % "stepSizeInMicrons" (0.25 microns by default). Averages using
-    % the number of frames entered in the ScanImage IMAGE CONTROLS window.
-    % Data will be saved to a TIFF on the desktop in a directory called
-    % "PSF". This will be made if needed.
+    %  pathToTiff = mpsf.record.PSF('param1','val1', ...)
+    %
+    % Purpose
+    % This function simplifies setting up ScanImage to acquire a z-stack of nano beads.
+    % The user defines the depth of the stack in microns and the separation between
+    % planes within this function and ScanImage is set up appropriately. The image stack
+    % is averaged using the number of frames entered in the ScanImage IMAGE CONTROLS
+    % window. The path to the saved data is displayed to screen and can optionally be
+    % returned as an output argument.
     %
     % Inputs
-    % depthMicrons - total depth to image in microns
-    % stepSizeInMicrons - number of microns between each z step
-    % wavelength - of laser used
-    % power - of light
+    % All inputs are optional parameter/value pairs. The user will be interactively
+    % prompted at the CLI to fill in any undefined values.
+    % 'depthMicrons'      - Total depth to image in microns
+    % 'stepSizeInMicrons' - Number of microns between each z step
+    % 'wavelength'        - Excitation wavelength in nm
+    % 'power'             - Excitation power at the sample in mW
+    %
     %
     % Outputs
     % Optionally returns path to the TIFF.

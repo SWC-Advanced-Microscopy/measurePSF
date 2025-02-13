@@ -3,6 +3,7 @@ function electrical_and_dark_noise()
     %
     % function record.electrical_and_dark_noise()
     %
+    %
     % CAUTION: will turn on PMTs! ENSURE THERE IS NO LIGHT SOURCE OR SAMPLE!
     %
     % e.g.

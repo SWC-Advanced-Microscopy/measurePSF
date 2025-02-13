@@ -11,7 +11,7 @@ function lens_paper(varargin)
     % NOTE: the paper must remain dry for imaging.
     %
     %
-    % Inputs (optional as param/val pairs. If not defined a CLI prompt appears)
+    % Inputs (optional param/val pairs. If not defined, a CLI prompt appears)
     %  'wavelength' - Excitation wavelength of the laser. Defined in nm.
     %  'power' - Power at the sample. Defined in mW.
     %

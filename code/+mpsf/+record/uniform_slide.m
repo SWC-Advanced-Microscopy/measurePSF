@@ -1,7 +1,7 @@
 function uniform_slide(varargin)
     % Set up ScanImage to acquire images of a uniform Chroma slide
     %
-    % function mpsf.record.uniform_slide('param1','val1')
+    % function mpsf.record.uniform_slide('power',value, 'wavelength', value)
     %
     % Purpose
     % The uniform Chroma slide is a bright, uniform, fluorescent target that can be used
@@ -18,11 +18,9 @@ function uniform_slide(varargin)
     % poorly conjugated scan optics can produce very oblate intensity pattern.
     %
     %
-    % Inputs
-    % The user must supply the laser power in mW and the laser wavelength in nm as
-    % parameter/value pairs: 'wavelength' and 'power'. This is for logging purposes: the
-    % values are used to build the file name. If the user fails to do this they are
-    % prompted at CLI.
+    % Inputs (optional param/val pairs. If not defined, a CLI prompt appears)
+    %  'wavelength' - Excitation wavelength of the laser. Defined in nm.
+    %  'power' - Power at the sample. Defined in mW.
     %
     %
     % Example
