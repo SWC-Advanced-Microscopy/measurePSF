@@ -1,14 +1,23 @@
 function lens_paper(varargin)
-    % Image lens paper to provide qualitative indications of images quality
+    % Image lens paper to generate raw data for assessing overall image quality
     %
     % function mpsf.record.lens_paper('power',value, 'wavelength', value, ...)
     %
     % Purpose
-    % Imaging lens paper (e.g. purchased from ThorLabs) is a quick and dirty way of
-    % assessing whether image quality is decent. Lens paper is autofluorescent, but
-    % weakly so. It has a sparse structure of fibres that does not dim rapidly with
-    % depth. It is intrinsically very thin. It can easily be sealed under a coverslip.
-    % NOTE: the paper must remain dry for imaging.
+    % Lens paper (e.g. purchased from ThorLabs) is useful standard sample. It is
+    % consistent from batch to batch, it contains structure, it bleaches slowly. Images
+    % of lens paper show a sparse structure of fibres that do not dim rapidly with depth.
+    % depth and anyway it is intrinsically pretty thin. Lens paper can easily be sealed
+    % under a coverslip but note the paper must remain dry for imaging. Lens paper samples
+    % can be assessed in two ways:
+    % 1. Qualitatively. Here the user learns by experience that, say, a barely reasonable
+    %   image of the lens tissue paper can be achieved at a power of 15 mW at the sample.
+    %   Failure to get a decent image at that power would indicate a potential problem.
+    % 2. Quantitatively. Here we would use a higher laser power, such as 50 to 100 mW, and
+    %   analyse the data post-acquisition to calculate the mean number of photons emitted
+    %   from the sample per pixel. If the same laser power is used each time, a deviation
+    %   in mean photon count may indicate a problem with the microscope. A higher laser
+    %   power is needed to provide a larger SNR for the measurement.
     %
     %
     % Inputs (optional param/val pairs. If not defined, a CLI prompt appears)
@@ -24,7 +33,7 @@ function lens_paper(varargin)
     %               different gains is made. NOTE: set numGains to -1 to use the default
     %               gains that are used for the standard light source.
     %
-    % The channel to image is determined based on the channel selected to be saved
+    % The channels to image is determined based on the channel selected to be saved
     % within ScanImage.
     %
     % Running the function
