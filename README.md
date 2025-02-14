@@ -118,4 +118,4 @@ Please see the [list of known obvious issues](https://github.com/SWC-Advanced-Mi
 
 
 ### Acknowledgments
-This code has been written in collaboration with [Fred Marbach](https://www.sainsburywellcome.org/web/people/fred-marbach) ([SWC](https://www.sainsburywellcome.org)), and Bruno Pichler and Mark Walling of [INSS](https://www.inss.org.uk/). 
+###### Much of the early versions of this code were written in collaboration with [Fred Marbach](https://www.sainsburywellcome.org/web/people/fred-marbach) ([SWC](https://www.sainsburywellcome.org)), and Bruno Pichler and Mark Walling of [INSS](https://www.inss.org.uk/).
