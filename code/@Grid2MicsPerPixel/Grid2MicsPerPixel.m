@@ -200,7 +200,7 @@ classdef Grid2MicsPerPixel < handle
 
         function savePDF(obj,~,~)
             % Save the current figure as a PDF to the desktop in a date-stamped folder
-            saveDir = mpsf.tools.makeTodaysDataDirectory;
+            saveDir = mpqc.tools.makeTodaysDataDirectory;
             fname = fullfile(saveDir,[datestr(now,'yyyy-mm-dd_HH-MM-SS'),'_grid.pdf']);
             obj.toggleButtonVisibility('off')
             print('-dpdf','-bestfit',fname)

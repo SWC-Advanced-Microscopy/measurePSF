@@ -1,4 +1,4 @@
 function result = issingle(obj)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 result = all(size(obj) == 1) ;
 end

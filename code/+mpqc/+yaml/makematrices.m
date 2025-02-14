@@ -1,9 +1,9 @@
 function result = makematrices(r, makeords)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 result = recurse(r, 0, [], makeords);
 end
 function result = recurse(data, level, addit, makeords)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 if iscell(data)
         result = iter_cell(data, level, addit, makeords);
     elseif isstruct(data)
@@ -13,7 +13,7 @@ if iscell(data)
     end;
 end
 function result = iter_cell(data, level, addit, makeords)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 if  isvector(data) &&         iscell_all(data) &&         isvector_all(data) &&         isaligned_all(data) &&         ismatrixrow_all(data)
         tmp = data;
         tmp = cellfun(@cell2mat, tmp, 'UniformOutput', 0);
@@ -34,7 +34,7 @@ if  isvector(data) &&         iscell_all(data) &&         isvector_all(data) && 
     end;
 end
 function result = iter_struct(data, level, addit, makeords)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 result = struct();
     for i = fields(data)'
         fld = char(i);
@@ -42,62 +42,62 @@ result = struct();
     end;
 end
 function result = scan_data(data, level, addit)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 result = data;
 end
 function result = iscell_all(cellvec)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 result = all(cellfun(@iscell, cellvec));
 end
 function result = isaligned_all(cellvec)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 siz = numel(cellvec{1});
     result = all(cellfun(@numel, cellvec) ==  siz);
 end
 function result = ismatrixrow_all(cellvec)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 result = all(cellfun(@ismatrixrow, cellvec));
 end
 function result = ismatrixrow(cellvec)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 result =         (isnumeric_all(cellvec) || islogical_all(cellvec) || isstruct_all(cellvec)) &&         issingle_all(cellvec) &&         iscompatible_all(cellvec);
 end
 function result = isnumeric_all(cellvec)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 result = all(cellfun(@isnumeric, cellvec));
 end
 function result = islogical_all(cellvec)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 result = all(cellfun(@islogical, cellvec));
 end
 function result = issingle_all(cellvec)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 result = all(cellfun(@issingle, cellvec));
 end
 function result = iscompatible_all(cellvec)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 result = true;
     for i = 1:(length(cellvec) - 1)
         result = result && iscompatible(cellvec{i}, cellvec{i + 1});
     end
 end
 function result = iscompatible(obj1, obj2)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 result = isequal(class(obj1), class(obj2));
 end
 function result = isvector_all(cellvec)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 result = all(cellfun(@isvector, cellvec));
 end
 function result = isstruct_all(cellvec)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 result = all(cellfun(@isstruct, cellvec));
 end
 function result = torow(vec)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 result = tocolumn(vec).';
 end
 function result = tocolumn(vec)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 result = vec(:);
 end

@@ -1,31 +1,31 @@
 function [settings,allValid] = checkSettingsAreValid(settings)
     % Check that all settings that are read in are valid
     %
-    % function [settings,allValid] = mpsf.settings.checkSettingsAreValid(settings)
+    % function [settings,allValid] = mpqc.settings.checkSettingsAreValid(settings)
     %
     % Purpose
     % Attempt to stop weird errors that could be caused by the user entering a weird setting.
     % This function *also* converts some values from cells to vectors, as reading from the
     % YAML creates unwanted cell arrays. Consequently, this function must be run after data
-    % are read in. It is called by mpsf.settings.readSettings.
+    % are read in. It is called by mpqc.settings.readSettings.
     %
     % Inputs
-    % settings - The is the output of reading a settings file with mpsf.yaml.ReadYaml, but
-    %          usually this function is called by mpsf.settings.readSettings directly.
+    % settings - The is the output of reading a settings file with mpqc.yaml.ReadYaml, but
+    %          usually this function is called by mpqc.settings.readSettings directly.
     %
     %
     % Rob Campbell - SWC 2023
     %
     % See also:
-    % mpsf.settings.readSettings
-    % mpsf.settings.default_settings
-    % mpsf.settings.settingsValuesTests
+    % mpqc.settings.readSettings
+    % mpqc.settings.default_settings
+    % mpqc.settings.settingsValuesTests
     %
     %
     %  Rob Campbell, SWC AMF
 
     allValid=true;
-    [DEFAULT_SETTINGS,SETTINGS_TESTS] = mpsf.settings.default_settings;
+    [DEFAULT_SETTINGS,SETTINGS_TESTS] = mpqc.settings.default_settings;
 
     % Loop through everything
     f0 = fields(DEFAULT_SETTINGS);

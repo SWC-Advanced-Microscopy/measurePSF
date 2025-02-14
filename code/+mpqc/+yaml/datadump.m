@@ -1,10 +1,10 @@
 function datadump(data)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 recurse(data, 0, []);
 end
 
 function result = recurse(data, level, addit)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 indent = repmat(' | ',1,level);
     if iscell(data) && ~ismymatrix(data)
         result = iter_cell(data, level, addit);
@@ -17,7 +17,7 @@ indent = repmat(' | ',1,level);
     end;
 end
 function result = iter_cell(data, level, addit)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 indent = repmat(' | ',1,level);
     result = {};
     fprintf([indent,'cell {\n']);
@@ -27,7 +27,7 @@ indent = repmat(' | ',1,level);
     fprintf([indent,'} cell\n']);
 end
 function result = iter_struct(data, level, addit)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 indent = repmat(' | ',1,level);
     result = struct();
     fprintf([indent,'struct {\n']);

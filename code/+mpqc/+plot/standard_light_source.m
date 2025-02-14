@@ -1,7 +1,7 @@
 function varargout = standard_light_source(dirToSearch)
     % Make plots of data from the standard light source
     %
-    % mpsf.plot.standard_light_source(dirToSearch)
+    % mpqc.plot.standard_light_source(dirToSearch)
     %
     % Purpose
     % Showing PMT response as a function of gain using the standard light source
@@ -37,7 +37,7 @@ function varargout = standard_light_source(dirToSearch)
     fprintf('Loading data')
     for jj = 1:length(files)
         fname = fullfile(dirToSearch,files(jj).name);
-        [imstack,metadata] = mpsf.tools.scanImage_stackLoad(fname,false);
+        [imstack,metadata] = mpqc.tools.scanImage_stackLoad(fname,false);
 
         % Fail gracefully if the file could not be loaded
         if isempty(imstack)
@@ -57,7 +57,7 @@ function varargout = standard_light_source(dirToSearch)
 
     % Plot!
     % Make a new figure or return a plot handle as appropriate
-    fig = mpsf.tools.returnFigureHandleForFile([dirToSearch,mfilename]);
+    fig = mpqc.tools.returnFigureHandleForFile([dirToSearch,mfilename]);
     offset_subtracted = mean_value-mean_value(1,:);
 
     p=plot(offset_subtracted,'o-','MarkerSize',5);

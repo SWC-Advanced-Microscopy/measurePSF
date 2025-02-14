@@ -63,7 +63,7 @@ classdef measurePSF < handle
     % >> measurePSF;
     %
     % Two: Feed in a matrix and define the voxel size
-    % >> T=mpsf.tools.load3Dtiff('PSF_2019-59-15_16-11-55_00001.tif');
+    % >> T=mpqc.tools.load3Dtiff('PSF_2019-59-15_16-11-55_00001.tif');
     % >> measurePSF(T, 'micsPixZ',0.5, 'micsPixXY',0.1);
     %
     % Three: load a specific file from disk at the command line and also manually specify Z voxel size
@@ -228,7 +228,7 @@ classdef measurePSF < handle
 
                 obj.fname=inputPSFstack;
 
-                [inputPSFstack,metadata] = mpsf.tools.scanImage_stackLoad(obj.fname);
+                [inputPSFstack,metadata] = mpqc.tools.scanImage_stackLoad(obj.fname);
 
 
                 % Allow for user-specified values to over-ride what the header returns

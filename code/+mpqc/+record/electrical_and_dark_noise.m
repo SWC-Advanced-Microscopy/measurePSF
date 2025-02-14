@@ -7,7 +7,7 @@ function electrical_and_dark_noise()
     % CAUTION: will turn on PMTs! ENSURE THERE IS NO LIGHT SOURCE OR SAMPLE!
     %
     % e.g.
-    % >> mpsf.record.electrical_and_dark_noise
+    % >> mpqc.record.electrical_and_dark_noise
     %
     %
     % Rob Campbell, SWC AMF, initial commit 2022
@@ -23,13 +23,13 @@ function electrical_and_dark_noise()
 
 
     % Create 'diagnostic' directory in the user's desktop
-    saveDir = mpsf.tools.makeTodaysDataDirectory;
+    saveDir = mpqc.tools.makeTodaysDataDirectory;
     if isempty(saveDir)
         return
     end
 
     %Record the state of all ScanImage settings we will change so we can change them back
-    initialSettings = mpsf.tools.recordScanImageSettings(API);
+    initialSettings = mpqc.tools.recordScanImageSettings(API);
 
 
     %Apply common setting
@@ -47,7 +47,7 @@ function electrical_and_dark_noise()
     API.turnOffPMTs; % Turn off PMTs
     pause(0.5)
 
-    SETTINGS=mpsf.settings.readSettings;
+    SETTINGS=mpqc.settings.readSettings;
     fileStem = sprintf('%s_electrical_noise__%s', ...
         SETTINGS.microscope.name, ...
         datestr(now,'yyyy-mm-dd_HH-MM-SS'));
@@ -65,7 +65,7 @@ function electrical_and_dark_noise()
     API.setPMTgains(volts);
     pause(0.5)
 
-    SETTINGS=mpsf.settings.readSettings;
+    SETTINGS=mpqc.settings.readSettings;
     fileStem = sprintf('%s_dark_noise__%dV__%s', ...
         SETTINGS.microscope.name, ...
         volts, ...
@@ -78,14 +78,14 @@ function electrical_and_dark_noise()
     API.acquireAndWait;
 
 
-    % Report saved file location and copy mpsf settings there
+    % Report saved file location and copy mpqc settings there
     postAcqTasks(saveDir,fileStem)
 
     % Nested cleanup function that will return ScanImage to its original settings. The
     % cleanup function was defined near the top of the file.
     function cleanupAfterAcquisition
         % Return ScanImage to the state it was in before we started.
-        mpsf.tools.reapplyScanImageSettings(API,initialSettings);
+        mpqc.tools.reapplyScanImageSettings(API,initialSettings);
         API.hSI.hChannels.channelSave = API.hSI.hChannels.channelDisplay;
         API.turnOffPMTs;
     end

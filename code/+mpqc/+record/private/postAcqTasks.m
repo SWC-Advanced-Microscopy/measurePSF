@@ -10,8 +10,8 @@ function postAcqTasks(saveDir,fileStem)
 
 
     % Report where the file was saved
-    mpsf.tools.reportFileSaveLocation(saveDir,fileStem)
+    mpqc.tools.reportFileSaveLocation(saveDir,fileStem)
 
     % Save system settings to this location
-    settingsFilePath = mpsf.settings.findSettingsFile;
+    settingsFilePath = mpqc.settings.findSettingsFile;
     copyfile(settingsFilePath, saveDir)

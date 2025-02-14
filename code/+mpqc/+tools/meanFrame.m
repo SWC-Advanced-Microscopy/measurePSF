@@ -2,12 +2,12 @@ classdef meanFrame < handle
 % Monitor open ScanImage channel windows and plot a rolling average trace.
 %
 % To use this function simply run
-% "mpsf.tools.meanFrame" then press "Focus" in ScanImage
+% "mpqc.tools.meanFrame" then press "Focus" in ScanImage
 % The current frame mean is present in the figure title along with a rolling average.
 %
 %
 % Advanced usage:
-% M=mpsf.tools.meanFrame
+% M=mpqc.tools.meanFrame
 %
 % % Change channel colors
 % M.channelColors='bkrr';

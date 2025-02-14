@@ -23,7 +23,7 @@ function varargout = lens_paper(fname,aveBy)
         aveBy = 1;
     end
 
-    [imstack,metadata] = mpsf.tools.scanImage_stackLoad(fname);
+    [imstack,metadata] = mpqc.tools.scanImage_stackLoad(fname);
     if isempty(imstack)
         return
     end
@@ -47,7 +47,7 @@ function varargout = lens_paper(fname,aveBy)
 
 
     % Make a new figure or return a plot handle as appropriate
-    fig = mpsf.tools.returnFigureHandleForFile([fname,mfilename]);
+    fig = mpqc.tools.returnFigureHandleForFile([fname,mfilename]);
 
     im_mu = mean(imstack,3);
 
@@ -61,7 +61,7 @@ function varargout = lens_paper(fname,aveBy)
     caxis([0,cMax])
     colorbar
 
-    mpsf.tools.add_scale_axis_tick_labels(gca,micsPerPixelXY)
+    mpqc.tools.add_scale_axis_tick_labels(gca,micsPerPixelXY)
     title('Mean lens paper image')
 
 
@@ -73,7 +73,7 @@ function varargout = lens_paper(fname,aveBy)
     caxis([0,cMax])
     colorbar
 
-    mpsf.tools.add_scale_axis_tick_labels(gca,micsPerPixelXY)
+    mpqc.tools.add_scale_axis_tick_labels(gca,micsPerPixelXY)
     title('Single frame')
 
 
@@ -88,8 +88,8 @@ function varargout = lens_paper(fname,aveBy)
 
     % Optionally return key parameters as a structure
     if nargout>0
-        out.laser_power_in_mw = mpsf.report.laser_power_from_fname(fname);
-        out.laser_wavelength_in_nm = mpsf.report.laser_wavelength_from_fname(fname);
+        out.laser_power_in_mw = mpqc.report.laser_power_from_fname(fname);
+        out.laser_wavelength_in_nm = mpqc.report.laser_wavelength_from_fname(fname);
 
         h=sibridge.readTifHeader(fname);
         out.PMT_gain_in_V = h.gains(h.channelSave);

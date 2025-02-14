@@ -1,7 +1,7 @@
 function figHandle = returnFigureHandleForFile(fname)
     % Find a figure associated with this file name or make one and tag it
     %
-    % fig = mpsf.tools.returnFigureHandleForFile(fname)
+    % fig = mpqc.tools.returnFigureHandleForFile(fname)
     %
     % Purpose
     % If a figure has already been made with data from this file name, we do

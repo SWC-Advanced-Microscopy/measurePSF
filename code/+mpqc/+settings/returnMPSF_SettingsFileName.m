@@ -1,5 +1,5 @@
  function MPSF_SettingsFileName = returnMPSF_SettingFileName
-    % Return the mpsf settings file name as a string
+    % Return the mpqc settings file name as a string
     %
     % Purpose
     % Multiple files need access to this file name so we define it here once.

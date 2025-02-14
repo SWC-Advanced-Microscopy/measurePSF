@@ -1,13 +1,13 @@
 function varargout = uniform_slide_laser_stability(fname)
     % Plots that explore how stable are the the fluoro slide images with time
     %
-    % function legend_text = mpsf.plot.uniform_slide_laser_stability(fname)
+    % function legend_text = mpqc.plot.uniform_slide_laser_stability(fname)
     %
     % Optionally returns text that describes the plots
     %
     % Rob Campbell, SWC AMF
 
-    [imstack,metadata] = mpsf.tools.scanImage_stackLoad(fname);
+    [imstack,metadata] = mpqc.tools.scanImage_stackLoad(fname);
     if isempty(imstack)
         return
     end
@@ -15,7 +15,7 @@ function varargout = uniform_slide_laser_stability(fname)
     micsPerPixelXY = metadata.micsPerPixelXY;
 
     % Make a new figure or return a plot handle as appropriate
-    fig = mpsf.tools.returnFigureHandleForFile([fname,mfilename]);
+    fig = mpqc.tools.returnFigureHandleForFile([fname,mfilename]);
 
     clf
     subplot(2,2,1)

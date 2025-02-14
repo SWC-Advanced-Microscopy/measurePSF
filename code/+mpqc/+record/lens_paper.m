@@ -1,7 +1,7 @@
 function lens_paper(varargin)
     % Image lens paper to generate raw data for assessing overall image quality
     %
-    % function mpsf.record.lens_paper('power',value, 'wavelength', value, ...)
+    % function mpqc.record.lens_paper('power',value, 'wavelength', value, ...)
     %
     % Purpose
     % Lens paper (e.g. purchased from ThorLabs) is useful standard sample. It is
@@ -46,10 +46,10 @@ function lens_paper(varargin)
     % e.g. In the following example the user is imaging at 920 nm and 10 mW
     % at the sample.
     %
-    % >> mpsf.record.lens_paper('wavelength',920,'power',10)
+    % >> mpqc.record.lens_paper('wavelength',920,'power',10)
     %
     % e.g. If no inputs are given, user will be prompted for values
-    % >> mpsf.record.lens_paper
+    % >> mpqc.record.lens_paper
     %
     % Rob Campbell, SWC AMF, initial commit 2022
 
@@ -91,17 +91,17 @@ function lens_paper(varargin)
     end
 
     % Create 'diagnostic' directory in the user's desktop
-    saveDir = mpsf.tools.makeTodaysDataDirectory;
+    saveDir = mpqc.tools.makeTodaysDataDirectory;
     if isempty(saveDir)
         return
     end
 
 
     % Get measurePSF settings for use later
-    SETTINGS=mpsf.settings.readSettings;
+    SETTINGS=mpqc.settings.readSettings;
 
     %Record the state of all ScanImage settings we will change so we can change them back
-    initialSettings = mpsf.tools.recordScanImageSettings(API);
+    initialSettings = mpqc.tools.recordScanImageSettings(API);
 
     %Define a cleanup object
     tidyUp = onCleanup(@cleanupAfterAcquisition);
@@ -182,7 +182,7 @@ function lens_paper(varargin)
     end
 
 
-    % Report saved file location and copy mpsf settings there
+    % Report saved file location and copy mpqc settings there
     postAcqTasks(saveDir,fileStem)
 
 
@@ -190,7 +190,7 @@ function lens_paper(varargin)
     % cleanup function was defined near the top of the file.
     function cleanupAfterAcquisition
        % Return ScanImage to the state it was in before we started.
-       mpsf.tools.reapplyScanImageSettings(API,initialSettings);
+       mpqc.tools.reapplyScanImageSettings(API,initialSettings);
     end
 
 end

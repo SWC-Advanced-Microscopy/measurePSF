@@ -1,5 +1,5 @@
 function result = merge_struct(p, s, donotmerge, deep)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 if ~( isstruct(p) && isstruct(s) )
         error('Only structures can be merged.');
     end;

@@ -1,7 +1,7 @@
 function userDir = userFolder
     % Return path to user's home folder as a string
     %
-    % function userDir = mpsf.settings.userFolder
+    % function userDir = mpqc.settings.userFolder
     %
     % Purpose
     % Return path to user's home folder on Windows or Unix systems. Returns

@@ -1,7 +1,7 @@
 function uniform_slide(varargin)
     % Set up ScanImage to acquire images of a uniform Chroma slide
     %
-    % function mpsf.record.uniform_slide('power',value, 'wavelength', value)
+    % function mpqc.record.uniform_slide('power',value, 'wavelength', value)
     %
     % Purpose
     % The uniform Chroma slide is a bright, uniform, fluorescent target that can be used
@@ -28,9 +28,9 @@ function uniform_slide(varargin)
     % 2. Choose a low laser power and ensure you get a clear image of the slide.
     % 3. Run this function as shown in the examples below
     %
-    % >> mpsf.record.uniform_slide
-    % >> mpsf.record.uniform_slide('wavelength',920,'power',10)
-    % >> mpsf.record.uniform_slide('power',7,'wavelength',800)
+    % >> mpqc.record.uniform_slide
+    % >> mpqc.record.uniform_slide('wavelength',920,'power',10)
+    % >> mpqc.record.uniform_slide('power',7,'wavelength',800)
     %
     %
     % Rob Campbell, SWC AMF, initial commit 2022
@@ -64,13 +64,13 @@ function uniform_slide(varargin)
 
 
     % Create 'diagnostic' directory in the user's desktop
-    saveDir = mpsf.tools.makeTodaysDataDirectory;
+    saveDir = mpqc.tools.makeTodaysDataDirectory;
     if isempty(saveDir)
         return
     end
 
     %Record the state of all ScanImage settings we will change so we can change them back
-    initialSettings = mpsf.tools.recordScanImageSettings(API);
+    initialSettings = mpqc.tools.recordScanImageSettings(API);
 
     %Define a cleanup object
     tidyUp = onCleanup(@cleanupAfterAcquisition);
@@ -91,7 +91,7 @@ function uniform_slide(varargin)
 
 
     % Set file name and save dir
-    SETTINGS=mpsf.settings.readSettings;
+    SETTINGS=mpqc.settings.readSettings;
     fileStem = sprintf('%s_uniform_slide_zoom__%s_%dnm_%dmW_%s__%s', ...
         SETTINGS.microscope.name, ...
         obj.returnZoomFactorAsString, ...
@@ -106,14 +106,14 @@ function uniform_slide(varargin)
 
     API.acquireAndWait;
 
-    % Report saved file location and copy mpsf settings there
+    % Report saved file location and copy mpqc settings there
     postAcqTasks(saveDir,fileStem)
 
     % Nested cleanup function that will return ScanImage to its original settings. The
     % cleanup function was defined near the top of the file.
     function cleanupAfterAcquisition
        % Return ScanImage to the state it was in before we started.
-       mpsf.tools.reapplyScanImageSettings(API,initialSettings);
+       mpqc.tools.reapplyScanImageSettings(API,initialSettings);
     end
 
 end

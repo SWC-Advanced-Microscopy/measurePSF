@@ -21,7 +21,7 @@ function plotAllBasic(data_dir)
         data_dir = pwd;
     end
 
-    genPlotStructure = mpsf.report.plot_functions_generator(data_dir);
+    genPlotStructure = mpqc.report.plot_functions_generator(data_dir);
 
 
     fig=[];
@@ -38,5 +38,5 @@ function plotAllBasic(data_dir)
 
     fprintf('Made %d figures\n', length(fig))
 
-    mpsf.tools.TileFigures(fig);
+    mpqc.tools.TileFigures(fig);
 

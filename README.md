@@ -1,4 +1,4 @@
-# measurePSF
+# Multi-Photon Quality Control with ScanImage
 
 This repository contains various tools for measuring microscope performance with ScanImage. 
 In particular, there are functions for recording and measuring Point Spread Functions (PSFs), 

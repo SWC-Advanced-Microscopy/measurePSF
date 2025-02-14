@@ -2,7 +2,7 @@ function out = plot_functions_generator(data_dir)
 % Look in a directory containing maintenance data and generate a structure
 % that can be used to produce the plots.
 %
-% function out = mpsf.report.plot_functions_generator(data_dir)
+% function out = mpqc.report.plot_functions_generator(data_dir)
 %
 % Purpose
 % This function generates a structure that contains information about which
@@ -17,7 +17,7 @@ function out = plot_functions_generator(data_dir)
 %
 %
 % Also see:
-% mpsf.report.plotAllBasic
+% mpqc.report.plotAllBasic
 %
 %
 % Rob Campbell, SWC AMF, initial commit 2022
@@ -38,27 +38,27 @@ for ii=1:length(d)
     if contains(tmp.name,'electrical_noise')
         out(n) = generic_generator_template(tmp);
         out(n).type = 'electrical_noise';
-        out(n).plotting_func = @mpsf.plot.electrical_noise;
+        out(n).plotting_func = @mpqc.plot.electrical_noise;
         n=n+1;
     elseif contains(tmp.name,'uniform_slide_')
         out(n) = generic_generator_template(tmp);
         out(n).type = 'uniform_slide';
-        out(n).plotting_func = @mpsf.plot.uniform_slide;
+        out(n).plotting_func = @mpqc.plot.uniform_slide;
         n=n+1;
 
         out(n) = generic_generator_template(tmp);
         out(n).type = 'laser_stability';
-        out(n).plotting_func = @mpsf.plot.uniform_slide_laser_stability;
+        out(n).plotting_func = @mpqc.plot.uniform_slide_laser_stability;
         n=n+1;
     elseif contains(tmp.name,'lens_paper_')
         out(n) = generic_generator_template(tmp);
         out(n).type = 'lens_paper';
-        out(n).plotting_func = @mpsf.plot.lens_paper;
+        out(n).plotting_func = @mpqc.plot.lens_paper;
         n=n+1;
     elseif contains(tmp.name,'standard_source')
         out(n) = generic_generator_template(tmp);
         out(n).type = 'standard_source';
-        out(n).plotting_func = @mpsf.plot.standard_light_source;
+        out(n).plotting_func = @mpqc.plot.standard_light_source;
         n=n+1;
     end
 end
@@ -78,7 +78,7 @@ if ~isempty(bead_files)
         tmp = bead_files(ii);
         out(n) = generic_generator_template(tmp);
         out(n).type = 'bead_psf';
-        out(n).plotting_func = @mpsf.report.loadBeadPSF;
+        out(n).plotting_func = @mpqc.report.loadBeadPSF;
         n=n+1;
     end
 end
@@ -95,6 +95,6 @@ function out = generic_generator_template(t_dir)
     out.full_path_to_data = fullfile(t_dir.folder,t_dir.name);
     out.type = [];
     out.plotting_func = [];
-    out.laser_wavelength = mpsf.report.laser_wavelength_from_fname(t_dir.name); %get laser wavelength
-    out.laser_power = mpsf.report.laser_power_from_fname(t_dir.name); %get laser power
+    out.laser_wavelength = mpqc.report.laser_wavelength_from_fname(t_dir.name); %get laser wavelength
+    out.laser_power = mpqc.report.laser_power_from_fname(t_dir.name); %get laser power
 

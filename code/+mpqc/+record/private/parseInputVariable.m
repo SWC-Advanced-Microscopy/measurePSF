@@ -7,8 +7,8 @@ function out = parseInputVariable(varargin)
     % Recording functions need the power and wavelength, and sometimes depth and step
     % size, supplied by the user. The user may either do this by supplying input args as
     % parameter/value pairs or, if they do not, as interactive inputs that have a default
-    % value. This function handles this. This function is called by the mpsf.record.
-    % functions such as mpsf.record.uniform_slide, .lens_paper, and .PSF.
+    % value. This function handles this. This function is called by the mpqc.record.
+    % functions such as mpqc.record.uniform_slide, .lens_paper, and .PSF.
     % The behavior of this function depends on the function that called it. e.g. it
     % will not return depthMicrons and stepSize if it was called by the lens paper
     % recording function.

@@ -23,7 +23,7 @@ end
 
 
 % Load an image extract from it information about the microscope.
-d = mpsf.report.getScanImageTifNames(data_dir);
+d = mpqc.report.getScanImageTifNames(data_dir);
 
 header = sibridge.readTifHeader(fullfile(d(1).folder,d(1).name));
 
@@ -52,7 +52,7 @@ end
 settingsFile = dir(fullfile(data_dir,'*_SystemSettings.yml'));
 if length(settingsFile) == 1
     settingsFile = fullfile(data_dir, settingsFile.name);
-    mic = mpsf.settings.readSettings(settingsFile);
+    mic = mpqc.settings.readSettings(settingsFile);
 end
 
 

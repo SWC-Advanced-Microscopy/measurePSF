@@ -1,7 +1,7 @@
 function add_scale_axis_tick_labels(ax,micsPixXY)
     % Change y and x axis labels so they are in microns
     %
-    % mpsf.tools.add_scale_axis_tick_labels(ax,micsPixXY)
+    % mpqc.tools.add_scale_axis_tick_labels(ax,micsPixXY)
     %
     % Purpose
     % For a 2D image, we add 5 tick marks labeled in microns based on micsPixXY.

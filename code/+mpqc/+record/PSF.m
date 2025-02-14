@@ -1,7 +1,7 @@
 function varargout = PSF(varargin)
     % Record a z-stack of beads to later generate a PSF
     %
-    %  pathToTiff = mpsf.record.PSF('param1','val1', ...)
+    %  pathToTiff = mpqc.record.PSF('param1','val1', ...)
     %
     % Purpose
     % This function simplifies setting up ScanImage to acquire a z-stack of nano beads.
@@ -57,14 +57,14 @@ function varargout = PSF(varargin)
     end
 
     % Create 'PSF' directory in the user's desktop
-    saveDir = mpsf.tools.makeTodaysDataDirectory;
+    saveDir = mpqc.tools.makeTodaysDataDirectory;
     if isempty(saveDir)
         return
     end
 
 
     %Record the state of all ScanImage settings we will change so we can change them back
-    initialSettings = mpsf.tools.recordScanImageSettings(API);
+    initialSettings = mpqc.tools.recordScanImageSettings(API);
 
     %Define a cleanup object
     tidyUp = onCleanup(@cleanupAfterAcquisition);
@@ -120,7 +120,7 @@ function varargout = PSF(varargin)
     % Start the acquisition and wait for it to finish
     API.acquireAndWait;
 
-    % Report saved file location and copy mpsf settings there
+    % Report saved file location and copy mpqc settings there
     postAcqTasks(saveDir,fileStem)
 
 
@@ -134,7 +134,7 @@ function varargout = PSF(varargin)
     % cleanup function was defined near the top of the file.
     function cleanupAfterAcquisition
        % Return ScanImage to the state it was in before we started.
-       mpsf.tools.reapplyScanImageSettings(API,initialSettings);
+       mpqc.tools.reapplyScanImageSettings(API,initialSettings);
     end
 
 end % record.PSF

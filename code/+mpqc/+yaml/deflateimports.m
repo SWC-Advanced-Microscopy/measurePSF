@@ -1,10 +1,10 @@
 function result = deflateimports(r)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 result = recurse(r, 0, []);
 end
 
 function result = recurse(data, level, addit)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 if iscell(data) && ~ismymatrix(data)
         result = iter_cell(data, level, addit);
     elseif isstruct(data)
@@ -14,7 +14,7 @@ if iscell(data) && ~ismymatrix(data)
     end;
 end
 function result = iter_cell(data, level, addit)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 result = {};
     icollect = {};
     ii = 1;
@@ -37,7 +37,7 @@ result = {};
     end;
 end
 function result = iter_struct(data, level, addit)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 result = struct();
     for i = fields(data)'
         fld = char(i);
@@ -45,15 +45,15 @@ result = struct();
     end;
 end
 function result = issingleimport_all(r)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 result = all(cellfun(@issingleimport, r));
 end
 function result = issingleimport(r)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 result = isstruct(r) && length(fields(r)) == 1 && isfield(r, 'import');
 end
 function result = addall(list1, list2)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 for i = 1:length(list2)
         list1{end + 1} = list2{i};
     end;

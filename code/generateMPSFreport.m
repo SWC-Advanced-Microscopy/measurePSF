@@ -7,7 +7,7 @@ function varargout=generateMPSFreport(data_dir)
     % Makes all available plots from a data directory and tiles them over the screen.
     % If no input is provided, it looks in the current directory for data.
     % If you do not wish to generate a PDF report but wish to see all the figures, run
-    % mpsf.report.plotAllBasic
+    % mpqc.report.plotAllBasic
     %
     % Inputs
     % data_dir - [optional] location of data directory.
@@ -16,16 +16,16 @@ function varargout=generateMPSFreport(data_dir)
     % none
     %
     % See also
-    % mpsf.report.plotAllBasic
+    % mpqc.report.plotAllBasic
     %
-    % Rob Campbell - SWC 2022
+    % Rob Campbell, SWC AMF, initial commit 2022
 
 
     % Bail out if the user lacks the report generator
     v = ver;
     if ~contains([v.Name] ,'MATLAB Report Generator')
         fprintf('\nThis function requires the MATLAB Report Generator to be installed\n')
-        fprintf('If you can not install it, see mpsf.report.plotAllBasic\n\n')
+        fprintf('If you can not install it, see mpqc.report.plotAllBasic\n\n')
         return
     end
 
@@ -35,7 +35,7 @@ function varargout=generateMPSFreport(data_dir)
         data_dir = pwd;
     end
 
-    GEN=mpsf.report.plot_functions_generator(data_dir);
+    GEN=mpqc.report.plot_functions_generator(data_dir);
     if isempty(GEN)
         return
     end
@@ -58,7 +58,7 @@ function varargout=generateMPSFreport(data_dir)
 
     %% Intro to the report by summarizing whatever information we can automatically generate
     chapter = Chapter('Title', 'Introduction');
-    p1 = Paragraph(mpsf.report.generate_summary_text);
+    p1 = Paragraph(mpqc.report.generate_summary_text);
 
 
     add(chapter,p1)

@@ -25,7 +25,7 @@
 %   dictionary       ... Dictionary of of labels that will be replaced,
 %                        struct is expected
 function result = ReadYaml(filename, nosuchfileaction, makeords, treatasdata, dictionary)
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 
 if ~exist('nosuchfileaction','var')
         nosuchfileaction = 0;

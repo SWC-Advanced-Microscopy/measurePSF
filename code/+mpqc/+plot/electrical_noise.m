@@ -1,7 +1,7 @@
 function electrical_noise(fname)
     % Electrical noise plots
     %
-    % mpsf.plot.electrical_noise(fname)
+    % mpqc.plot.electrical_noise(fname)
     %
     % Purpose
     % Plots of electrical noise for each channel with PMTs off. If there is
@@ -14,13 +14,13 @@ function electrical_noise(fname)
 
 
 
-    [imstack,metadata] = mpsf.tools.scanImage_stackLoad(fname);
+    [imstack,metadata] = mpqc.tools.scanImage_stackLoad(fname);
     if isempty(imstack)
         return
     end
 
     % Make a new figure or return a plot handle as appropriate
-    fig = mpsf.tools.returnFigureHandleForFile([fname,mfilename]);
+    fig = mpqc.tools.returnFigureHandleForFile([fname,mfilename]);
 
 
     for ii=1:size(imstack,3)

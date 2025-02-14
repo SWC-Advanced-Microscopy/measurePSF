@@ -2,7 +2,7 @@ function [imStack,metadata] = scanImage_stackLoad(fileName,subtractOffset)
 % load a z-stack from ScanImage for analysis return also in a structure useful metadata
 %
 %
-% function imStack = mpsf.tools.scanImage_stackLoad(fileName,subtractOffset)
+% function imStack = mpqc.tools.scanImage_stackLoad(fileName,subtractOffset)
 %
 % Purpose
 % Return z stack and metadata. By default subtracts any offset if needed.
@@ -18,7 +18,7 @@ function [imStack,metadata] = scanImage_stackLoad(fileName,subtractOffset)
 % metadata - useful metadata from scanimage header. Adds micsPerPixelXY.
 %
 % Example
-% [imS,metadata] = mpsf.tools.scanImageStackLoad('Bead_*.tif')
+% [imS,metadata] = mpqc.tools.scanImageStackLoad('Bead_*.tif')
 %
 %
 %
@@ -37,7 +37,7 @@ function [imStack,metadata] = scanImage_stackLoad(fileName,subtractOffset)
         subtractOffset = true;
     end
 
-    imStack = mpsf.tools.load3Dtiff(fileName);
+    imStack = mpqc.tools.load3Dtiff(fileName);
 
 
 

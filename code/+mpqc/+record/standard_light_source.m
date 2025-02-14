@@ -51,13 +51,13 @@ function standard_light_source(channelSave,nFrames)
 
 
     % Create 'diagnostic' directory in the user's desktop
-    saveDir = mpsf.tools.makeTodaysDataDirectory;
+    saveDir = mpqc.tools.makeTodaysDataDirectory;
     if isempty(saveDir)
         return
     end
 
     % Determine the name of the files we will be saving
-    SETTINGS=mpsf.settings.readSettings;
+    SETTINGS=mpqc.settings.readSettings;
 
     if ~isempty(SETTINGS.QC.sourceIDs)
         if length(SETTINGS.QC.sourceIDs)==1
@@ -93,7 +93,7 @@ function standard_light_source(channelSave,nFrames)
     mkdir(lightSourceDir)
 
     %Record the state of all ScanImage settings we will change so we can change them back
-    initialSettings = mpsf.tools.recordScanImageSettings(API);
+    initialSettings = mpqc.tools.recordScanImageSettings(API);
 
     %Define a cleanup object
     tidyUp = onCleanup(@cleanupAfterAcquisition);
@@ -139,7 +139,7 @@ function standard_light_source(channelSave,nFrames)
     end
 
 
-    % Report saved file location and copy mpsf settings there
+    % Report saved file location and copy mpqc settings there
     postAcqTasks(saveDir,fileStem)
 
 
@@ -148,7 +148,7 @@ function standard_light_source(channelSave,nFrames)
     function cleanupAfterAcquisition
        API.turnOffPMTs; % Turn off all PMTs
        % Return ScanImage to the state it was in before we started.
-       mpsf.tools.reapplyScanImageSettings(API,initialSettings);
+       mpqc.tools.reapplyScanImageSettings(API,initialSettings);
        API.hSI.hChannels.channelSave = API.hSI.hChannels.channelDisplay;
     end
 

@@ -1,7 +1,7 @@
 function reformattedSettings = readSettings(fname)
     % Read MPSF settings YAML file and return as a structure
     %
-    % function settings = mpsf.settings.readSettings()
+    % function settings = mpqc.settings.readSettings()
     %
     % Purpose
     % This function parses the MPSF settings file and creates it if does not already exist.
@@ -18,7 +18,7 @@ function reformattedSettings = readSettings(fname)
     %       this arg is defined.
     %
     % Outputs
-    % settings - the mpsf settings as a structure
+    % settings - the mpqc settings as a structure
     %
     %
     % Rob Campbell, Biozentrum Basel, initial commit 2017
@@ -32,7 +32,7 @@ function reformattedSettings = readSettings(fname)
 
 
     if isempty(fname)
-        [settingsFile,backupSettingsDir] = mpsf.settings.findSettingsFile;
+        [settingsFile,backupSettingsDir] = mpqc.settings.findSettingsFile;
     else
         % cope with wildcards
         if contains(fname,'*')
@@ -52,10 +52,10 @@ function reformattedSettings = readSettings(fname)
     end
 
 
-    settingsFromYML = mpsf.yaml.ReadYaml(settingsFile);
+    settingsFromYML = mpqc.yaml.ReadYaml(settingsFile);
 
     %Check if the loaded settings are the same as the default settings
-    DEFAULT_SETTINGS = mpsf.settings.default_settings;
+    DEFAULT_SETTINGS = mpqc.settings.default_settings;
 
     % TODO -- does this ever run? Can we delete it?
     if isequal(settingsFromYML,DEFAULT_SETTINGS)
@@ -68,8 +68,8 @@ function reformattedSettings = readSettings(fname)
         fprintf('\n\n *** Once you have finished editing the file, save it and press RETURN\n')
 
         pause
-        outputSettings = mpsf.settings.readSettings;
-        [outputSettings,allValid] = mpsf.settings.checkSettingsAreValid(outputSettings);
+        outputSettings = mpqc.settings.readSettings;
+        [outputSettings,allValid] = mpqc.settings.checkSettingsAreValid(outputSettings);
         return
     end
 
@@ -149,7 +149,7 @@ function reformattedSettings = readSettings(fname)
     % Three
     % Make sure all settings that are returned are valid
     % If they are not, we replace them with the original default value
-    [outputSettings,allValidCheck] = mpsf.settings.checkSettingsAreValid(outputSettings); % see private directory
+    [outputSettings,allValidCheck] = mpqc.settings.checkSettingsAreValid(outputSettings); % see private directory
 
     % Because settings will return as valid even if an old setting exists.
     allValid = allValid * allValidCheck;
@@ -215,13 +215,13 @@ function reformattedSettings = readSettings(fname)
             mkdir(backupSettingsDir)
         end
        backupFname = fullfile(backupSettingsDir, ...
-            [datestr(now, 'yyyy_mm_dd__HH_MM_SS_'),mpsf.settings.returnMPSF_SettingsFileName]);
+            [datestr(now, 'yyyy_mm_dd__HH_MM_SS_'),mpqc.settings.returnMPSF_SettingsFileName]);
        fprintf('Making backup of settings file at %s\n', backupFname)
        copyfile(settingsFile,backupFname)
 
        % Write the new file to the settings location
        fprintf('Replacing settings file with updated version\n')
-       mpsf.yaml.WriteYaml(settingsFile,outputSettings);
+       mpqc.yaml.WriteYaml(settingsFile,outputSettings);
     end
 
     % Ensure we don't have too many backup files

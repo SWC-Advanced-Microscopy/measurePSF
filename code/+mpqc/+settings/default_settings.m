@@ -1,7 +1,7 @@
 function [settings,setTests] = default_settings
     % Return a set of default system settings to write to a file in the settings directory
     %
-    % function [settings, setTests] = mpsf.settings.default_settings
+    % function [settings, setTests] = mpqc.settings.default_settings
     %
     % Purpose
     % Defines the default settings of MPSF. These are what are written to YAML when there
@@ -22,7 +22,7 @@ function [settings,setTests] = default_settings
 
 
     % Import the functions we use for checking that stuff is valid
-    import mpsf.settings.settingsValuesTests.*
+    import mpqc.settings.settingsValuesTests.*
 
 
     %% NOTE!

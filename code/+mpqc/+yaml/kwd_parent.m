@@ -1,4 +1,4 @@
 function result = kwd_parent()
-import mpsf.yaml.*;
+import mpqc.yaml.*;
 result = 'parent';
 end

@@ -2,14 +2,14 @@ classdef (Abstract) settingsValuesTests
 
     % Tests associated with default_settings
     %
-    % mpsf.settings.settingsValuesTests
+    % mpqc.settings.settingsValuesTests
     %
     % Purpose
     % Defines generic tests that can be combined to ensure values in settings file reasonable.
     %
     %
-    % See mpsf.settings.checkSettingsAreValid for how these methods are used.
-    % See mpsf.settings.default_settings for where tests are specified.
+    % See mpqc.settings.checkSettingsAreValid for how these methods are used.
+    % See mpqc.settings.default_settings for where tests are specified.
     %
     %
     % Rob Campbell, SWC AMF, initial commit 2023
@@ -22,11 +22,11 @@ classdef (Abstract) settingsValuesTests
         % * How the following methods work
         % In each case the following methods test some aspect of value in the structure "actualStruct".
         % The value itself is always addressed as "actualStruct.(sectionName).fieldName". This is done
-        % in the function "mpsf.settings.checkSettingsAreValid". If the value does not pass then the
+        % in the function "mpqc.settings.checkSettingsAreValid". If the value does not pass then the
         % default value from the structure "defaultStruct" is used to replace the value that was present.
         % A message is displayed to the CLI. The second output argument of each method, "isValid" is
         % true if no replacement had to be done and false otherwise. This is used by the function
-        % "mpsf.settings.checkSettingsAreValid" to determine whether any settings in the YAML at all
+        % "mpqc.settings.checkSettingsAreValid" to determine whether any settings in the YAML at all
         % needed replacing.
 
         function [actualStruct,isValid] = check_isCellArrayOfStrings(actualStruct,defaultStruct,sectionName,fieldName)
@@ -138,8 +138,8 @@ classdef (Abstract) settingsValuesTests
         function [actualStruct,isValid] = convert_cell2mat(actualStruct,~,sectionName,fieldName)
             % Used to turn a cell array into a matrix. This is because arrays from a YAMLs are read in as
             % cell arrays and sometimes they need to be matrices. This method is called in
-            % mpsf.settings.checkSettingsAreValid and we select when it is to be run by defining this in
-            % mpsf.settings.default_settings
+            % mpqc.settings.checkSettingsAreValid and we select when it is to be run by defining this in
+            % mpqc.settings.default_settings
             isValid = true;
             actualStruct.(sectionName).(fieldName) = cell2mat(actualStruct.(sectionName).(fieldName));
         end

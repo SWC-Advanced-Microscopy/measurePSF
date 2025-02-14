@@ -1,7 +1,7 @@
 function uniform_slide(fname,varargin)
     % Make nice plots of the uniform slide data to explore illumination
     %
-    % mpsf.plot.uniform_slide(fname,'param1','val1','param2','val2',...)
+    % mpqc.plot.uniform_slide(fname,'param1','val1','param2','val2',...)
     %
     % Purpose
     % Make a plot of field homogeneity based on a uniform fluorescent slide or solution.
@@ -20,7 +20,7 @@ function uniform_slide(fname,varargin)
     %
     % Examples
     % Plot with no zoom boxes overlaid
-    % mpsf.plot.uniform_slide('uniform_slide_zoom_1_920nm_5mW__2022-08-02_10-09-33_00001.tif','overlayZoom',[])
+    % mpqc.plot.uniform_slide('uniform_slide_zoom_1_920nm_5mW__2022-08-02_10-09-33_00001.tif','overlayZoom',[])
     %
     %
     % Rob Campbell, SWC AMF
@@ -36,7 +36,7 @@ function uniform_slide(fname,varargin)
     overlayZoom = params.Results.overlayZoom;
     crossSections = params.Results.crossSections;
 
-    [imstack,metadata] = mpsf.tools.scanImage_stackLoad(fname);
+    [imstack,metadata] = mpqc.tools.scanImage_stackLoad(fname);
     if isempty(imstack)
         return
     end
@@ -45,7 +45,7 @@ function uniform_slide(fname,varargin)
 
 
     % Make a new figure or return a plot handle as appropriate
-    fig = mpsf.tools.returnFigureHandleForFile([fname,mfilename]);
+    fig = mpqc.tools.returnFigureHandleForFile([fname,mfilename]);
 
     subplot(1,2,1)
     plotData = mean(imstack,3);
@@ -61,7 +61,7 @@ function uniform_slide(fname,varargin)
     axis equal tight
     colormap gray
 
-    mpsf.tools.add_scale_axis_tick_labels(gca,micsPerPixelXY)
+    mpqc.tools.add_scale_axis_tick_labels(gca,micsPerPixelXY)
 
     hold on
     nContours = 10;

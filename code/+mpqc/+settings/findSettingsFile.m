@@ -1,14 +1,14 @@
 function varargout = findSettingsFile
     % Find the MPSF settings file and return as a string
     %
-    % function settingsFile = mpsf.settings.findSettingsFile()
+    % function settingsFile = mpqc.settings.findSettingsFile()
     %
     % Purpose
     % There are three places the MPSF settings file could be located. This function
     % Looks through this in the following order:
     % 1. In the user's home folder in a folder called MPSF_Settings
     % 2. In C:\MPSF_Settings
-    % 3. In the mpsf\SETTINGS folder
+    % 3. In the mpqc\SETTINGS folder
     %
     % If there are settings files in more than one location, it is the first one to be found
     % that is read. The rest are ignored.
@@ -37,8 +37,8 @@ function varargout = findSettingsFile
     % Rob Campbell, SWC AMF, initial commit 2022
 
 
-    settingsDirs = mpsf.settings.possibleSettingsLocations; % Potential locations for the settings file
-    settingsFname = mpsf.settings.returnMPSF_SettingsFileName; % The name of the settings file
+    settingsDirs = mpqc.settings.possibleSettingsLocations; % Potential locations for the settings file
+    settingsFname = mpqc.settings.returnMPSF_SettingsFileName; % The name of the settings file
 
 
     % Look for a the settings file
@@ -81,7 +81,7 @@ function varargout = findSettingsFile
                 fprintf('%d. At "%s"\n', ii, settingsDirs(ii).settingsLocation)
                 fprintf(['    RECOMMENDED: Choose this if you change user accounts and are ', ...
                         'not updating MPSF via Git.\n\n'])
-            case 'mpsf'
+            case 'mpqc'
                 fprintf('%d. At "%s"\n', ii, settingsDirs(ii).settingsLocation)
                 fprintf(['   ADVANCED: Choose this option if you like your settings files along with the code ', ...
                         'and are updating MPSF via Git.\n\n'])
@@ -123,10 +123,10 @@ function varargout = findSettingsFile
 
 
 
-    DEFAULT_SETTINGS = mpsf.settings.default_settings;
+    DEFAULT_SETTINGS = mpqc.settings.default_settings;
     if ~exist(settingsFilePath)
         fprintf('\nCan not find system settings file: making empty default file at %s\n', settingsFilePath)
-        mpsf.yaml.WriteYaml(settingsFilePath,DEFAULT_SETTINGS);
+        mpqc.yaml.WriteYaml(settingsFilePath,DEFAULT_SETTINGS);
     end
 
 
