@@ -1,5 +1,5 @@
 function settings = reapplyScanImageSettings(API,settings)
-% Record settings from ScanImage 
+% Record settings from ScanImage
 %
 % function settings = reapplyScanImageSettings(API,settings)
 %
@@ -13,10 +13,12 @@ function settings = reapplyScanImageSettings(API,settings)
 %
 % See also
 % recordScanImageSettings
+%
+%
+% Rob Campbell, SWC AMF
 
 
-
-    if API.versionGreaterThan('2020') 
+    if API.versionGreaterThan('2020')
         API.hSI.hStackManager.closeShutterBetweenSlices = settings.stackManShutterClose;
         API.hSI.hStackManager.numVolumes = settings.numVolumes;
         API.hSI.hStackManager.stackActuator = settings.stackActuator;
@@ -34,10 +36,10 @@ function settings = reapplyScanImageSettings(API,settings)
     API.hSI.hRoiManager.pixelsPerLine = settings.pixelsPerLine;
 
     API.hSI.hFastZ.waveformType = settings.fastZwaveform;
-    API.hSI.hStackManager.numSlices = settings.stackManNumSlices; 
+    API.hSI.hStackManager.numSlices = settings.stackManNumSlices;
     API.hSI.hStackManager.stackZStepSize = settings.stackManStepSize;
 
-    API.hSI.hChannels.loggingEnable = settings.loggingEnabled; 
+    API.hSI.hChannels.loggingEnable = settings.loggingEnabled;
     API.hSI.hScan2D.logAverageFactor = settings.logAveFact;
     API.hSI.hStackManager.framesPerSlice = settings.framesPerSlice;
     API.hSI.acqsPerLoop = settings.acqsPerLoop;

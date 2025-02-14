@@ -15,7 +15,7 @@ function varargout = lens_paper(fname,aveBy)
     % params - optionally return key imaging parameters as a structure
     % txt - legend text for report
     %
-    % Rob Campbell - SWC 2022
+    % Rob Campbell, SWC AMF, initial commit 2022
 
 
 

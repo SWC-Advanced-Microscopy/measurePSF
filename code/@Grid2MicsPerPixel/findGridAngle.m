@@ -1,13 +1,16 @@
 function bestAng=findGridAngle(obj,im)
     % Iteratively find the grid orientation that makes the grid lines
-    % parallel with the axes. 
+    % parallel with the axes.
     % Algorithm:
     % START
     % Projecting the image onto two 1D vectors (rows and columns).
-    % Calculating the total variance (see getVar) along both dimensions. 
+    % Calculating the total variance (see getVar) along both dimensions.
     % Repeat for a range of grid angles in an adaptive manner to improve speed.
-    % The variance is maximimal when the grid is parallel with the axes. 
+    % The variance is maximimal when the grid is parallel with the axes.
     % END
+    %
+    %
+    % Rob Campbell, Basel Biozentrum, 2016
 
     startAngleRange=25;
     startRes=5;

@@ -18,9 +18,9 @@ function gainsToTest = getPMTGainsToTest(numGains)
     % Outputs
     % gainsToTest - a matrix where rows are different PMTs and columns are gains.
     %
-    % % TODO ! include example ouput
+    % % TODO ! include example output
     %
-    % Rob Campbell - SWC 2025
+    % Rob Campbell, SWC AMF, initial commit 2025
 
 
     if nargin<1 || isempty(numGains) || numGains<0

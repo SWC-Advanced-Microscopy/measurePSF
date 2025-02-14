@@ -10,7 +10,7 @@ function electrical_and_dark_noise()
     % >> mpsf.record.electrical_and_dark_noise
     %
     %
-    % Rob Campbell, first committed SWC 2022
+    % Rob Campbell, SWC AMF, initial commit 2022
 
 
     fprintf('Remove sample and ensure enclosure is dark then press return\n')

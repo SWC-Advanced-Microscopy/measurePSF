@@ -1,7 +1,8 @@
 function findPSF_centreInXY(obj,im)
-    % Used by measurePSF to find the maximum of a 2D image 
+    % Used by measurePSF to find the maximum of a 2D image
     %
     %
+    % Rob Campbell, Basel Biozentrum, 2016
 
     %Find the peak of the image
     f = obj.fit_Intensity(max(im,[],1),1);

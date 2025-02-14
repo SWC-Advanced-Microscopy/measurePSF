@@ -5,7 +5,7 @@
     % Multiple files need access to this file name so we define it here once.
     % Returns "MPSF_SystemSettings.yml"
     %
-    % Rob Campbell - SWC 2022
+    % Rob Campbell, SWC AMF, initial commit 2022
 
     MPSF_SettingsFileName = 'MPSF_SystemSettings.yml';
 

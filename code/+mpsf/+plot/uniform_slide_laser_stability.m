@@ -4,7 +4,8 @@ function varargout = uniform_slide_laser_stability(fname)
     % function legend_text = mpsf.plot.uniform_slide_laser_stability(fname)
     %
     % Optionally returns text that describes the plots
-
+    %
+    % Rob Campbell, SWC AMF
 
     [imstack,metadata] = mpsf.tools.scanImage_stackLoad(fname);
     if isempty(imstack)

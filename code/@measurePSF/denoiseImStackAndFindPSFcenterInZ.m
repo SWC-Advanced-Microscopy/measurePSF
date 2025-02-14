@@ -1,5 +1,8 @@
 function denoiseImStackAndFindPSFcenterInZ(obj)
     % Estimate the slice that contains center of the PSF in Z by finding the brightest point.
+    %
+    % Rob Campbell, Basel Biozentrum, 2016
+
     obj.reportMethodEntry
 
     obj.PSFstack = double(obj.PSFstack);
@@ -24,14 +27,14 @@ function denoiseImStackAndFindPSFcenterInZ(obj)
     obj.PSFstack = obj.PSFstack - median(obj.PSFstack(:)); %subtract the baseline because the Gaussian fit doesn't have an offset parameter
 
             %Further clean the image stack since we will use the max command to find the peak location
-    DS = imresize(obj.PSFstack,0.25); 
+    DS = imresize(obj.PSFstack,0.25);
     for ii = 1:size(DS,3)
         DS(:,:,ii) = conv2(DS(:,:,ii),ones(2),'same');
     end
-    Z = max(squeeze(max(DS))); 
+    Z = max(squeeze(max(DS)));
 
     z = max(squeeze(max(DS)));
-    f = obj.fit_Intensity(z,1,1); 
+    f = obj.fit_Intensity(z,1,1);
 
     if isempty(f)
         % Probably no curve fitting toolbox

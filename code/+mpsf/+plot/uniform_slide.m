@@ -21,6 +21,9 @@ function uniform_slide(fname,varargin)
     % Examples
     % Plot with no zoom boxes overlaid
     % mpsf.plot.uniform_slide('uniform_slide_zoom_1_920nm_5mW__2022-08-02_10-09-33_00001.tif','overlayZoom',[])
+    %
+    %
+    % Rob Campbell, SWC AMF
 
 
     %Parse optional arguments

@@ -6,7 +6,7 @@ function postAcqTasks(saveDir,fileStem)
     % saveDir - path to which data were saved
     % fileStem - the name of the saved file
     %
-    % Rob Campbell -- initial commit SWC 2025
+    % Rob Campbell, SWC AMF, initial commit 2025
 
 
     % Report where the file was saved

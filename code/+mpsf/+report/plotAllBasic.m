@@ -13,7 +13,7 @@ function plotAllBasic(data_dir)
     % Outputs
     % none
     %
-    % Rob Campbell - SWC 2022
+    % Rob Campbell, SWC AMF, initial commit 2022
 
 
 

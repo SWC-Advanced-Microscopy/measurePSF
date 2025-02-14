@@ -20,7 +20,7 @@ function out = plot_functions_generator(data_dir)
 % mpsf.report.plotAllBasic
 %
 %
-% Rob Campbell - SWC 2022
+% Rob Campbell, SWC AMF, initial commit 2022
 
 
 if nargin<1

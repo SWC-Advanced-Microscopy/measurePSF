@@ -22,7 +22,7 @@ function [imStack,metadata] = scanImage_stackLoad(fileName,subtractOffset)
 %
 %
 %
-% Rob Campbell - SWC 2022
+% Rob Campbell, SWC AMF, initial commit 2022
 
 
     imStack = [];

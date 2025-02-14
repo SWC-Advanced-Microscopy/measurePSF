@@ -33,8 +33,7 @@ function uniform_slide(varargin)
     % >> mpsf.record.uniform_slide('power',7,'wavelength',800)
     %
     %
-    % Rob Campbell, first committed SWC 2022
-    % Updated: Isabell Whiteley, SWC 2024
+    % Rob Campbell, SWC AMF, initial commit 2022
 
 
     % Parse the input arguments

@@ -33,7 +33,7 @@ function out = parseInputVariable(varargin)
     %  out.power = 20;
     %
     %
-    % Isabell Whiteley, SWC 2024
+    % Isabell Whiteley, SWC AMF, initial commit 2024
 
 
     % Make the inputParser object

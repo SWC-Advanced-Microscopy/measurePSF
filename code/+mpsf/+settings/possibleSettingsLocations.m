@@ -12,7 +12,7 @@ function settingsDirs = possibleSettingsLocations
     % settingsDirs - A structure containing the possible settings file locations
     %
     %
-    % Rob Campbell - SWC 2022
+    % Rob Campbell, SWC AMF, initial commit 2022
 
 
     n = 0;

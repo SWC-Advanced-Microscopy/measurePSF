@@ -1,10 +1,10 @@
 classdef meanFrame < handle
 % Monitor open ScanImage channel windows and plot a rolling average trace.
-% 
+%
 % To use this function simply run
 % "mpsf.tools.meanFrame" then press "Focus" in ScanImage
-% The current frame mean is present in the figure title along with a rolling average. 
-% 
+% The current frame mean is present in the figure title along with a rolling average.
+%
 %
 % Advanced usage:
 % M=mpsf.tools.meanFrame
@@ -20,8 +20,12 @@ classdef meanFrame < handle
 % % Change the number of seconds to display
 % M.secondsToDisplay=5
 % M.secondsToDisplay=3
+%
+%
+% Rob Campbell, SWC AMF
 
-    properties 
+
+    properties
 
         hSI % Refence to ScanImage object
 
@@ -34,7 +38,7 @@ classdef meanFrame < handle
     properties (SetObservable)
         % minUpdateInterval - the minimum time in seconds between plot updates
         % channelColors - a character array of length 4 that defines the channel colors
-        % secondsToDisplay - how many seconds worth of data to display on the screen    
+        % secondsToDisplay - how many seconds worth of data to display on the screen
         minUpdateInterval = 0.05 %The minimum time to wait in seconds between updates of the plot
         channelColors = 'rbgk'
         secondsToDisplay = 30
@@ -89,13 +93,13 @@ classdef meanFrame < handle
 
             switch obj.hSI.acqState
                 case {'grab','loop'}
-                    % Do nothing because we are in data acquisition mode 
+                    % Do nothing because we are in data acquisition mode
                     fprintf('Stopping listener\n')
                     obj.listener_frameDone.Enable=0;
                 case 'focus'
                     % Ensure we have a figure window open
                     fprintf('Starting listener\n')
-                    obj.listener_frameDone.Enable=1;                    
+                    obj.listener_frameDone.Enable=1;
                 case 'idle'
                     fprintf('Stopping listener\n')
                     obj.listener_frameDone.Enable=0;
@@ -119,12 +123,12 @@ classdef meanFrame < handle
             %Extract means and store in figure's UserData
             timeSinceLastUpdate = (now-obj.hFig.UserData.lastUpdate)*24*60^2;
             meansToDisplay=nan(1,length(obj.channelColors));
-            for ii = 1:length(obj.channelColors) 
+            for ii = 1:length(obj.channelColors)
                 if ~any(channels==ii) %then it's not being recorded
                     mu=nan;
                 else
                     f=find(channels==ii);
-                    imData=lastStripe.roiData{1}.imageData{f}{1}; 
+                    imData=lastStripe.roiData{1}.imageData{f}{1};
                     mu=mean(imData(:));
                     meansToDisplay(ii)=mu;
                 end
@@ -139,7 +143,7 @@ classdef meanFrame < handle
 
             end
 
-            %Restrict the rate of plot update. 
+            %Restrict the rate of plot update.
             if (now-obj.hFig.UserData.lastUpdate)*24*60^2 > obj.minUpdateInterval
                 titleStr='';
                 for ii=1:4
@@ -179,7 +183,7 @@ classdef meanFrame < handle
                 for ii=1:length(obj.channelColors)
                     data.plotData{ii}=plotData(:,ii);
                 end
-                obj.hFig.UserData=data; 
+                obj.hFig.UserData=data;
                 grid on
                 set(obj.hFig,'Name','Mean traces')
                 xlabel('Frame #')
@@ -271,7 +275,7 @@ classdef meanFrame < handle
             obj.hFig.UserData=data;
 
             xlim([1,obj.numDataPoints])
-    
+
             for ii=1:4
                 obj.plotDataH(ii).YData = obj.hFig.UserData.plotData{ii};
                 obj.plotDataH(ii).Color = obj.channelColors(ii);

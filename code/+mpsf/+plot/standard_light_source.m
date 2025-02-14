@@ -14,7 +14,7 @@ function varargout = standard_light_source(dirToSearch)
     % pltData - The data that underlies the plot
     %
     %
-    % Rob Campbell - SWC2024
+    % Rob Campbell, SWC AMF, initial commit Q4 2024
 
 
     if nargin<1 || isempty(dirToSearch)

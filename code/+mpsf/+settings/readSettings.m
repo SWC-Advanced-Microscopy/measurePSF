@@ -21,8 +21,8 @@ function reformattedSettings = readSettings(fname)
     % settings - the mpsf settings as a structure
     %
     %
-    % Rob Campbell - Basel 2017
-    % Rob Campbell - SWC 2022
+    % Rob Campbell, Biozentrum Basel, initial commit 2017
+
 
     outputSettings = [];
     allValid = true; % By default all settings are valid

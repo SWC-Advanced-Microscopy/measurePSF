@@ -20,6 +20,9 @@ function [settings,allValid] = checkSettingsAreValid(settings)
     % mpsf.settings.readSettings
     % mpsf.settings.default_settings
     % mpsf.settings.settingsValuesTests
+    %
+    %
+    %  Rob Campbell, SWC AMF
 
     allValid=true;
     [DEFAULT_SETTINGS,SETTINGS_TESTS] = mpsf.settings.default_settings;

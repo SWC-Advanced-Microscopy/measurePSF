@@ -22,7 +22,7 @@ function standard_light_source(channelSave,nFrames)
     %           There is unlikely to be a reason for this.
     %
     %
-    % Rob Campbell, first committed SWC 2022
+    % Rob Campbell, SWC AMF, initial commit 2022
 
 
 

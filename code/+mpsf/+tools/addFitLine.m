@@ -1,32 +1,32 @@
-function varargout=addFitLine(poolFits,modelType,lineprops,ax) 
-% function varargout=addFitLine(poolFits,modelType,lineprops,ax) 
+function varargout=addFitLine(poolFits,modelType,lineprops,ax)
+% function varargout=addFitLine(poolFits,modelType,lineprops,ax)
 %
 % Purpose
 % Add one or more fit lines to some or all data in axes "ax" or,
-% without ax specified, to the current axes.     
+% without ax specified, to the current axes.
 %
 % Inputs
-%  * poolFits [optional 0 by default] - 
+%  * poolFits [optional 0 by default] -
 %    if 1 we fit a single line to all data series on the current
 %    axes.
 %  * modelType ['linear' by default] - If 'linear' it fits a straight line
 %    using the regress function from the stats toolbox. If 'quadratic' it
 %    fits a second-order polynomial using regress. The output from regress is
-%    returned. If modelType is an integer, the function fit a polynomial of 
-%    this order using polyfit, which is not part of the stats toolbox. The 
-%    output of polyfit is then returned. 
+%    returned. If modelType is an integer, the function fit a polynomial of
+%    this order using polyfit, which is not part of the stats toolbox. The
+%    output of polyfit is then returned.
 %  * lineprops [optional 'b-' by default]
 %  * ax [optional - gca by default]
-%    
+%
 % Outputs
 % out - the fit parameters and plot handles
 %
 %
-% 
+%
 % Examples
-% clf 
+% clf
 % %Fit two seperate lines
-% subplot(1,3,1), hold on, x=-5:0.1:5; 
+% subplot(1,3,1), hold on, x=-5:0.1:5;
 % y=1+1*x+randn(size(x))*2; plot(x,y,'.k')
 % y=2-4*x+randn(size(x))*2; plot(x,y,'.r')
 % H=addFitLine;
@@ -39,16 +39,17 @@ function varargout=addFitLine(poolFits,modelType,lineprops,ax)
 %
 % %Fit one quadratic
 % subplot(1,3,3)
-% x=-5:0.1:5; 
-% y=2+0.3*x+0.5*x.^2+randn(size(x))*2; 
+% x=-5:0.1:5;
+% y=2+0.3*x+0.5*x.^2+randn(size(x))*2;
 % plot(x,y,'.k')
 % addFitLine([],'quadratic');
 % OR:
 % addFitLine([],2);
 %
-% Rob Campbell - December 2009
-    
- 
+%
+% Rob Campbell, CSHL, December 2009
+
+
 if nargin<1 || isempty(poolFits),  poolFits=0;     end
 if nargin<2 || isempty(modelType), modelType='linear'; end
 if nargin<3 || isempty(lineprops), lineprops='b-'; end
@@ -61,12 +62,12 @@ end
 
 
 
-%Get data 
+%Get data
 chil=get(ax,'children');
 
 %Remove inappropriate axis elements
 chil(strmatch('text',get(chil,'type')))=[];
-chil(strmatch('patch',get(chil,'type')))=[]; 
+chil(strmatch('patch',get(chil,'type')))=[];
 
 
 xdata=get(chil,'xdata');
@@ -121,7 +122,7 @@ for ii=1:length(xdata)
             out(ii).handles=...
                 plot(X, out(ii).b(1) + out(ii).b(2)*X + out(ii).b(3)*X.^2,...
                 lineprops{:});
-           
+
         otherwise
             if isnumeric(modelType)
                 % For some reason we have to sort the data to get a sensible fit
@@ -132,9 +133,9 @@ for ii=1:length(xdata)
                 f=polyval(out(ii).b,x);
                 out(ii).handles=plot(x,f,lineprops{:},'color',COL{ii});
             end
-            
+
     end % switch
-    
+
 end % for ii=1:length(xdata)
 
 %Return hold status to what it was before this function was called

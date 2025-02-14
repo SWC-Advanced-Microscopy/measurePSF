@@ -12,7 +12,7 @@ function out = generate_summary_text(data_dir)
 % data_dir - optional, if nothing is provided the current directory is used
 %
 %
-% Rob Campbell - SWC 2022
+% Rob Campbel, SWC AMF, initial commit 2022
 
 
 

@@ -18,7 +18,7 @@ function [settings,setTests] = default_settings
     % setTests - structure with tests required for each field as a cell array of function
     %               handles. The functions are static methods of the class settingsValuesTests.
     %
-    % Rob Campbell - 2023
+    % Rob Campbell, SWC AMF, initial commit 2023
 
 
     % Import the functions we use for checking that stuff is valid

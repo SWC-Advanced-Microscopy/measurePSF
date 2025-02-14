@@ -7,13 +7,16 @@ function [FWHM,p] = plotCrossSectionAndFit(obj,x,y,fitObj,fitRes,flipAxes,plotAx
     % y - y data
     % fitObj - the fit object produced by measurePSF.fit_Intensity that is associated with these data
     % fitRes - the resolution in microns of the fitted curve. This is used to obtain the FWHM
-    % flipAxes - set to true to flip x/y axes for the plots long the right. 
-    % plotAxStr - a string to indicate which axes are being plotted (e.g. 'XZ'). This is added to the 
+    % flipAxes - set to true to flip x/y axes for the plots long the right.
+    % plotAxStr - a string to indicate which axes are being plotted (e.g. 'XZ'). This is added to the
     %             title string.
     %
     % OUTPUTS (returns empty fitObj is empty)
     % FWHM - the full-width-half-max
     % p - plot handle of the fit
+    %
+    %
+    % Rob Campbell, Basel Biozentrum, initial commit 2016
 
     if isempty(fitObj)
         FWHM = [];
@@ -27,9 +30,9 @@ function [FWHM,p] = plotCrossSectionAndFit(obj,x,y,fitObj,fitRes,flipAxes,plotAx
         plotAxStr='';
     end
 
-    %Generate x data 
+    %Generate x data
     fitX = x(1):fitRes:x(end);
-    fitY = feval(fitObj,fitX); 
+    fitY = feval(fitObj,fitX);
 
 
     %calculate the FWHM
@@ -86,7 +89,7 @@ function [FWHM,p] = plotCrossSectionAndFit(obj,x,y,fitObj,fitRes,flipAxes,plotAx
     axis tight
     grid on
 
-    %Add ticks such that the peak has a tick mark that we will label as zero    
+    %Add ticks such that the peak has a tick mark that we will label as zero
     stepSize  = (fitX(end)-fitX(1))/11; %to divide up the fit
     xAtMax = fitX(length(yvals));
 

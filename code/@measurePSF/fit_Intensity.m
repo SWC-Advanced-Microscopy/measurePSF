@@ -4,14 +4,14 @@ function [fitresult, gof] = fit_Intensity(obj,Y,micsPerPix,numberOfTerms)
     % function [fitresult, gof] = fit_Intensity(Y,micsPerPix,numberOfTerms)
     %
     % Purpose
-    % This is a measurePSF helper function. 
+    % This is a measurePSF helper function.
     %
     %
     % Inputs
     %  Y - the vector intensities for this PSF cross-section
-    %  micsPerPix - the number of microns per pixel (set to 1 
+    %  micsPerPix - the number of microns per pixel (set to 1
     %            if using this function to determine the index of the peak)
-    %  numberOfTerms - number of terms in the Gaussian. Use 1 for a regular 
+    %  numberOfTerms - number of terms in the Gaussian. Use 1 for a regular
     %               Gaussian. 2 if kurtosis of the raw data seem high.
     %               By default we use the value in obj.zFitOrder
     %
@@ -20,10 +20,12 @@ function [fitresult, gof] = fit_Intensity(obj,Y,micsPerPix,numberOfTerms)
     %  gof - structure with goodness-of fit info.
     %
     %  See also FIT, CFIT, SFIT.
+    %
+    % Rob Campbell, Basel Biozentrum, initial commit 2016
 
     obj.reportMethodEntry
 
-    v=ver; 
+    v=ver;
     if isempty(strmatch('Curve Fitting', {v.Name}))
         fprintf('*** No curve fitting toolbox, not returning a fit ***\n')
         fitresult=[];

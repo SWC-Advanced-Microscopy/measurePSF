@@ -12,7 +12,9 @@ function mkdirname = makeDesktopDirectory(dirname)
     % Outputs
     % mkdirname - Full path of the created directory name.
     %
-    % Rob Campbell - SWC 2023
+    %
+    % Rob Campbell, SWC AMF, initial commit 2023
+
 
 	success = false;
 	mkdirname = [];

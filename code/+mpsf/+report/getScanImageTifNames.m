@@ -10,7 +10,7 @@ function fnames = getScanImageTifNames(data_dir)
 % data_dir - optional, if nothing is provided the current directory is used
 %
 %
-% Rob Campbell - SWC 2022
+% Rob Campbell, SWC AMF, initial 2022
 
 
 

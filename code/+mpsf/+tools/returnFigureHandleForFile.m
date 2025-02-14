@@ -9,9 +9,13 @@ function figHandle = returnFigureHandleForFile(fname)
     %
     % Inputs
     % fname = string file name
-    % 
+    %
     % Outputs
     % figHandle - handle to the figure we will use for plotting
+    %
+    %
+    % Rob Campbell, SWC AMF
+
 
     tag = findobj('Tag',fname);
 

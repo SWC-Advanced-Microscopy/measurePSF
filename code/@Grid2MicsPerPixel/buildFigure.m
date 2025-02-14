@@ -6,6 +6,8 @@ function buildFigure(obj)
     % Purpose
     % Builds figures and calculates all statistics
     %
+    %
+    % Rob Campbell, Basel Biozentrum, 2016
 
 
     % TODO: For modularity we might want to move the calculations to a separate function

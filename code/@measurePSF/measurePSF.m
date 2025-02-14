@@ -73,7 +73,7 @@ classdef measurePSF < handle
     % >> measurePSF('demo');
     %
     %
-    % Rob Campbell - Basel 2016
+    % Rob Campbell, Basel Biozentrum, initial commit 2016
     %
     % Requires:
     % Curve-Fitting Toolbox, Image Processing Toolbox

@@ -1,5 +1,7 @@
 function OUT=updateXYfits(obj)
     % Updates the X/Y bead fits on either side of the bottom/left plot
+    %
+    % Rob Campbell, Basel Biozentrum, initial commit 2016
 
     %The cross-section sliced along the rows (the fit shown along the right side of the X/Y PSF)
     axes(obj.hxSectionRowsAx);

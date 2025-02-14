@@ -30,9 +30,9 @@ classdef Grid2MicsPerPixel < handle
         % Data derived from image and used to measure the number of microns per pixel
         muCols %The mean of the rotated grid image along the columns (first axis)
         muRows %The mean of the rotated grid image along the rows (second axis)
-        micsPix %Structure storing the number of microns per pixel        
-        rotImage = 0; %If zero the image is not rotated after loading from SI. If 
-                 %this is 1 we do 90 deg. If 2 180. 
+        micsPix %Structure storing the number of microns per pixel
+        rotImage = 0; %If zero the image is not rotated after loading from SI. If
+                 %this is 1 we do 90 deg. If 2 180.
     end % properties
 
 
@@ -58,9 +58,9 @@ classdef Grid2MicsPerPixel < handle
             %
             %
             % Inputs
-            % inputIM - 2D image of the grid. If empty or no input arguments provided, Grid2MicsPerPixel 
+            % inputIM - 2D image of the grid. If empty or no input arguments provided, Grid2MicsPerPixel
             %           attempts to extract the grid image from the running instance of ScanImage. i.e.
-            %           it assumes a grid is currently being displayed in the channel windows. 
+            %           it assumes a grid is currently being displayed in the channel windows.
             %
             % Inputs (optional param/val pairs)
             % gridPitch   - pitch of the grid in microns (default is 25)
@@ -108,10 +108,9 @@ classdef Grid2MicsPerPixel < handle
             % >> someImage = imread('someImage.tiff');
             % >> Grid2MicsPerPixel(someImage)
             %
-            %
-            % Rob Campbell - Basel 2016
-            %
             % Requires the Stats Toolbox
+            %
+            % Rob Campbell, Basel Biozentrum, initial commit 2016
 
 
 
@@ -364,7 +363,7 @@ classdef Grid2MicsPerPixel < handle
             elseif length(T)==1
                 siImage=T{1};
             end
-            
+
             if obj.rotImage>0
                 siImage = rot90(siImage,obj.rotImage);
             end

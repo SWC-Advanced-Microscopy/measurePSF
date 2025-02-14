@@ -14,7 +14,7 @@ function varargout = loadBeadPSF(fname)
 % stats - PSF stats
 %
 %
-% Rob Campbell - SWC 2022
+% Rob Campbell, SWC AMF, initial commit 2022
 
 
 warning off

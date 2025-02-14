@@ -1,9 +1,13 @@
 function setUpFigureWindow(obj)
-    % Set up the measurePSF figure window by placing empty axes and 
-    % place-holder plot elements that will later be updated. 
+    % Set up the measurePSF figure window by placing empty axes and
+    % place-holder plot elements that will later be updated.
+    %
+    %
+    % Rob Campbell, Basel Biozentrum, initial commit 2016
+
     obj.reportMethodEntry
 
-    % Create a figure window 
+    % Create a figure window
     obj.hFig = figure;
     obj.hFig.CloseRequestFcn = @obj.windowCloseFcn;
 

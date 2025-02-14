@@ -10,7 +10,7 @@ function electrical_noise(fname)
     % may appear non-symmetric.
     %
     %
-    % Rob Campbell - SWC
+    % Rob Campbell, SWC AMF
 
 
 

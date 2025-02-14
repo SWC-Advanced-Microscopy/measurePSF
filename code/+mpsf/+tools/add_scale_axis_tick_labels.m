@@ -11,7 +11,8 @@ function add_scale_axis_tick_labels(ax,micsPixXY)
     % ax - axes to target
     % micsPixXY - microns per pixel in x/y
     %
-    % Rob Campbell - SWC 2022
+    %
+    % Rob Campbell, SWC AMF, initial commit 2022
 
 
     nTicks = 5;

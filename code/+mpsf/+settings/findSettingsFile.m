@@ -34,7 +34,7 @@ function varargout = findSettingsFile
     % 4. Move your settings file using Windows
     %
     %
-    % Rob Campbell - SWC 2022
+    % Rob Campbell, SWC AMF, initial commit 2022
 
 
     settingsDirs = mpsf.settings.possibleSettingsLocations; % Potential locations for the settings file

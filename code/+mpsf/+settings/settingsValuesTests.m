@@ -12,7 +12,7 @@ classdef (Abstract) settingsValuesTests
     % See mpsf.settings.default_settings for where tests are specified.
     %
     %
-    % Rob Campbell - SWC 2023
+    % Rob Campbell, SWC AMF, initial commit 2023
 
 
     %%

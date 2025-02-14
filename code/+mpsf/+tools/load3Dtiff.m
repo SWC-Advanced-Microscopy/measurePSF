@@ -30,7 +30,7 @@ function [imageStack,imageInfo]=load3Dtiff(FileName,varargin)
 %
 %
 %
-% Rob Campbell, March, 2009
+% Rob Campbell, CSHL, March, 2009
 % last updated : March, 2016
 
 

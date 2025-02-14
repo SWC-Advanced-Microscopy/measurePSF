@@ -14,7 +14,7 @@ function userDir = userFolder
     % userDir - string defining the path to the user's home folder.
     %
     %
-    % Rob Campbell - 2022 SWC
+    % Rob Campbell, SWC AMF, initial commit 2022
 
 
     if ispc
