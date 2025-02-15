@@ -127,7 +127,7 @@ function standard_light_source(channelSave,nFrames)
         fileStem = sprintf('%s_standard_light_source_%s_%dV__%s', ...
             SETTINGS.microscope.name, ...
             sourceID, ...
-            gainsToTest(1,ii), ... %TODO! This is only first PMT gain!
+            gainsToTest(1,ii), ...
             datestr(now,'yyyy-mm-dd_HH-MM-SS'));
 
         API.hSI.hScan2D.logFileStem=fileStem;
@@ -135,7 +135,7 @@ function standard_light_source(channelSave,nFrames)
         API.hSI.hScan2D.logFileCounter=1;
 
         API.setPMTgains(gainsToTest(:,ii)); % Set gain
-        pause(0.5) % Out of abundance of caution
+        pause(1) % Let's wait for it to stabilise
 
         API.acquireAndWait;
     end

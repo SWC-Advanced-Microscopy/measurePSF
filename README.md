@@ -15,7 +15,7 @@ and for measuring field of view size using an EM grid.
 * `mpsf_tools.meanFrame` plots the mean frame intensity as a function of time whilst you are scanning.
 
 
-![cover image](https://raw.githubusercontent.com/raacampbell/measurePSF/gh-pages/realBead.png "Main Window")
+![cover image](https://raw.githubusercontent.com/SWC-Advanced-Microscopy/measurePSF/gh-pages/realBead.png "Main Window")
 
 
 ## Installation

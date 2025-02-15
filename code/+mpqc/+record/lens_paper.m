@@ -83,13 +83,6 @@ function lens_paper(varargin)
     end
 
 
-    % Errors if >1 channel set to save
-    saveChanName = API.getSaveChannelName;
-    if isempty(saveChanName)
-        % message produced by API.getSaveChannelName;
-        return
-    end
-
     % Create 'diagnostic' directory in the user's desktop
     saveDir = mpqc.tools.makeTodaysDataDirectory;
     if isempty(saveDir)
@@ -140,11 +133,10 @@ function lens_paper(varargin)
         % PMT gains
 
         % Set file name and save dir
-        fileStem = sprintf('%s_lens_paper_%dnm_%dmW_%s__%s', ...
+        fileStem = sprintf('%s_lens_paper_%dnm_%dmW__%s', ...
             SETTINGS.microscope.name, ...
             laser_wavelength, ...
             laser_power_in_mW, ...
-            saveChanName, ...
             datestr(now,'yyyy-mm-dd_HH-MM-SS'));
 
         API.hSI.hScan2D.logFileStem=fileStem;
@@ -161,12 +153,11 @@ function lens_paper(varargin)
 
         for ii=1:length(gainsToTest)
             % Set file name and save dir
-            fileStem = sprintf('%s_lens_paper_%dV_%dnm_%dmW_%s__%s', ...
+            fileStem = sprintf('%s_lens_paper_%dV_%dnm_%dmW__%s', ...
                 SETTINGS.microscope.name, ...
-                gainsToTest(1,ii), ... %TODO! This is only first PMT gain!
+                gainsToTest(1,ii), ...
                 laser_wavelength, ...
                 laser_power_in_mW, ...
-                saveChanName, ...
                 datestr(now,'yyyy-mm-dd_HH-MM-SS'));
 
             API.hSI.hScan2D.logFileStem=fileStem;
@@ -174,7 +165,7 @@ function lens_paper(varargin)
             API.hSI.hScan2D.logFileCounter=1;
 
             API.setPMTgains(gainsToTest(:,ii)); % Set gain
-            pause(0.5) % Out of abundance of caution
+            pause(1) % Wait for settling
 
             API.acquireAndWait;
         end

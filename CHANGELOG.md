@@ -6,6 +6,7 @@
 * Add `CONTRIBUTION_GUIDELINES.md`
 * Make a standalone `CHANGELOG.md` then tidy it and improve formatting.
 * Rename repo to multiphoton-qc, mpsf -> mpqc
+* Lens paper function saves all channels
 
 ### 2024/07/19
 * NEW FEATURE: `mpsf.record` functions now all accept parameter/value pairs via standard interface.
