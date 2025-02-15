@@ -176,16 +176,28 @@ classdef silinker < handle
         end % getSaveChannelName
 
 
-        function turnOffPMTs(obj)
+        function turnOffAllPMTs(obj)
             % Turn off all PMTs
             obj.hSI.hPmts.powersOn = obj.hSI.hPmts.powersOn*0;
-        end % turnOffPMTs
+        end % turnOffAllPMTs
 
 
-        function turnOnPMTs(obj)
+        function turnOnAllPMTs(obj)
             % Turn on all PMTs
             obj.hSI.hPmts.powersOn = ones(1,length(obj.hSI.hPmts.powersOn));
-        end % turnOffPMTs
+        end % turnOffAllPMTs
+
+
+        function saveAllChannels(obj)
+            % Enable all available channels for saving
+            obj.hSI.hChannels.channelSave = 1:obj.numberOfAvailableChannels;
+        end % saveAllChannels
+
+
+        function numChans = numberOfAvailableChannels(obj)
+            % Return the number of available channels as an integer
+            numChans = length(obj.hSI.hPmts.powersOn); % TODO: is this NOT the most robust way!
+        end % numberOfAvailableChannels
 
 
         function setPMTgains(obj,gain)
@@ -205,7 +217,7 @@ classdef silinker < handle
             elseif length(obj.hSI.hPmts.gains) == length(gain)
                 obj.hSI.hPmts.gains = gain(:)';
             end
-        end % turnOffPMTs
+        end % turnOffAllPMTs
 
 
         function zFactStr = returnZoomFactorAsString(obj)

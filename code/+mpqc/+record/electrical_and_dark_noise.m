@@ -19,7 +19,7 @@ function electrical_and_dark_noise()
     % Connect to ScanImage using the linker class
     API = sibridge.silinker;
 
-    API.hSI.hChannels.channelSave = 1:4;
+    API.saveAllChannels;
 
 
     % Create 'diagnostic' directory in the user's desktop
@@ -44,7 +44,7 @@ function electrical_and_dark_noise()
     API.hSI.hChannels.loggingEnable=true;
 
     % Set file name and save dir then acquire electrical noise
-    API.turnOffPMTs; % Turn off PMTs
+    API.turnOffAllPMTs; % Turn off PMTs
     pause(0.5)
 
     SETTINGS=mpqc.settings.readSettings;
@@ -60,7 +60,7 @@ function electrical_and_dark_noise()
 
 
     % Set file name and save dir then acquire dark noise
-    API.turnOnPMTs;
+    API.turnOnAllPMTs;
     volts=650;
     API.setPMTgains(volts);
     pause(0.5)
@@ -87,7 +87,7 @@ function electrical_and_dark_noise()
         % Return ScanImage to the state it was in before we started.
         mpqc.tools.reapplyScanImageSettings(API,initialSettings);
         API.hSI.hChannels.channelSave = API.hSI.hChannels.channelDisplay;
-        API.turnOffPMTs;
+        API.turnOffAllPMTs;
     end
 
 end

@@ -26,27 +26,29 @@ function standard_light_source(channelSave,nFrames)
 
 
 
-    % Process input argument
-    % TODO: https://github.com/SWC-Advanced-Microscopy/measurePSF/issues/78
-    if nargin<1
-        channelSave = 1:4;
-    else
-        channelSave = unique(channelSave);
-        if length(channelSave)>4 || any(channelSave<1) || any(channelSave>4)
-            channelSave = 1:4;
-        end
-    end
-
-    if nargin<2
-        nFrames = 1;
-    end
-
-
     % Connect to ScanImage using the linker class
     API = sibridge.silinker;
 
     if API.linkSucceeded == false
         return
+    end
+
+
+    % Process input argument
+    if nargin<1
+        channelSave = 1:API.numberOfAvailableChannels;
+    else
+        channelSave = unique(channelSave);
+        if length(channelSave)>API.numberOfAvailableChannels || ...
+            any(channelSave<1) || ...
+            any(channelSave>API.numberOfAvailableChannels)
+            channelSave = 1:API.numberOfAvailableChannels;
+        end
+    end
+
+
+    if nargin<2
+        nFrames = 1;
     end
 
 
@@ -114,7 +116,7 @@ function standard_light_source(channelSave,nFrames)
 
 
 
-    API.turnOnPMTs; % Turn on all PMTs
+    API.turnOnAllPMTs; % Turn on all PMTs
     pause(0.5)
 
 
@@ -146,7 +148,7 @@ function standard_light_source(channelSave,nFrames)
     % Nested cleanup function that will return ScanImage to its original settings. The
     % cleanup function was defined near the top of the file.
     function cleanupAfterAcquisition
-       API.turnOffPMTs; % Turn off all PMTs
+       API.turnOffAllPMTs; % Turn off all PMTs
        % Return ScanImage to the state it was in before we started.
        mpqc.tools.reapplyScanImageSettings(API,initialSettings);
        API.hSI.hChannels.channelSave = API.hSI.hChannels.channelDisplay;
