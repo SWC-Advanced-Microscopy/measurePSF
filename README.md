@@ -148,5 +148,5 @@ It is known to work with ScanImage Basic 2020 to 2022 and likely earlier version
 Please see the [list of known obvious issues](https://github.com/SWC-Advanced-Microscopy/measurePSF/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22known%20obvious%20issues%22) before using the software. 
 
 
-### Acknowledgments
-###### Much of the early versions of this code were written in collaboration with [Fred Marbach](https://www.sainsburywellcome.org/web/people/fred-marbach) ([SWC](https://www.sainsburywellcome.org)), and Bruno Pichler and Mark Walling of [INSS](https://www.inss.org.uk/).
+## Acknowledgments
+### Much of the early versions of this code were written in collaboration with Fred Marbach ([then at the SWC](https://www.sainsburywellcome.org)), and Bruno Pichler and Mark Walling of [INSS](https://www.inss.org.uk/).
