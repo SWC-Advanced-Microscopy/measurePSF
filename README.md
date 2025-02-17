@@ -15,11 +15,11 @@ and for measuring field of view size using an EM grid.
 * `mpqc.tools.meanFrame` plots the mean frame intensity as a function of time whilst you are scanning.
 
 
-![cover image](https://raw.githubusercontent.com/SWC-Advanced-Microscopy/measurePSF/gh-pages/realBead.png "Main Window")
+![cover image](https://raw.githubusercontent.com/SWC-Advanced-Microscopy/multiphoton-qc/gh-pages/realBead.png "Main Window")
 
 
 ## Installation
-Add the measurePSF `code` directory to your MATLAB path. 
+Add the multiphoton-qc `code` directory to your MATLAB path. 
 You do not need to "Add With Subfolders".
 
 ### Fill in the settings file
@@ -138,14 +138,15 @@ You can generate a PDF report of all conducted analyses using
 ```
 
 ### Requirements
-The function has been well well-tested under R2016b and later. 
-It should also work on R2016a. It's known to fail on 2015b and earlier.
+These functions have been tested on most MATLAB releases R2016b and later. 
+They should also work on R2016a but are known to fail on 2015b and earlier.
+
 Requires the Curve-Fitting Toolbox, the Image Processing Toolbox, and the Stats Toolbox.
 The MATLAB Report Generator is needed if you want to make PDF reports.
-It is known to work with ScanImage Basic 2020 to 2022 and likely earlier versions are also OK.
+It is known to work with ScanImage Basic 2020 to 2022.
 
 ## Known Obvious Issues
-Please see the [list of known obvious issues](https://github.com/SWC-Advanced-Microscopy/measurePSF/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22known%20obvious%20issues%22) before using the software. 
+Please see the [list of known obvious issues](https://github.com/SWC-Advanced-Microscopy/multiphoton-qc/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22known%20obvious%20issues%22) before using the software. 
 
 
 ## Acknowledgments

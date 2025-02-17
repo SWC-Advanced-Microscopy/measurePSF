@@ -1,10 +1,10 @@
 function reformattedSettings = readSettings(fname)
-    % Read MPSF settings YAML file and return as a structure
+    % Read MPQC settings YAML file and return as a structure
     %
     % function settings = mpqc.settings.readSettings()
     %
     % Purpose
-    % This function parses the MPSF settings file and creates it if does not already exist.
+    % This function parses the MPQC settings file and creates it if does not already exist.
     %
     % If no settings have been created then a default settings file is created. The user is
     % prompted to edit it and nothing is returned. If a settings file is present and looks
@@ -215,7 +215,7 @@ function reformattedSettings = readSettings(fname)
             mkdir(backupSettingsDir)
         end
        backupFname = fullfile(backupSettingsDir, ...
-            [datestr(now, 'yyyy_mm_dd__HH_MM_SS_'),mpqc.settings.returnMPSF_SettingsFileName]);
+            [datestr(now, 'yyyy_mm_dd__HH_MM_SS_'),mpqc.settings.returnMPQC_SettingsFileName]);
        fprintf('Making backup of settings file at %s\n', backupFname)
        copyfile(settingsFile,backupFname)
 
