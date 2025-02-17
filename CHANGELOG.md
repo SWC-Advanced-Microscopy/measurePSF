@@ -1,19 +1,22 @@
 
 # Change-Log
 
-### DEV-BRANCH-DATE-ADDED-WHEN-MERGED
+### 2024/02/17
+Merge of a bunch of recent changes by Rob Campbell
 * General doc text tidying. 
 * Add `CONTRIBUTION_GUIDELINES.md`
-* Make a standalone `CHANGELOG.md` then tidy it and improve formatting.
-* Rename repo to multiphoton-qc, mpsf -> mpqc
-* Lens paper function saves all channels
-* Dark noise is longer recorded along with electrical noise. 
-* Channels to record are now selected automatically. 
+* Made a standalone `CHANGELOG.md` and tidied it and improve formatting.
+* Renamed repo to multiphoton-qc, mpsf -> mpqc
+* Lens paper function now saves all channels.
+* Standard source and lens paper produce more similar data (same pixel size)
+* Dark noise is longer recorded along with electrical noise.
+* Electrical noise function now saves all available channels automatically. 
+* Added simple code in `tools` for converting the standard source to photons. 
+
 
 ### 2024/07/19
 * NEW FEATURE: `mpsf.record` functions now all accept parameter/value pairs via standard interface.
-Inputs that are required not supplied when the function is called are requested interactively at the CLI.
-Isabell Whitely [PR #70](https://github.com/SWC-Advanced-Microscopy/measurePSF/pull/70).
+Inputs that are required not supplied when the function is called are requested interactively at the CLI. Isabell Whitely [PR #70](https://github.com/SWC-Advanced-Microscopy/measurePSF/pull/70).
 
 
 ### 2024/07/05

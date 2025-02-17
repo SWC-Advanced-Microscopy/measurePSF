@@ -89,16 +89,47 @@ The results are saved to a folder on the desktop. You can view the results as fo
 mpsf.plot.uniform_slide('uniform_slice_zoom_1_920nm_5mW__2022-08-02_10-09-33_00001.tif')
 ```
 
-## Measuring electrical noise, and a standard light source
+## Measuring electrical noise
 Remove all contaminant sources of light from the enclosure run:
 ```matlab
  mpsf.record.electrical_noise
 ```
 
-Then place a standard light source under the objective and run:
+
+## Measuring a structured source and the standard light source
+Lens paper at a known laser power is a reasonable choice for a standard structured target. 
+If laser power is carefully checked before the recording, it can be used to compare different rigs.
+This is because we can convert the data to photons.
+If a standard source is imaged after the lens paper at the same gains, it can be converted to photons to compare the detection paths of different rigs.
+**NOTE:** these functions work but they are not finalised and documentation is sparse right now. 
+
+First record the lens paper. 
+Do this at around 50 to 100 mW at the sample. 
+The following command will record the lens paper at 4 different gains. 
+The gains are set automatically **AND HAVE ONLY BEEN TESTED WITH MULTI-ALKALI PMTs SO FAR**. 
+```matlab
+ mpsf.record.lens_paper
+```
+
+Then take out the lens paper. 
+CLOSE THE LASER SHUTTER.
+Record the standard source.
+This by default will record at the same gains as above. 
 ```matlab
  mpsf.record.standard_light_source
 ```
+
+
+
+Analyse this:
+```matlab
+     OUT = mpqc.tools.get_quantalsize_from_file
+```
+This will analyse one file at a time: returning the standard source mean photon count. 
+The quality of the fit that underlies this should be assessed with `mpqc.tools.plotPhotonFit`.
+
+
+
 
 ## PDF report
 You can generate a PDF report of all conducted analyses using 

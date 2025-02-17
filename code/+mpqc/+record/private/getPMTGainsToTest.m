@@ -24,7 +24,7 @@ function gainsToTest = getPMTGainsToTest(numGains)
 
 
     if nargin<1 || isempty(numGains) || numGains<0
-        numGains=12;
+        numGains=4;
     end
 
     % Connect to ScanImage using the linker class
@@ -52,10 +52,10 @@ function gainsToTest = getPMTGainsToTest(numGains)
         end
 
         if isMultiAlkali
-            tPMTgains = [0,linspace(450,750,numGains)];
+            tPMTgains = [0,linspace(500,725,numGains)];
         else
             maxV = hPMT.pmtSupplyRange_V(2);
-            tPMTgains = [0, linspace(maxV*0.45,maxV*0.8,numGains)];
+            tPMTgains = [0, linspace(maxV*0.55,maxV*0.8,numGains)];
         end
 
         tPMTgains = round(tPMTgains);
