@@ -74,8 +74,6 @@ function lens_paper(varargin)
         mumGains = out.mumGains;
     end
 
-
-
     % Connect to ScanImage using the linker class
     API = sibridge.silinker;
 
@@ -115,6 +113,9 @@ function lens_paper(varargin)
         end
     end
 
+    % TODO -- make it acquire on all available PMTS?
+
+    
     API.hSI.hStackManager.framesPerSlice=numFramesToAcquire;
 
     API.hSI.hScan2D.logAverageFactor = 1;

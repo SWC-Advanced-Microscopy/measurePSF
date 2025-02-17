@@ -1,7 +1,7 @@
-function standard_light_source(channelSave,nFrames)
+function standard_light_source(channelSave,nFrames,gainsToTest)
     % Record response to the standard light source on all four channels
     %
-    % function record.standard_light_source(channelSave,nFames)
+    % function record.standard_light_source(channelSave,nFames,gainsToTest)
     %
     % Purpose
     % Runs through a series of gain values to record signals from the
@@ -20,9 +20,11 @@ function standard_light_source(channelSave,nFrames)
     %         can specify anything they like.
     % nFrames - [Optional, 1 by default] If >1 we save this many frames per gain.
     %           There is unlikely to be a reason for this.
+    % gainsToTest - vector of gains to test. if empty uses default. TODO --workflow needs fixing here
     %
     %
     % Rob Campbell, SWC AMF, initial commit 2022
+
 
 
 
@@ -47,10 +49,14 @@ function standard_light_source(channelSave,nFrames)
     end
 
 
-    if nargin<2
+    if nargin<2 || isempty(nFrames)
         nFrames = 1;
     end
 
+
+    if nargin<3
+        gainsToTest = [];
+    end
 
     % Create 'diagnostic' directory in the user's desktop
     saveDir = mpqc.tools.makeTodaysDataDirectory;
@@ -85,15 +91,6 @@ function standard_light_source(channelSave,nFrames)
         fprintf('See function help text\n')
     end
 
-    % Now make the sub-directory
-    subDirName = sprintf('%s_standard_light_source_%s__%s', ...
-            SETTINGS.microscope.name, ...
-            sourceID, ...
-            datestr(now,'yyyy-mm-dd_HH-MM'));
-
-    lightSourceDir = fullfile(saveDir,subDirName);
-    mkdir(lightSourceDir)
-
     %Record the state of all ScanImage settings we will change so we can change them back
     initialSettings = mpqc.tools.recordScanImageSettings(API);
 
@@ -101,7 +98,7 @@ function standard_light_source(channelSave,nFrames)
     API.setZSlices(1) % Just one z slice
     API.hSI.hBeams.powers=0; % set laser power to zero
     API.hSI.hStackManager.framesPerSlice=nFrames; % Optionally we will record multiple frames
-    API.hSI.hRoiManager.pixelsPerLine=128;
+    API.hSI.hRoiManager.pixelsPerLine=256;
 
     API.hSI.hScan2D.logAverageFactor = 1; % Do not average frames
     API.hSI.hDisplay.volumeDisplayStyle='Current';
@@ -118,7 +115,9 @@ function standard_light_source(channelSave,nFrames)
 
 
     API.hSI.acqsPerLoop=1;
-    gainsToTest = getPMTGainsToTest;
+    if isempty(gainsToTest)
+        gainsToTest = getPMTGainsToTest;
+    end
     for ii=1:length(gainsToTest)
         % Set file name and save dir
         fileStem = sprintf('%s_standard_light_source_%s_%dV__%s', ...
@@ -128,7 +127,7 @@ function standard_light_source(channelSave,nFrames)
             datestr(now,'yyyy-mm-dd_HH-MM-SS'));
 
         API.hSI.hScan2D.logFileStem=fileStem;
-        API.hSI.hScan2D.logFilePath=lightSourceDir;
+        API.hSI.hScan2D.logFilePath=saveDir;
         API.hSI.hScan2D.logFileCounter=1;
 
         API.setPMTgains(gainsToTest(:,ii)); % Set gain

@@ -10,12 +10,9 @@ classdef silinker < handle
         scanimageObjectName = 'hSI' % If connecting to ScanImage look for this variable in the base workspace
         hSI % The ScanImage API attaches here
         listeners = {} % Reserved for listeners we might make
-
-    end % Close hidden methods
-
-    properties
         linkSucceeded % true if SI connected
-    end
+    end % Close hidden properties
+
 
     methods
 
@@ -196,7 +193,16 @@ classdef silinker < handle
 
         function numChans = numberOfAvailableChannels(obj)
             % Return the number of available channels as an integer
-            numChans = length(obj.hSI.hPmts.powersOn); % TODO: is this NOT the most robust way!
+            % These are all the channels that the microscope system can possibly acquire. 
+            % They may not all have a connected PMT. 
+            % TODO -- I think there is no way to know whether one is connected
+            numChans = obj.hSI.hChannels.channelsAvailable;
+        end % numberOfAvailableChannels
+
+
+        function numPMTs = numberOfAvailablePMTs(obj)
+            % Return the number of PMTs with an connected DAQ line as an integer
+            numPMTs =  cellfun(@(x) ~isempty(x.hAOGain), obj.hSI.hPmts.hPMTs)
         end % numberOfAvailableChannels
 
 
