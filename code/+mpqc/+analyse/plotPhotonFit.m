@@ -69,7 +69,7 @@ muIm_p = mpqc.analyse.convertImageToPhotons(muIm, STATS);
 imagesc(floor(muIm_p))
 set(gca,'ColorScale','log')
 title('log(photon) mean image')
-
+colorbar
 
 %%
 % The histogram of photon counts
