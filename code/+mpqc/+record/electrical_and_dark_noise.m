@@ -28,10 +28,6 @@ function electrical_and_dark_noise()
         return
     end
 
-    %Record the state of all ScanImage settings we will change so we can change them back
-    initialSettings = mpqc.tools.recordScanImageSettings(API);
-
-
     %Apply common setting
     API.setZSlices(1)
     API.hSI.hBeams.powers=0; % set laser power to zero
@@ -81,13 +77,9 @@ function electrical_and_dark_noise()
     % Report saved file location and copy mpqc settings there
     postAcqTasks(saveDir,fileStem)
 
-    % Nested cleanup function that will return ScanImage to its original settings. The
-    % cleanup function was defined near the top of the file.
-    function cleanupAfterAcquisition
-        % Return ScanImage to the state it was in before we started.
-        mpqc.tools.reapplyScanImageSettings(API,initialSettings);
-        API.hSI.hChannels.channelSave = API.hSI.hChannels.channelDisplay;
-        API.turnOffAllPMTs;
-    end
+    % Return ScanImage to the state it was in before we started.
+    mpqc.tools.reapplyScanImageSettings(API,initialSettings);
+    API.hSI.hChannels.channelSave = API.hSI.hChannels.channelDisplay;
+    API.turnOffAllPMTs;
 
 end

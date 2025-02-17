@@ -66,10 +66,6 @@ function varargout = PSF(varargin)
     %Record the state of all ScanImage settings we will change so we can change them back
     initialSettings = mpqc.tools.recordScanImageSettings(API);
 
-    %Define a cleanup object
-    tidyUp = onCleanup(@cleanupAfterAcquisition);
-
-
     % We will set up ScanImage to acquire the z-stack
     framesToAverage = API.hSI.hDisplay.displayRollingAverageFactor;
     numSlices = round(micronsToImage/stepSizeInMicrons);
@@ -130,11 +126,6 @@ function varargout = PSF(varargin)
         varargout{1} = pathToTiff;
     end
 
-    % Nested cleanup function that will return ScanImage to its original settings. The
-    % cleanup function was defined near the top of the file.
-    function cleanupAfterAcquisition
-       % Return ScanImage to the state it was in before we started.
-       mpqc.tools.reapplyScanImageSettings(API,initialSettings);
-    end
+    mpqc.tools.reapplyScanImageSettings(API,initialSettings);
 
 end % record.PSF

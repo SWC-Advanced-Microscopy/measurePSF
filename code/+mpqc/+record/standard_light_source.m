@@ -97,9 +97,6 @@ function standard_light_source(channelSave,nFrames)
     %Record the state of all ScanImage settings we will change so we can change them back
     initialSettings = mpqc.tools.recordScanImageSettings(API);
 
-    %Define a cleanup object
-    tidyUp = onCleanup(@cleanupAfterAcquisition);
-
     %Apply settings for this acquisition
     API.setZSlices(1) % Just one z slice
     API.hSI.hBeams.powers=0; % set laser power to zero
@@ -145,13 +142,9 @@ function standard_light_source(channelSave,nFrames)
     postAcqTasks(saveDir,fileStem)
 
 
-    % Nested cleanup function that will return ScanImage to its original settings. The
-    % cleanup function was defined near the top of the file.
-    function cleanupAfterAcquisition
-       API.turnOffAllPMTs; % Turn off all PMTs
-       % Return ScanImage to the state it was in before we started.
-       mpqc.tools.reapplyScanImageSettings(API,initialSettings);
-       API.hSI.hChannels.channelSave = API.hSI.hChannels.channelDisplay;
-    end
+    API.turnOffAllPMTs; % Turn off all PMTs
+    % Return ScanImage to the state it was in before we started.
+    mpqc.tools.reapplyScanImageSettings(API,initialSettings);
+    API.hSI.hChannels.channelSave = API.hSI.hChannels.channelDisplay;
 
 end
