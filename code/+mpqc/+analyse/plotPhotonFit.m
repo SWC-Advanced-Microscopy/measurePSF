@@ -1,4 +1,4 @@
-function c=plotPhotonFit(STATS)
+function n=plotPhotonFit(STATS)
 % Diagnostic plots for the compute_sensitivity function.
 %
 % function mpqc.analyse.plotPhotonFit(STATS)
@@ -40,7 +40,7 @@ fig.Name = fname;
 %%
 % The photon fit
 
-subplot(1,3,1)
+subplot(2,3,[1,4])
 % Plot the variance as a function of the mean and overlay the fit line
 intensity = STATS.min_intensity:STATS.max_intensity - 1;
 plot(intensity,STATS.variance,'.', 'color',[0.35,0.35,1])
@@ -62,7 +62,7 @@ title(sprintf('Quantal size: %0.1f. Mean photons per pixel: %0.2f', ...
 
 %%
 % The converted image
-subplot(1,3,2)
+subplot(2,3,[2,5])
 imStack = mpqc.tools.load3Dtiff(STATS.filename);
 muIm = mean(imStack,3);
 muIm_p = mpqc.analyse.convertImageToPhotons(muIm, STATS);
@@ -74,7 +74,7 @@ title('log(photon) mean image')
 %%
 % The histogram of photon counts
 
-subplot(1,3,3)
+subplot(2,3,3)
 nBins =  round(( max(muIm_p(:)) /2.5)/10)*10;
 [n,x] = hist(muIm_p(:),nBins);
 
@@ -84,4 +84,32 @@ ylabel('log(n)')
 set(gca,'YScale','log')
 grid on
 xlim([0,max(x)])
-title('log(photon) image histogram')
+
+hold on
+mu = mean(muIm_p(:));
+plot([mu,mu], ylim,'r-')
+hold off
+
+title(sprintf('log(photons), mean = %0.2f', mu))
+
+
+subplot(2,3,6)
+nBins =  round(( max(muIm_p(:)) /1.5)/10)*10;
+[n,x] = hist(muIm_p(:),nBins);
+
+plot(x,n,'LineWidth',3)
+xlabel('Intensity [photons]')
+ylabel('n')
+grid on
+
+hold on
+plot([mu,mu], ylim,'r-')
+hold off
+
+% set x lim to encompass 95% of values
+CLIP=0.99;
+p = cumsum(n)/sum(n);
+f=find(p>CLIP);
+xlim([0,x(f(1))])
+
+title(sprintf('photons clipped at %d%% of max', CLIP*100))
