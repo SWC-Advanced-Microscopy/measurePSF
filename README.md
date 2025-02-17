@@ -89,10 +89,10 @@ The results are saved to a folder on the desktop. You can view the results as fo
 mpsf.plot.uniform_slide('uniform_slice_zoom_1_920nm_5mW__2022-08-02_10-09-33_00001.tif')
 ```
 
-## Measuring dark noise, electrical noise, and a standard light source
+## Measuring electrical noise and a standard light source
 Remove all contaminant sources of light from the enclosure run:
 ```matlab
- mpsf.record.electrical_and_dark_noise
+ mpsf.record.electrical_noise
 ```
 
 Then place a standard light source under the objective and run:
@@ -122,6 +122,7 @@ This code has been written in collaboration with [Fred Marbach](https://www.sain
 
 
 # Change-Log
+* 2025/02/17 -- Remove dark noise measurement. (See [#75](https://github.com/SWC-Advanced-Microscopy/measurePSF/pull/75))
 * 2024/07/05 -- Updates to standard light source. Plotting of said. Bugfixes.
 * 2024/06/14 -- Add standard light source function. Add dark noise to electrical noise.
 * 2024/05/23 -- Implement a more elaborate microscope settings (parameters) system.
