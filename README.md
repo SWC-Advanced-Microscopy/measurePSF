@@ -89,10 +89,10 @@ The results are saved to a folder on the desktop. You can view the results as fo
 mpsf.plot.uniform_slide('uniform_slice_zoom_1_920nm_5mW__2022-08-02_10-09-33_00001.tif')
 ```
 
-## Measuring dark noise, electrical noise, and a standard light source
+## Measuring electrical noise, and a standard light source
 Remove all contaminant sources of light from the enclosure run:
 ```matlab
- mpsf.record.electrical_and_dark_noise
+ mpsf.record.electrical_noise
 ```
 
 Then place a standard light source under the objective and run:
