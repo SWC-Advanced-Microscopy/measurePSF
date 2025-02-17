@@ -1,4 +1,4 @@
-function settings = reapplyScanImageSettings(API,settings)
+function settings = reapplyScanImageSettings(API,settings,verbose)
 % Record settings from ScanImage
 %
 % function settings = reapplyScanImageSettings(API,settings)
@@ -16,6 +16,15 @@ function settings = reapplyScanImageSettings(API,settings)
 %
 %
 % Rob Campbell, SWC AMF
+
+
+    if nargin<3
+        verbose=false;
+    end
+
+    if verbose
+        fprintf('Re-applying ScanImage Settings.\n')
+    end
 
 
     if API.versionGreaterThan('2020')

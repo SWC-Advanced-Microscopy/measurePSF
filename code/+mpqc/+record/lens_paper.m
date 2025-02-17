@@ -32,6 +32,7 @@ function lens_paper(varargin)
     %               "numGains" is non empty and >1 then a series of recordings at
     %               different gains is made. NOTE: set numGains to -1 to use the default
     %               gains that are used for the standard light source.
+    %               TODO -- IT SHOULD ALWAYS ASK FOR A GAIN AND SAVE TO FILE NAME!
     %
     % The channels to image is determined based on the channel selected to be saved
     % within ScanImage.
@@ -73,8 +74,6 @@ function lens_paper(varargin)
         mumGains = out.mumGains;
     end
 
-
-
     % Connect to ScanImage using the linker class
     API = sibridge.silinker;
 
@@ -96,8 +95,6 @@ function lens_paper(varargin)
     %Record the state of all ScanImage settings we will change so we can change them back
     initialSettings = mpqc.tools.recordScanImageSettings(API);
 
-    %Define a cleanup object
-    tidyUp = onCleanup(@cleanupAfterAcquisition);
 
     %Apply common settings
     API.setZSlices(1)
@@ -116,6 +113,9 @@ function lens_paper(varargin)
         end
     end
 
+    % TODO -- make it acquire on all available PMTS?
+
+    
     API.hSI.hStackManager.framesPerSlice=numFramesToAcquire;
 
     API.hSI.hScan2D.logAverageFactor = 1;
@@ -128,7 +128,7 @@ function lens_paper(varargin)
 
     API.hSI.acqsPerLoop=1;
 
-    if isempty(gains)
+    if isempty(numGains)
         % If no gain was defined, we simply acquire with existing
         % PMT gains
 
@@ -182,12 +182,6 @@ function lens_paper(varargin)
     % Report saved file location and copy mpqc settings there
     postAcqTasks(saveDir,fileStem)
 
-
-    % Nested cleanup function that will return ScanImage to its original settings. The
-    % cleanup function was defined near the top of the file.
-    function cleanupAfterAcquisition
-       % Return ScanImage to the state it was in before we started.
-       mpqc.tools.reapplyScanImageSettings(API,initialSettings);
-    end
+    mpqc.tools.reapplyScanImageSettings(API,initialSettings);
 
 end

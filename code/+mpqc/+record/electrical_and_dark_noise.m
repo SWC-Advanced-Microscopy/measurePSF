@@ -25,6 +25,7 @@ function electrical_noise
         return
     end
 
+
     %Record the state of all ScanImage settings we will change so we can change them back
     initialSettings = mpqc.tools.recordScanImageSettings(API);
 
