@@ -1,7 +1,7 @@
 function electrical_noise
     % Record electrical noise on all channels
     %
-    % function mpwc.record.electrical_noise()
+    % function mpqc.record.electrical_noise()
     %
     % Purpose
     % Record electrical noise with PMTs off on all channels. The function

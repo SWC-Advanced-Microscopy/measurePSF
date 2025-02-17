@@ -5,14 +5,14 @@
 
 ### New files, attributions, and CHANGELOG
 * Attribute changes to yourself in the `CHANGELOG.md` or in the last line of the DOC text _for files you created_.
-So if you create a new function, attribute it to yourself in this format: `NAME, INSTITUTE, initial commit DATE`    
+So if you create a new function, at the bottom of the doc text add this: `NAME, INSTITUTE, initial commit DATE`    
 e.g. all of these are ok: `John Blogs, SWC AMF, initial commit 2022` or `Jane Blogs, SWC AMF, initial commit Jan 2027`
-* Do not add change info to individual files. 
+* Do not add change info to individual files. e.g. do not add "file updated by Jody Blogs, Sept 2025". The Changelog should contain this information, along with what was changed. Feel free to add links to PRs and commits in the Changelog. 
 
 
-### Forks and PRs
+### How to contribute: Forks and PRs
 * Fork the repo.
-* Make your changes in a new branch if you like or in the `dev` branch. 
+* Make your changes in a new branch if you like (e.g. because the changes are extensive or will take a long time) or in the `dev` branch. Do not make changes in the `master` branch.  
 * Add a section to the `CHANGELOG.md` the goes along these lines: 
 ```
 ### 2024/07/19
@@ -20,7 +20,7 @@ e.g. all of these are ok: `John Blogs, SWC AMF, initial commit 2022` or `Jane Bl
 Inputs that are required not supplied when the function is called are requested interactively at the CLI.
 Isabell Whitely [PR #70](https://github.com/SWC-Advanced-Microscopy/measurePSF/pull/70).
 ```
-* If you used a new branch merge back to `dev`. File the PR from `dev`. (The PR link in the `CHANGELOG.md` will probably be added later when the PR is accepted);
+* If you used a new branch: before filing a PR you should ensure your `dev` branch is up to date then merge into that. File the PR from `dev`. 
 
 
 

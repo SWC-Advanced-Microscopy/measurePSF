@@ -115,7 +115,7 @@ function lens_paper(varargin)
 
     % TODO -- make it acquire on all available PMTS?
 
-    
+
     API.hSI.hStackManager.framesPerSlice=numFramesToAcquire;
 
     API.hSI.hScan2D.logAverageFactor = 1;
