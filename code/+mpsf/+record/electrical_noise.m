@@ -1,13 +1,16 @@
-function electrical_and_dark_noise()
-    % Record electrical noise and dark noise on all four channels
+function electrical_noise(channelSave)
+    % Record electrical noise on all four channels
     %
-    % function record.electrical_and_dark_noise()
+    % function record.electrical_noise()
     %
     % CAUTION: will turn on PMTs! ENSURE THERE IS NO LIGHT SOURCE OR SAMPLE!
     %
     % e.g.
-    % >> mpsf.record.electrical_and_dark_noise
+    % >> mpsf.record.electrical_noise
     %
+    % Optional Inputs
+    % channelSave - By default this is all four channels (1:4). But the user
+    %         can specify anything they like.
     %
     % Rob Campbell, SWC 2022
 
@@ -15,11 +18,20 @@ function electrical_and_dark_noise()
     fprintf('Remove sample and ensure enclosure is dark then press return\n')
     pause
 
+    % Process input argument
+    if nargin<1
+        channelSave = 1:4;
+    else
+        channelSave = unique(channelSave);
+        if length(channelSave)>4 || any(channelSave<1) || any(channelSave>4)
+            channelSave = 1:4;
+        end
+    end
+
     % Connect to ScanImage using the linker class
     API = sibridge.silinker;
 
-    API.hSI.hChannels.channelSave = 1:4;
-
+    API.hSI.hChannels.channelSave = channelSave;
 
     % Create 'diagnostic' directory in the user's desktop
     saveDir = mpsf.tools.makeTodaysDataDirectory;
@@ -56,28 +68,6 @@ function electrical_and_dark_noise()
     API.hSI.hScan2D.logFileCounter=1;
 
     API.acquireAndWait;
-
-
-    % Set file name and save dir then acquire dark noise
-    API.turnOnPMTs;
-    volts=650;
-    API.setPMTgains(volts);
-    pause(0.5)
-
-    SETTINGS=mpsf.settings.readSettings;
-    fileStem = sprintf('%s_dark_noise__%dV__%s', ...
-        SETTINGS.microscope.name, ...
-        volts, ...
-        datestr(now,'yyyy-mm-dd_HH-MM-SS'));
-
-    API.hSI.hScan2D.logFileStem=fileStem;
-    API.hSI.hScan2D.logFilePath=saveDir;
-    API.hSI.hScan2D.logFileCounter=1;
-
-    API.acquireAndWait;
-
-
-    API.turnOffPMTs;
 
 
     mpsf.tools.reapplyScanImageSettings(API,settings);
