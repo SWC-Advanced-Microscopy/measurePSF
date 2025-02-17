@@ -1,13 +1,13 @@
 function varargout = findSettingsFile
-    % Find the MPSF settings file and return as a string
+    % Find the MPQC settings file and return as a string
     %
     % function settingsFile = mpqc.settings.findSettingsFile()
     %
     % Purpose
-    % There are three places the MPSF settings file could be located. This function
+    % There are three places the MPQC settings file could be located. This function
     % Looks through this in the following order:
-    % 1. In the user's home folder in a folder called MPSF_Settings
-    % 2. In C:\MPSF_Settings
+    % 1. In the user's home folder in a folder called MPQC_Settings
+    % 2. In C:\MPQC_Settings
     % 3. In the mpqc\SETTINGS folder
     %
     % If there are settings files in more than one location, it is the first one to be found
@@ -38,7 +38,7 @@ function varargout = findSettingsFile
 
 
     settingsDirs = mpqc.settings.possibleSettingsLocations; % Potential locations for the settings file
-    settingsFname = mpqc.settings.returnMPSF_SettingsFileName; % The name of the settings file
+    settingsFname = mpqc.settings.returnMPQC_SettingsFileName; % The name of the settings file
 
 
     % Look for a the settings file
@@ -68,7 +68,7 @@ function varargout = findSettingsFile
     % No settings files found so we prompt the user where to set up
     if isempty(settingsFileLocations)
         clc
-        fprintf('\n\n *** No MPSF settings file found. Where do you want to store these? *** \n\n')
+        fprintf('\n\n *** No MPQC settings file found. Where do you want to store these? *** \n\n')
 
         for ii=1:length(settingsDirs)
 
@@ -76,15 +76,15 @@ function varargout = findSettingsFile
             case 'homefolder'
                 fprintf('%d. At "%s"\n', ii, settingsDirs(ii).settingsLocation)
                 fprintf(['   Choose this option if you always use the same user account and ', ...
-                        'are not updating MPSF via Git.\n\n'])
+                        'are not updating MPQC via Git.\n\n'])
             case 'C'
                 fprintf('%d. At "%s"\n', ii, settingsDirs(ii).settingsLocation)
                 fprintf(['    RECOMMENDED: Choose this if you change user accounts and are ', ...
-                        'not updating MPSF via Git.\n\n'])
+                        'not updating MPQC via Git.\n\n'])
             case 'mpqc'
                 fprintf('%d. At "%s"\n', ii, settingsDirs(ii).settingsLocation)
                 fprintf(['   ADVANCED: Choose this option if you like your settings files along with the code ', ...
-                        'and are updating MPSF via Git.\n\n'])
+                        'and are updating MPQC via Git.\n\n'])
             end
         end
 

@@ -1,4 +1,4 @@
-function varargout=generateMPSFreport(data_dir)
+function varargout=generateMPQCreport(data_dir)
     % Makes all plots defined by the gen plot structure
     %
     % function generatePDFreport(data_dir)

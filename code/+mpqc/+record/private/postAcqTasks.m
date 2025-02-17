@@ -1,5 +1,5 @@
 function postAcqTasks(saveDir,fileStem)
-    % Report the location the file was saved to and copy the system's MPSF settings
+    % Report the location the file was saved to and copy the system's MPQC settings
     % file to that location for logging purposes
     %
     % Inputs

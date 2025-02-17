@@ -1,10 +1,10 @@
 function settingsDirs = possibleSettingsLocations
-    % Return all possible user settings locations of the MPSF package
+    % Return all possible user settings locations of the MPQC package
     %
     % function settingsDirs = mpqc.settings.possibleSettingsLocations()
     %
     % Prurpose
-    % Return all possible user settings directory locations for the MPSF package.
+    % Return all possible user settings directory locations for the MPQC package.
     % This is used by mpqc.settings.findSettingsFile to determine where the settings file
     % is located.
     %
@@ -20,7 +20,7 @@ function settingsDirs = possibleSettingsLocations
     % In C:\ (on Windows)
     if ispc
         n = n+1;
-        settingsDirs(n).settingsLocation = fullfile('C:\', 'MPSF_Settings');
+        settingsDirs(n).settingsLocation = fullfile('C:\', 'MPQC_Settings');
         settingsDirs(n).backupSettingsLocation = fullfile(settingsDirs(n).settingsLocation,'BackupSettings');
             settingsDirs(n).locationType = 'C';
     end
@@ -30,7 +30,7 @@ function settingsDirs = possibleSettingsLocations
     userFolder = mpqc.settings.userFolder;
     if ~isempty(userFolder)
         n = n+1;
-        settingsDirs(n).settingsLocation = fullfile(userFolder,'MPSF_Settings');
+        settingsDirs(n).settingsLocation = fullfile(userFolder,'MPQC_Settings');
         settingsDirs(n).backupSettingsLocation = fullfile(settingsDirs(n).settingsLocation,'BackupSettings');
         settingsDirs(n).locationType = 'homefolder';
     end

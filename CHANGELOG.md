@@ -3,10 +3,11 @@
 
 ### 2025/02/17
 Merge of a bunch of recent changes by Rob Campbell
+* BREAKING CHANGE! Renamed repo to multiphoton-qc, mpsf -> mpqc. Your settings file will
+  now need to be renamed `MPQC_SystemSettings.yml`.
 * General doc text tidying. 
 * Add `CONTRIBUTION_GUIDELINES.md`
 * Made a standalone `CHANGELOG.md` and tidied it and improve formatting.
-* Renamed repo to multiphoton-qc, mpsf -> mpqc
 * Lens paper function now saves all channels.
 * Standard source and lens paper produce more similar data (same pixel size)
 * Dark noise is longer recorded along with electrical noise.

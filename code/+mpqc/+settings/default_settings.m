@@ -4,7 +4,7 @@ function [settings,setTests] = default_settings
     % function [settings, setTests] = mpqc.settings.default_settings
     %
     % Purpose
-    % Defines the default settings of MPSF. These are what are written to YAML when there
+    % Defines the default settings of MPQC. These are what are written to YAML when there
     % is no settings file. If the settings file has invalid values, these are corrected with
     % values found here. The function also defines a structure with identical fields but with
     % function handles defining tests for each item. These functions are defined as static
