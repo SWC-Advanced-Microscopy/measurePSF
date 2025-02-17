@@ -25,7 +25,13 @@ function OUT = get_quantalsize_quantalsize_from_file(fname)
 
 
 	if nargin<1
-		fname = uigetfile('*.tif');
+		[fname,pathToFile] = uigetfile('*.tif');
+		fname = fullfile(pathToFile,fname);
+	end
+
+	if ~exist(fname,'file')
+		fprintf('Can not find file %s\n',fname)
+		return
 	end
 
 	[im,metadata]=mpqc.tools.scanImage_stackLoad(fname,false); %Do not subtract the offset
