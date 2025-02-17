@@ -1,10 +1,12 @@
-function electrical_and_dark_noise()
-    % Record electrical noise and dark noise on all four channels
+function electrical_noise
+    % Record electrical noise on all channels
     %
-    % function record.electrical_and_dark_noise()
+    % function mpwc.record.electrical_noise()
     %
+    % Purpose
+    % Record electrical noise with PMTs off on all channels. The function
+    % automatically finds the number of possible channels and activates them all.
     %
-    % CAUTION: will turn on PMTs! ENSURE THERE IS NO LIGHT SOURCE OR SAMPLE!
     %
     % e.g.
     % >> mpqc.record.electrical_and_dark_noise
@@ -13,13 +15,8 @@ function electrical_and_dark_noise()
     % Rob Campbell, SWC AMF, initial commit 2022
 
 
-    fprintf('Remove sample and ensure enclosure is dark then press return\n')
-    pause
-
     % Connect to ScanImage using the linker class
     API = sibridge.silinker;
-
-    API.saveAllChannels;
 
 
     % Create 'diagnostic' directory in the user's desktop
@@ -31,6 +28,8 @@ function electrical_and_dark_noise()
     %Record the state of all ScanImage settings we will change so we can change them back
     initialSettings = mpqc.tools.recordScanImageSettings(API);
 
+    % Set all channels for saving
+    API.saveAllChannels;
 
     %Apply common setting
     API.setZSlices(1)
@@ -50,25 +49,6 @@ function electrical_and_dark_noise()
     SETTINGS=mpqc.settings.readSettings;
     fileStem = sprintf('%s_electrical_noise__%s', ...
         SETTINGS.microscope.name, ...
-        datestr(now,'yyyy-mm-dd_HH-MM-SS'));
-
-    API.hSI.hScan2D.logFileStem=fileStem;
-    API.hSI.hScan2D.logFilePath=saveDir;
-    API.hSI.hScan2D.logFileCounter=1;
-
-    API.acquireAndWait;
-
-
-    % Set file name and save dir then acquire dark noise
-    API.turnOnAllPMTs;
-    volts=650;
-    API.setPMTgains(volts);
-    pause(0.5)
-
-    SETTINGS=mpqc.settings.readSettings;
-    fileStem = sprintf('%s_dark_noise__%dV__%s', ...
-        SETTINGS.microscope.name, ...
-        volts, ...
         datestr(now,'yyyy-mm-dd_HH-MM-SS'));
 
     API.hSI.hScan2D.logFileStem=fileStem;

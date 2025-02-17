@@ -153,11 +153,11 @@ function lens_paper(varargin)
 
         for ii=1:length(gainsToTest)
 
-            % Do not record zero gain. 
-            if sum(gainsToTest(:,ii)) == 0 
+            % Do not record zero gain.
+            if sum(gainsToTest(:,ii)) == 0
                 continue
             end
-        
+
             % Set file name and save dir
             fileStem = sprintf('%s_lens_paper_%dV_%dnm_%dmW__%s', ...
                 SETTINGS.microscope.name, ...
