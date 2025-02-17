@@ -5,10 +5,11 @@ function figHandle = returnFigureHandleForFile(fname)
     %
     % Purpose
     % If a figure has already been made with data from this file name, we do
-    % not make another but reuse it. Otherwise make a new figure
+    % not make another but reuse it. Otherwise make a new figure. See, for example
+    % how the function is used in mpqc.plot.lens_paper
     %
     % Inputs
-    % fname = string file name
+    % fname - string file name
     %
     % Outputs
     % figHandle - handle to the figure we will use for plotting

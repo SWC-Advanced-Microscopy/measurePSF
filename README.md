@@ -123,10 +123,10 @@ This by default will record at the same gains as above.
 
 Analyse this:
 ```matlab
-     OUT = mpqc.tools.get_quantalsize_from_file
+     OUT = mpqc.analyse.get_quantalsize_from_file
 ```
 This will analyse one file at a time: returning the standard source mean photon count. 
-The quality of the fit that underlies this should be assessed with `mpqc.tools.plotPhotonFit`.
+The quality of the fit that underlies this should be assessed with `mpqc.analyse.plotPhotonFit`.
 
 
 
