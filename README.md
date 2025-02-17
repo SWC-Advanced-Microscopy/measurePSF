@@ -7,12 +7,12 @@ and for measuring field of view size using an EM grid.
 
 ## Main functions
 
-* `mpsf.record.PSF` to easily acquire PSF stacks with ScanImage.
-* `mpsf.record.lens_tissue` to acquire standardised data from lens tissue.
-* `mpsf.record.standard_light_source` to data from a standard light source
+* `mpqc.record.PSF` to easily acquire PSF stacks with ScanImage.
+* `mpqc.record.lens_tissue` to acquire standardised data from lens tissue.
+* `mpqc.record.standard_light_source` to data from a standard light source
 * `measurePSF` to estimate PSF size. For a demo, run `measurePSF('demo')`. 
 * `Grid2MicsPerPixel`  measures the number of microns per pixel along x and y by analyzing an image of an EM grid. 
-* `mpsf_tools.meanFrame` plots the mean frame intensity as a function of time whilst you are scanning.
+* `mpqc.tools.meanFrame` plots the mean frame intensity as a function of time whilst you are scanning.
 
 
 ![cover image](https://raw.githubusercontent.com/SWC-Advanced-Microscopy/measurePSF/gh-pages/realBead.png "Main Window")
@@ -24,7 +24,7 @@ You do not need to "Add With Subfolders".
 
 ### Fill in the settings file
 Output files contain meta-data associated with the microscope in order to make it easier to compare different microscopes and to track hardware changes. 
-Before using the tools for the first time **you must** run `mpsf.settings.readSettings;` and then **you must** fill in the YAML file for your PC. 
+Before using the tools for the first time **you must** run `mpqc.settings.readSettings;` and then **you must** fill in the YAML file for your PC. 
 The commands which record information assume this file has been created and filled in with your microscope details. 
 Future changes to the software may add fields to this file automatically. 
 If this happens, it will be reported to the CLI that a new field was added with default settings. 
@@ -37,16 +37,16 @@ To get a good image of a sub-micron bead:
 * Once a bead is found, zoom to about 20x or 25x.
 * Take a z-plane every 0.25 microns and average about 25 to 40 images per per plane. It's not worth doing more because we'll be fitting a curve to z-intensity profile.
 
-To measure the PSF you can either use the included `mpsf.record.PSF` function or manually set up ScanImage (see `documentation` folder if you need to do that).
+To measure the PSF you can either use the included `mpqc.record.PSF` function or manually set up ScanImage (see `documentation` folder if you need to do that).
 
-## Using `mpsf.record.PSF` to obtain a PSF
+## Using `mpqc.record.PSF` to obtain a PSF
 * Find a bead, zoom in. 
 * Select only one channel to save in the [CHANNELS window](https://docs.scanimage.org/Windows%2BReference%2BGuide/Channels.html).
 * Set the averaging to the quantity you wish to use in the [Image Controls](https://docs.scanimage.org/Windows%2BReference%2BGuide/Image%2BControls.html) window.
 * Move the focus *down* to the lowest point you wish to image and press press "Zero Z" in MOTOR CONTROLS
 * Now focus back up to where you want to start the stack and press "Read Pos" in MOTOR CONTROLS. 
 This is the number of microns you will acquire (ignore the negative sign if present). 
-* Run `mpsf.record.PSF` with number of microns obtained above as the first input argument. This will obtain the stack with a 0.25 micron resolution using the averaging you have set. e.g. `record.PSF(12)` for a 12 micron stack. The save location is reported to screen. You can define a different z resolution using the second input argument.
+* Run `mpqc.record.PSF` with number of microns obtained above as the first input argument. This will obtain the stack with a 0.25 micron resolution using the averaging you have set. e.g. `record.PSF(12)` for a 12 micron stack. The save location is reported to screen. You can define a different z resolution using the second input argument.
 
 
 ## Measuring the PSF
@@ -73,26 +73,26 @@ Look at the diagnostic figures to ensure function has found most of the grid lin
 
 
 ## Plotting mean frame intensity
-Run `mpsf_tools.meanFrame` to bring up a figure window that plots mean frame intensity during scanning. 
+Run `mpqc.tools.meanFrame` to bring up a figure window that plots mean frame intensity during scanning. 
 This function is used for things like tweaking a pre-chirper. 
-See `help mpsf_tools.meanFrame` for advanced usage. 
+See `help mpqc.tools.meanFrame` for advanced usage. 
 
 
 ## Measuring field homogeneity
 To record data:
 ```matlab
-mpsf.record.uniform_slide
+mpqc.record.uniform_slide
 ```
 The results are saved to a folder on the desktop. You can view the results as follows:
 ```matlab
 % cd to directory containing data
-mpsf.plot.uniform_slide('uniform_slice_zoom_1_920nm_5mW__2022-08-02_10-09-33_00001.tif')
+mpqc.plot.uniform_slide('uniform_slice_zoom_1_920nm_5mW__2022-08-02_10-09-33_00001.tif')
 ```
 
 ## Measuring electrical noise
 Remove all contaminant sources of light from the enclosure run:
 ```matlab
- mpsf.record.electrical_noise
+ mpqc.record.electrical_noise
 ```
 
 
@@ -108,7 +108,7 @@ Do this at around 50 to 100 mW at the sample.
 The following command will record the lens paper at 4 different gains. 
 The gains are set automatically **AND HAVE ONLY BEEN TESTED WITH MULTI-ALKALI PMTs SO FAR**. 
 ```matlab
- mpsf.record.lens_paper
+ mpqc.record.lens_paper
 ```
 
 Then take out the lens paper. 
@@ -116,7 +116,7 @@ CLOSE THE LASER SHUTTER.
 Record the standard source.
 This by default will record at the same gains as above. 
 ```matlab
- mpsf.record.standard_light_source
+ mpqc.record.standard_light_source
 ```
 
 

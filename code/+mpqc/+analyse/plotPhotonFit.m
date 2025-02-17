@@ -43,7 +43,7 @@ fig.Name = fname;
 subplot(2,3,[1,4])
 % Plot the variance as a function of the mean and overlay the fit line
 intensity = STATS.min_intensity:STATS.max_intensity - 1;
-plot(intensity,STATS.variance,'.', 'color',[0.35,0.35,1])
+plot(intensity,STATS.variance,'.', 'color',[0.35,0.35,1],'markersize',4)
 
 hold on
 y = STATS.model(1) + intensity*STATS.model(2);
