@@ -24,7 +24,9 @@ function OUT = get_quantalsize_quantalsize_from_file(fname)
 	% Rob Campbell, SWC AMF, initial commit
 
 
-
+	if nargin<1
+		fname = uigetfile('*.tif');
+	end
 
 	[im,metadata]=mpqc.tools.scanImage_stackLoad(fname,false); %Do not subtract the offset
 
@@ -70,16 +72,19 @@ function ssResults = convert_standardSource(t_ssFiles,OUT)
 
 		nChans = length(metadata.channelSave);
 		n=1; %index
+
 		for ii=1:nChans
 			tChan = metadata.channelSave(ii);
+
 			if OUT.channel ~= tChan
 				continue
 			end
+
 			tData = im(:,:,ii:nChans:end);
 			tData = tData(:);
 			ssResults(n).fname = fname;
 			ssResults(n).channel = tChan;
-			ssResults(n).meanPhotonCount = mean(tData - OUT.min_intensity - OUT.zero_level) / OUT.quantal_size;
+			ssResults(n).meanPhotonCount = mean(tData - OUT.image_min_pixel_value - OUT.zero_level) / OUT.quantal_size;
 
 			fprintf('%s, Chan %d, mean photon count: %0.2f\n', ...
 				fname, tChan, ssResults(n).meanPhotonCount)
