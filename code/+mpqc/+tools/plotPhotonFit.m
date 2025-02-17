@@ -1,6 +1,8 @@
 function plotPhotonFit(STATS)
 % Diagnostic plots for the compute_sensitivity function.
 %
+% function mpqc.tools.plotPhotonFit(STATS)
+%
 % Purpose
 % The function "compute_sensitivity" takes as input a series of image frames from a
 % scanning microscope and returns an array of statistics as output. The key statistic
@@ -14,14 +16,13 @@ function plotPhotonFit(STATS)
 %
 %
 % Example
-% OUT = compute_sensitivity(T);
-% plotPhotonFit(OUT)
+% OUT = mpqc.tools_get_quantal_size_from_file(fname);
+% mpqc.tools.plotPhotonFit(OUT)
 %
-% For a more in-depth example see the script: example_standard_target_calibration.m
-% and also equivalent markdown file: example_standard_target_calibration.md
 %
 %
 % Rob Campbell, SWC AMF, initial commit February 2025
+%
 %
 % Acknowledgements
 % This function is based on this work:
