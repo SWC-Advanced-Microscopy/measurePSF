@@ -87,10 +87,9 @@ function ssResults = convert_standardSource(t_ssFiles,OUT)
 			end
 
 			tData = im(:,:,ii:nChans:end);
-			tData = tData(:);
 			ssResults(n).fname = fname;
 			ssResults(n).channel = tChan;
-			ssResults(n).meanPhotonCount = mpqc.analyse.convertImageToPhotons(tData, OUT);
+			ssResults(n).meanPhotonCount = mpqc.analyse.convertImageToPhotons(mean(tData(:)), OUT);
 
 			fprintf('%s, Chan %d, mean photon count: %0.2f\n', ...
 				fname, tChan, ssResults(n).meanPhotonCount)
