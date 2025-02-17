@@ -9,11 +9,11 @@ function standard_light_source(channelSave,nFrames)
     % one file per gain.
     %
     % INSTRUCTIONS
-    % You may have multiple standard light sources. If so, enter them
+    % 1. You may have multiple standard light sources. If so, enter them
     % into the `QC.sourceIDs` field of the YML file. e.g.
     %  sourceIDs: ['Red_2024Q2','Green_2024Q2','Blue_2024Q2','White_2024Q2']
-    % You will then be prompted to enter which is the source when you run the function.
-    %
+    % 2. You will then be prompted to enter which is the source when you run the function.
+    % 3. CLOSE THE LASER SHUTTER BEFORE STARTING
     %
     % Optional Inputs
     % channelSave - By default this is all four channels (1:4). But the user
