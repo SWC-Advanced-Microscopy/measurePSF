@@ -1,7 +1,7 @@
 function [result,dataForFit] = compute_quantalsize(frames, count_weight_gamma, min_count_proportion)
     % Compute photon quantal_size
     %
-    % function result = compute_quantalsize(frames, count_weight_gamma, min_count_proportion)
+    % function result = mpqc.analyse.compute_quantalsize(frames, count_weight_gamma, min_count_proportion)
     %
     % Purpose
     % Compute the number of photons per pixel (the quantal size or system sensitivity) from

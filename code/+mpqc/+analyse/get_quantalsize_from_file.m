@@ -1,7 +1,7 @@
 function OUT = get_quantalsize_quantalsize_from_file(fname)
 	% Get the quantal size and associated statistics from a file
 	%
-	% function OUT = mpqc.tools.get_quantalsize_quantalsize_from_file(fname)
+	% function OUT = mpqc.analyse.get_quantalsize_quantalsize_from_file(fname)
 	%
 	% Purpose
 	% Processes a file (likely a lens paper file) to extract the quantal size and associated
@@ -18,8 +18,8 @@ function OUT = get_quantalsize_quantalsize_from_file(fname)
 	% TODO -- explain this in more detail.
 	%
 	% See also
-	% mpqc.tools.compute_quantalsize
-	% mpqc.tools.plotPhotonFit
+	% mpqc.analyse.compute_quantalsize
+	% mpqc.analyse.plotPhotonFit
 	%
 	% Rob Campbell, SWC AMF, initial commit
 
@@ -45,7 +45,7 @@ function OUT = get_quantalsize_quantalsize_from_file(fname)
 	for ii=1:nChans
 		% Run the analysis
 		tChan = im(:,:,ii:nChans:end);
-		OUT(ii) = mpqc.tools.compute_quantalsize(tChan);
+		OUT(ii) = mpqc.analyse.compute_quantalsize(tChan);
 
 		% Fill in extra metadata
 		OUT(ii).channel = metadata.channelSave(ii);
@@ -90,7 +90,7 @@ function ssResults = convert_standardSource(t_ssFiles,OUT)
 			tData = tData(:);
 			ssResults(n).fname = fname;
 			ssResults(n).channel = tChan;
-			ssResults(n).meanPhotonCount = mean(tData - OUT.image_min_pixel_value - OUT.zero_level) / OUT.quantal_size;
+			ssResults(n).meanPhotonCount = mpqc.analyse.convertImageToPhotons(tData, OUT);
 
 			fprintf('%s, Chan %d, mean photon count: %0.2f\n', ...
 				fname, tChan, ssResults(n).meanPhotonCount)

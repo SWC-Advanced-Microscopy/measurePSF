@@ -1,7 +1,7 @@
-function plotPhotonFit(STATS)
+function c=plotPhotonFit(STATS)
 % Diagnostic plots for the compute_sensitivity function.
 %
-% function mpqc.tools.plotPhotonFit(STATS)
+% function mpqc.analyse.plotPhotonFit(STATS)
 %
 % Purpose
 % The function "compute_sensitivity" takes as input a series of image frames from a
@@ -17,7 +17,7 @@ function plotPhotonFit(STATS)
 %
 % Example
 % OUT = mpqc.tools_get_quantal_size_from_file(fname);
-% mpqc.tools.plotPhotonFit(OUT)
+% mpqc.analyse.plotPhotonFit(OUT)
 %
 %
 %
@@ -29,8 +29,18 @@ function plotPhotonFit(STATS)
 % https://github.com/datajoint/anscombe-numcodecs by Dimitri Yatsenko
 
 
-figure(12349)
-clf
+[~,fname] = fileparts(STATS.filename);
+
+fig = mpqc.tools.returnFigureHandleForFile(fname);
+fig.Name = fname;
+
+
+
+
+%%
+% The photon fit
+
+subplot(1,3,1)
 % Plot the variance as a function of the mean and overlay the fit line
 intensity = STATS.min_intensity:STATS.max_intensity - 1;
 plot(intensity,STATS.variance,'.', 'color',[0.35,0.35,1])
@@ -49,21 +59,29 @@ title(sprintf('Quantal size: %0.1f. Mean photons per pixel: %0.2f', ...
     STATS.quantal_size, STATS.photons_per_pixel))
 
 
-% Make an inset plot showing the distribution
-pos = get(gca,'Position');
-origWidth=pos(3);
-origHeight=pos(4);
-topEdge=pos(2)+origHeight;
-pos(3:4) = pos(3:4)*0.3';
-pos(2) = topEdge - pos(4) - origHeight*0.05;
-pos(1) = pos(1) + origWidth*0.05;
 
-axes('position',pos)
+%%
+% The converted image
+subplot(1,3,2)
+imStack = mpqc.tools.load3Dtiff(STATS.filename);
+muIm = mean(imStack,3);
+muIm_p = mpqc.analyse.convertImageToPhotons(muIm, STATS);
+imagesc(floor(muIm_p))
+set(gca,'ColorScale','log')
+title('log(photon) mean image')
 
-tColor = [0.85,0.65,0.65];
-area(intensity,log(STATS.counts),'EdgeColor', tColor, 'FaceColor', tColor)
-xlabel('Intensity')
-ylabel('log(Counts)')
+
+%%
+% The histogram of photon counts
+
+subplot(1,3,3)
+nBins =  round(( max(muIm_p(:)) /2.5)/10)*10;
+[n,x] = hist(muIm_p(:),nBins);
+
+plot(x,n,'LineWidth',3)
+xlabel('Intensity [photons]')
+ylabel('log(n)')
+set(gca,'YScale','log')
 grid on
-set(gca,'YAxisLocation','Right')
-axis tight
+xlim([0,max(x)])
+title('log(photon) image histogram')
