@@ -68,9 +68,9 @@ function lens_paper(varargin)
         numFramesToAcquire = out.nFrames;
     end
 
-    gains = [];
-    if isfield(out,'gains')
-        gains = out.gains;
+    numGains = [];
+    if isfield(out,'mumGains')
+        mumGains = out.mumGains;
     end
 
 
@@ -160,6 +160,12 @@ function lens_paper(varargin)
         gainsToTest = getPMTGainsToTest(numGains);
 
         for ii=1:length(gainsToTest)
+
+            % Do not record zero gain. 
+            if sum(gainsToTest(:,ii)) == 0 
+                continue
+            end
+        
             % Set file name and save dir
             fileStem = sprintf('%s_lens_paper_%dV_%dnm_%dmW_%s__%s', ...
                 SETTINGS.microscope.name, ...
@@ -170,7 +176,7 @@ function lens_paper(varargin)
                 datestr(now,'yyyy-mm-dd_HH-MM-SS'));
 
             API.hSI.hScan2D.logFileStem=fileStem;
-            API.hSI.hScan2D.logFilePath=lightSourceDir;
+            API.hSI.hScan2D.logFilePath=saveDir;
             API.hSI.hScan2D.logFileCounter=1;
 
             API.setPMTgains(gainsToTest(:,ii)); % Set gain
