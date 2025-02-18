@@ -47,15 +47,17 @@ function gainsToTest = getPMTGainsToTest(numGains)
     function tPMTgains = generateGainsForPMT(hPMT)
         if hPMT.pmtSupplyRange_V(2) <= 100 || hPMT.aoRange_V(2) <= 2
             isMultiAlkali = false;
-        else
+        elseif hPMT.pmtSupplyRange_V(2) > 500
             isMultiAlkali = true;
+        else
+            error('getPMTGainsToTest can not determine gain settings.\n')
         end
 
         if isMultiAlkali
             tPMTgains = [0,linspace(500,725,numGains)];
         else
             maxV = hPMT.pmtSupplyRange_V(2);
-            tPMTgains = [0, linspace(maxV*0.55,maxV*0.8,numGains)];
+            tPMTgains = [0, linspace(maxV*0.6,maxV*0.9,numGains)];
         end
 
         tPMTgains = round(tPMTgains);
